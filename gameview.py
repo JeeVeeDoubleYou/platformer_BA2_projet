@@ -17,6 +17,7 @@ class GameView(arcade.View):
     wall_list: arcade.SpriteList[arcade.Sprite]
 
     physics_engine: arcade.PhysicsEnginePlatformer
+    camera: arcade.camera.Camera2D
 
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
@@ -39,6 +40,7 @@ class GameView(arcade.View):
         self.player_sprite_list = arcade.SpriteList()
         self.player_sprite_list.append(self.player_sprite)
         self.wall_list = arcade.SpriteList()
+        self.camera = arcade.camera.Camera2D()
 
         for x in range(0, 1250, 64) :
             self.wall_list.append(arcade.Sprite(
@@ -95,12 +97,15 @@ class GameView(arcade.View):
         This is where in-world time "advances" or "ticks". """
 
         self.physics_engine.update()
+        self.camera.position = self.player_sprite.position #type: ignore
 
     def on_draw(self) -> None:
         """Render the screen."""
 
         self.clear() # always start with self.clear()
-        self.player_sprite_list.draw()
-        self.wall_list.draw()
+
+        with self.camera.activate():
+            self.wall_list.draw()
+            self.player_sprite_list.draw()
 
     
