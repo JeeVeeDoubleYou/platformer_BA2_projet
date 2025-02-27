@@ -1,6 +1,5 @@
 import arcade
 
-
 class GameView(arcade.View):
     """Main in-game view."""
 
@@ -30,19 +29,19 @@ class GameView(arcade.View):
         self.player_sprite_list.append(self.player_sprite)
         self.wall_list = arcade.SpriteList()
 
-        for x in range(0, 1250-64, 64) :
+        for x in range(0, 1250, 64) :
             self.wall_list.append(arcade.Sprite(
-                ":resources:images/tiles/grassMid.png" ,
-                center_x=x ,
-                center_y=32 ,
+                ":resources:images/tiles/grassMid.png",
+                center_x=x,
+                center_y=32,
                 scale=0.5
             ))
 
-        for x in range(256, 769, 256) :
+        for x in [256,512,768] :
             self.wall_list.append(arcade.Sprite(
-                ":resources:images/tiles/boxCrate_double.png" ,
-                center_x=x ,
-                center_y=96 ,
+                ":resources:images/tiles/boxCrate_double.png",
+                center_x=x,
+                center_y=96,
                 scale=0.5
             ))
 
