@@ -77,6 +77,10 @@ class GameView(arcade.View):
             case arcade.key.UP:
                 # jump by giving an initial vertical speed
                 self.player_sprite.change_y = PLAYER_JUMP_SPEED
+            
+            case arcade.key.ESCAPE:
+                # reset game
+                self.setup()
     
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
