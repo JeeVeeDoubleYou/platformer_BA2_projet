@@ -1,5 +1,8 @@
 import arcade
 
+"""Lateral speed of the player, in pixels per frame"""
+PLAYER_MOVEMENT_SPEED = 5
+
 class GameView(arcade.View):
     """Main in-game view."""
 
@@ -45,9 +48,25 @@ class GameView(arcade.View):
                 scale=0.5
             ))
 
-            
+    def on_key_press(self, key: int, modifiers: int) -> None:
+        """Called when the user presses a key on the keyboard."""
 
+        match key:
+            case arcade.key.RIGHT:
+                # start moving to the right
+                self.player_sprite.change_x = +PLAYER_MOVEMENT_SPEED
+        
+            case arcade.key.LEFT:
+                # start moving to the left
+                self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+    
+    def on_key_release(self, key: int, modifiers: int) -> None:
+        """Called when the user releases a key on the keyboard."""
 
+        match key:
+            case arcade.key.RIGHT | arcade.key.LEFT:
+                # stop lateral movement
+                self.player_sprite.change_x = 0
 
     def on_draw(self) -> None:
         """Render the screen."""
@@ -55,4 +74,10 @@ class GameView(arcade.View):
         self.clear() # always start with self.clear()
         self.player_sprite_list.draw()
         self.wall_list.draw()
-        
+
+    def on_update(self, delta_time: float) -> None:
+        """Called once per frame, before drawing.
+        This is where in-world time "advances" or "ticks". """
+        self.player_sprite.center_x += self.player_sprite.change_x
+
+    
