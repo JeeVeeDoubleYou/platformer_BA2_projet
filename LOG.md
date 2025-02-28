@@ -12,8 +12,14 @@ Format :
 
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 
-* Gaëlle : 
-* Paul : 
+### Gaëlle : 
+* [] Gestion plus fine de la caméra
+* [] Bruitages
+
+### Paul : 
+* [] Meilleure gestion du clavier
+* [] Sauts multiples
+
 
 ---
 
@@ -31,6 +37,9 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Collision avec les murs                                         20
 * [x] Remise à zéro                                                   10
 * [x] Caméra basique                                                  10
+* [x] Created coins and pickup                                        30
+* [x] Created first test : coins                                       5
+
 
 ### Semaine 3
 
