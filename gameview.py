@@ -111,22 +111,17 @@ class GameView(arcade.View):
 
         self.physics_engine.update()
 
-        # self.camera.move_to([1 , 1])
         camera_x, camera_y = self.camera.position
-        if (self.camera.center_right[0] < self.player_sprite.center_x):
+        if (self.camera.center_right[0] < self.player_sprite.center_x + 150):
             camera_x += 5
-        elif (self.camera.viewport_left > self.player_sprite.center_x):
-            camera_x -= 20
-
-        print(self.camera.view_data)
+        elif (self.camera.center_left[0] > self.player_sprite.center_x - 150):
+            camera_x -= 5
         
-        if (self.camera.viewport_top < self.player_sprite.center_y):
-            camera_y += 20
-        elif (self.camera.viewport_bottom > self.player_sprite.center_y):
-            camera_y -= 20
-        # print("Right : " + str(self.camera.viewport_right))
-        # print("Left : " + str(self.camera.viewport_left))
-
+        if (self.camera.top_center[1] < self.player_sprite.center_y + 150):
+            camera_y += 5
+        elif (self.camera.bottom_center[1] > self.player_sprite.center_y - 150):
+            camera_y -= 5
+    
         self.camera.position = arcade.Vec2(camera_x, camera_y)
 
         for coin in arcade.check_for_collision_with_list(self.player_sprite, self.coin_list) :

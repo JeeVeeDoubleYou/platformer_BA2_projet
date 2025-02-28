@@ -39,6 +39,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Caméra basique                                                  10
 * [x] Created coins and pickup                                        30
 * [x] Created first test : coins                                       5
+* [x] Gestion plus fine de la caméra                                 180
 
 
 ### Semaine 3
