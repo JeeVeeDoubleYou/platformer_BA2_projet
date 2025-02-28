@@ -44,6 +44,7 @@ class GameView(arcade.View):
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.camera = arcade.camera.Camera2D()
+        self.camera.position = self.player_sprite.position #type: ignore
 
 
         for x in range(0, 1250, 64) :
@@ -109,8 +110,25 @@ class GameView(arcade.View):
         This is where in-world time "advances" or "ticks". """
 
         self.physics_engine.update()
-        self.camera.position = self.player_sprite.position #type: ignore
-       
+
+        # self.camera.move_to([1 , 1])
+        camera_x, camera_y = self.camera.position
+        if (self.camera.center_right[0] < self.player_sprite.center_x):
+            camera_x += 5
+        elif (self.camera.viewport_left > self.player_sprite.center_x):
+            camera_x -= 20
+
+        print(self.camera.view_data)
+        
+        if (self.camera.viewport_top < self.player_sprite.center_y):
+            camera_y += 20
+        elif (self.camera.viewport_bottom > self.player_sprite.center_y):
+            camera_y -= 20
+        # print("Right : " + str(self.camera.viewport_right))
+        # print("Left : " + str(self.camera.viewport_left))
+
+        self.camera.position = arcade.Vec2(camera_x, camera_y)
+
         for coin in arcade.check_for_collision_with_list(self.player_sprite, self.coin_list) :
             coin.remove_from_sprite_lists()
 
