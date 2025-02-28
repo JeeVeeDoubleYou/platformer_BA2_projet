@@ -100,9 +100,15 @@ class GameView(arcade.View):
         """Called when the user releases a key on the keyboard."""
 
         match key:
-            case arcade.key.RIGHT | arcade.key.LEFT:
+            case arcade.key.RIGHT:
                 # stop lateral movement
-                self.player_sprite.change_x = 0
+                if self.player_sprite.change_x > 0:
+                    self.player_sprite.change_x = 0
+            case arcade.key.LEFT:
+                if self.player_sprite.change_x < 0:
+                    self.player_sprite.change_x = 0
+
+            #pourrait avoire probleme avec plateformes qui bouges
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
