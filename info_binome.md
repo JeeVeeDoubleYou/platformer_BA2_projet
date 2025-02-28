@@ -1,1 +1,3 @@
 Semaine 2 : crée la constante PLAYER_MOVEMENT_SPEED en global dans le fichier gameview -> ok de créer en global ? OUI
+
+
