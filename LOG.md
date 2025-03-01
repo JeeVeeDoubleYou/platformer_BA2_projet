@@ -13,7 +13,6 @@ Format :
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 
 ### Gaëlle : 
-* [] Gestion plus fine de la caméra
 * [] Bruitages
 
 ### Paul : 
@@ -37,9 +36,10 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Collision avec les murs                                         20
 * [x] Remise à zéro                                                   10
 * [x] Caméra basique                                                  10
-* [x] Created coins and pickup                                        30
-* [x] Created first test : coins                                       5
+* [x] Créé pièces et ramassage                                        30
+* [x] Premier test : pièces                                            5
 * [x] Gestion plus fine de la caméra                                 180
+* [x] Ajouté touches A, W, D et espace pour le mouvement              10
 
 
 ### Semaine 3
