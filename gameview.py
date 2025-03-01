@@ -7,7 +7,7 @@ PLAYER_MOVEMENT_SPEED = 5
 PLAYER_GRAVITY = 1
 
 """Instant vertical speed for jumping, in pixels per frame"""
-PLAYER_JUMP_SPEED = 18
+PLAYER_JUMP_SPEED = 19
 
 class GameView(arcade.View):
     """Main in-game view."""
@@ -92,6 +92,7 @@ class GameView(arcade.View):
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
                 self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
             
             case arcade.key.ESCAPE:
                 # reset game
@@ -132,6 +133,7 @@ class GameView(arcade.View):
 
         for coin in arcade.check_for_collision_with_list(self.player_sprite, self.coin_list) :
             coin.remove_from_sprite_lists()
+            arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
     def on_draw(self) -> None:
         """Render the screen."""

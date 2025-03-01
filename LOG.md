@@ -13,7 +13,7 @@ Format :
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 
 ### Gaëlle : 
-* [] Bruitages
+
 
 ### Paul : 
 * [] Meilleure gestion du clavier
@@ -40,7 +40,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Premier test : pièces                                            5
 * [x] Gestion plus fine de la caméra                                 180
 * [x] Ajouté touches A, W, D et espace pour le mouvement              10
-
+* [x] Bruitages                                                       10
 
 ### Semaine 3
 
