@@ -126,9 +126,10 @@ class GameView(arcade.View):
         
         if (self.camera.top_center[1] < self.player_sprite.center_y + 150):
             camera_y += 5
-        elif (self.camera.bottom_center[1] > self.player_sprite.center_y - 150):
+        elif (self.camera.bottom_center[1] > self.player_sprite.center_y - 250):
             camera_y -= 5
-    
+        # not convinced by recentering of platform, check back later when player must climb platforms
+
         self.camera.position = arcade.Vec2(camera_x, camera_y)
 
         for coin in arcade.check_for_collision_with_list(self.player_sprite, self.coin_list) :
