@@ -81,15 +81,15 @@ class GameView(arcade.View):
         """Called when the user presses a key on the keyboard."""
 
         match key:
-            case arcade.key.RIGHT:
+            case arcade.key.RIGHT | arcade.key.D:
                 # start moving to the right
                 self.player_sprite.change_x = +PLAYER_MOVEMENT_SPEED
         
-            case arcade.key.LEFT:
+            case arcade.key.LEFT | arcade.key.A :
                 # start moving to the left
                 self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
             
-            case arcade.key.UP:
+            case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
                 self.player_sprite.change_y = PLAYER_JUMP_SPEED
             
@@ -101,11 +101,11 @@ class GameView(arcade.View):
         """Called when the user releases a key on the keyboard."""
 
         match key:
-            case arcade.key.RIGHT:
+            case arcade.key.RIGHT | arcade.key.D:
                 # stop lateral movement
                 if self.player_sprite.change_x > 0:
                     self.player_sprite.change_x = 0
-            case arcade.key.LEFT:
+            case arcade.key.LEFT | arcade.key.A:
                 if self.player_sprite.change_x < 0:
                     self.player_sprite.change_x = 0
 
