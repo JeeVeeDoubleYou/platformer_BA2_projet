@@ -20,6 +20,11 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Sauts multiples
 
 
+
+
+
+
+
 ---
 
 ## Suivi
@@ -41,6 +46,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Gestion plus fine de la caméra                                 180
 * [x] Ajouté touches A, W, D et espace pour le mouvement              10
 * [x] Bruitages                                                       10
+* [x] enlever les doubles sauts                                       30
 
 ### Semaine 3
 

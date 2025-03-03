@@ -91,8 +91,14 @@ class GameView(arcade.View):
             
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
-                self.player_sprite.change_y = PLAYER_JUMP_SPEED
-                arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
+                self.player_sprite.center_y -= 20
+                print(arcade.check_for_collision_with_list(self.player_sprite, self.wall_list))
+                a=len(arcade.check_for_collision_with_list(self.player_sprite, self.wall_list))
+                if a != 0:
+                    self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                    arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
+                self.player_sprite.center_y += 20
+                
             
             case arcade.key.ESCAPE:
                 # reset game
