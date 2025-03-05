@@ -92,7 +92,6 @@ class GameView(arcade.View):
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
                 self.player_sprite.center_y -= 20
-                print(arcade.check_for_collision_with_list(self.player_sprite, self.wall_list))
                 a=len(arcade.check_for_collision_with_list(self.player_sprite, self.wall_list))
                 if a != 0:
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
@@ -126,15 +125,12 @@ class GameView(arcade.View):
 
         camera_x, camera_y = self.camera.position
         if (self.camera.center_right[0] < self.player_sprite.center_x + 400):
-            camera_x += 5
+            camera_x += PLAYER_MOVEMENT_SPEED
         elif (self.camera.center_left[0] > self.player_sprite.center_x - 400):
-            camera_x -= 5
+            camera_x -= PLAYER_MOVEMENT_SPEED
         
-        if (self.camera.top_center[1] < self.player_sprite.center_y + 150):
-            camera_y += 5
-        elif (self.camera.bottom_center[1] > self.player_sprite.center_y - 250):
-            camera_y -= 5
-        # not convinced by recentering of platform, check back later when player must climb platforms
+        if ((self.camera.top_center[1] < self.player_sprite.center_y + 150) or (self.camera.bottom_center[1] + 250 > self.player_sprite.center_y)):
+            camera_y += self.player_sprite.change_y
 
         self.camera.position = arcade.Vec2(camera_x, camera_y)
 
