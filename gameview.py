@@ -124,9 +124,9 @@ class GameView(arcade.View):
         self.physics_engine.update()
 
         camera_x, camera_y = self.camera.position
-        if (self.camera.center_right[0] < self.player_sprite.center_x + 400):
+        if (self.camera.center_right.x < self.player_sprite.center_x + 400):
             camera_x += PLAYER_MOVEMENT_SPEED
-        elif (self.camera.center_left[0] > self.player_sprite.center_x - 400):
+        elif (self.camera.center_left.x > self.player_sprite.center_x - 400):
             camera_x -= PLAYER_MOVEMENT_SPEED
         
         if ((self.camera.top_center[1] < self.player_sprite.center_y + 150) or (self.camera.bottom_center[1] + 250 > self.player_sprite.center_y)):
