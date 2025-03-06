@@ -21,7 +21,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] ANSWERS.MD (deux premières questions)
 
 ### Paul : 
-* [] Meilleure gestion du clavier
 * [] Test clavier
 * [] Test sauts multiples
 * [] Blobs (monstres)
@@ -52,7 +51,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Ajouté touches A, W, D et espace pour le mouvement              10
 * [x] Bruitages                                                       10
 * [x] Enlevé les doubles sauts                                        30
-
+* [x] Meilleure gestion du clavier                                   120
 ### Semaine 3
 
 ### Semaine 4

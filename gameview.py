@@ -18,7 +18,6 @@ class GameView(arcade.View):
     coin_list: arcade.SpriteList[arcade.Sprite]
     is_going_left = False
     is_going_right = False
-    
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
 
@@ -47,7 +46,7 @@ class GameView(arcade.View):
         self.camera = arcade.camera.Camera2D()
         self.camera.position = self.player_sprite.position #type: ignore
 
-        for x in range(-1000, 1250, 64) :
+        for x in range(0, 1250, 64) :
             self.wall_list.append(arcade.Sprite(
                 ":resources:images/tiles/grassMid.png",
                 center_x=x,
