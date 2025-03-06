@@ -13,16 +13,22 @@ Format :
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 
 ### Gaëlle : 
-
+* [] Test collisions
+* [] Test caméra
+* [] Importer maps
+* [] Test maps
+* [] Concorder autres test avec fichier maps
+* [] ANSWERS.MD (deux premières questions)
 
 ### Paul : 
 * [] Meilleure gestion du clavier
-
-
-
-Il faut qu'on écrive des tests ! (Tâche pour cette semaine)
-Paul : Régler le détail du mouvement, encore
-
+* [] Test clavier
+* [] Test sauts multiples
+* [] Blobs (monstres)
+* [] Lave
+* [] Test blobs
+* [] Test lave
+* [] ANSWERS.MD (deux dernières questions)
 
 ---
 
