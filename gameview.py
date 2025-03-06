@@ -9,13 +9,6 @@ PLAYER_GRAVITY = 1
 """Instant vertical speed for jumping, in pixels per frame"""
 PLAYER_JUMP_SPEED = 19
 
-"""going left"""
-LEFT = False
-
-"""going left"""
-RIGHT = False
-
-
 class GameView(arcade.View):
     """Main in-game view."""
 
@@ -23,8 +16,9 @@ class GameView(arcade.View):
     player_sprite_list: arcade.SpriteList[arcade.Sprite]
     wall_list: arcade.SpriteList[arcade.Sprite]
     coin_list: arcade.SpriteList[arcade.Sprite]
+    is_going_left = False
+    is_going_right = False
     
-
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
 
@@ -53,8 +47,7 @@ class GameView(arcade.View):
         self.camera = arcade.camera.Camera2D()
         self.camera.position = self.player_sprite.position #type: ignore
 
-
-        for x in range(0, 1250, 64) :
+        for x in range(-1000, 1250, 64) :
             self.wall_list.append(arcade.Sprite(
                 ":resources:images/tiles/grassMid.png",
                 center_x=x,
@@ -86,19 +79,16 @@ class GameView(arcade.View):
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
-        #print(LEFT)
         match key:
             case arcade.key.RIGHT | arcade.key.D:
                 # start moving to the right
-                self.player_sprite.change_x += PLAYER_MOVEMENT_SPEED
-                RIGHT = True
-                LEFT = False
+                self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+                self.is_going_right = True
         
             case arcade.key.LEFT | arcade.key.A :
                 # start moving to the left
-                self.player_sprite.change_x -= PLAYER_MOVEMENT_SPEED
-                LEFT = True
-                RIGHT = False
+                self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+                self.is_going_left = True
             
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
@@ -117,18 +107,23 @@ class GameView(arcade.View):
     
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
-        print(LEFT)
-
         match key:
+              # stop lateral movement
             case arcade.key.RIGHT | arcade.key.D:
-                # stop lateral movement
-                if LEFT == False:
-                    self.player_sprite.change_x -= PLAYER_MOVEMENT_SPEED
-            case arcade.key.LEFT | arcade.key.A:
-                if RIGHT == False:
-                    self.player_sprite.change_x += PLAYER_MOVEMENT_SPEED
-
+                self.is_going_right = False
+                if self.is_going_left == False:
+                    self.player_sprite.change_x = 0
                     
+                else :
+                    self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+
+            case arcade.key.LEFT | arcade.key.A:
+                self.is_going_left = False
+                if self.is_going_right == False:
+                    self.player_sprite.change_x = 0
+                else :
+                    self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+                
 
             #pourrait avoir des probleme avec les plateformes qui bouges
 
