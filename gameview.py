@@ -21,6 +21,11 @@ class GameView(arcade.View):
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
 
+    allow_multi_jump: bool
+    allowed_jumps: int
+    allow_multi_jump = False
+    allowed_jumps = 1
+
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
@@ -75,6 +80,8 @@ class GameView(arcade.View):
             walls=self.wall_list,
             gravity_constant=PLAYER_GRAVITY
         )
+    
+    
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
@@ -89,15 +96,14 @@ class GameView(arcade.View):
                 self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
                 self.is_going_left = True
             
+
+            
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
-                self.player_sprite.center_y -= 20
-                print(arcade.check_for_collision_with_list(self.player_sprite, self.wall_list))
-                a=len(arcade.check_for_collision_with_list(self.player_sprite, self.wall_list))
-                if a != 0:
+
+                if self.physics_engine.can_jump(5) :
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
                     arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
-                self.player_sprite.center_y += 20
                 
             
             case arcade.key.ESCAPE:
