@@ -25,9 +25,13 @@ class GameView(arcade.View):
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
 
-    def __init__(self) -> None:
+    def __init__(self, map_name : str = "maps/map1.txt") -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
+
+        if not os.path.exists(map_name) :
+            raise SystemExit(1)
+        self.map_name = map_name
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
@@ -42,18 +46,7 @@ class GameView(arcade.View):
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
 
-
-        for i in range(3) :
-            map_name = "maps/" + input("Enter the file path for the map you would like, without any quotation marks : ")
-            if os.path.exists(map_name) :
-                break
-            elif i == 2 :
-                print("----- I give up ! -----")
-                raise SystemExit(1)
-            else : 
-                print("Please enter a valid file name. It must be in the 'maps' folder.")
-
-        with open(map_name, "r", encoding="utf-8", newline='') as f:
+        with open(self.map_name, "r", encoding="utf-8", newline='') as f :
      
             try :
                 map_width = None
