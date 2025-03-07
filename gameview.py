@@ -7,7 +7,10 @@ PLAYER_MOVEMENT_SPEED = 5
 PLAYER_GRAVITY = 1
 
 """Instant vertical speed for jumping, in pixels per frame"""
-PLAYER_JUMP_SPEED = 19
+PLAYER_JUMP_SPEED = 18
+
+"""Scale for all sprites"""
+SCALE = 0.5
 
 class GameView(arcade.View):
     """Main in-game view."""
@@ -34,42 +37,112 @@ class GameView(arcade.View):
     def setup(self) -> None:
         """Set up the game here."""
 
-        self.player_sprite = arcade.Sprite(
-            ":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png",
-            center_x=64,
-            center_y=128
-        )
         self.player_sprite_list = arcade.SpriteList()
-        self.player_sprite_list.append(self.player_sprite)
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
+
+        map_name = "maps/map1.txt"
+
+        with open(map_name, "r", encoding="utf-8", newline='') as f:
+     
+            map_width = None
+            map_height = None
+            for line in f :
+                if line == "---\n" or line == "---" :
+                    break
+                line.split()
+                try : 
+                    if line.startswith("width") :
+                        map_width = int(line.split()[-1])
+                    if line.startswith("height") :
+                        map_height = int(line.split()[-1])
+                except ValueError :
+                    raise Exception("Configuration lines one file aren't formated correctly")
+                # What to do with other parameters?
+            if (map_width == None or map_height == None) :
+                raise Exception("Width and height should be defined in configuration of file")
+            if (map_width <= 0 or map_height <= 0) :
+                raise Exception("Width and height should be positive numbers")
+            
+            start_is_placed = False
+            # Starts looping from where last loop stopped
+            for line_num, line in enumerate(f) :
+                line_number_arcade_coordinates = map_height - (line_num + 1)
+                # To match line number with convention that first line is h-1, last line is 0
+                if line_number_arcade_coordinates < 0 :
+                    break
+                if len(line) > map_width + 1 :
+                    raise Exception(f"There are too many characters on line {line_num + 1}")    
+                for position_x, sprite in enumerate(line) :
+                    x_coordinate = 64 * position_x
+                    y_coordinate =  64 * line_number_arcade_coordinates
+                    match sprite : 
+                        case "=" :
+                            self.wall_list.append(arcade.Sprite(
+                            ":resources:images/tiles/grassMid.png",
+                            center_x= x_coordinate,
+                            center_y= y_coordinate,
+                            scale=SCALE
+                            ))
+                        case "-" :
+                            self.wall_list.append(arcade.Sprite(
+                            ":resources:/images/tiles/grassHalf_mid.png",
+                            center_x= x_coordinate,
+                            center_y= y_coordinate,
+                            scale=SCALE
+                            ))
+                        case "x" :
+                            self.wall_list.append(arcade.Sprite(
+                            ":resources:/images/tiles/boxCrate_double.png",
+                            center_x= x_coordinate,
+                            center_y= y_coordinate,
+                            scale=SCALE
+                            ))
+                        case "*" :
+                            self.coin_list.append(arcade.Sprite(
+                            ":resources:images/items/coinGold.png",
+                            center_x= x_coordinate,
+                            center_y= y_coordinate,
+                            scale=SCALE
+                            ))
+                        case "o" :
+                            self.coin_list.append(arcade.Sprite(
+                            ":resources:/images/enemies/slimeBlue.png",
+                            center_x= x_coordinate,
+                            center_y= y_coordinate,
+                            scale=SCALE
+                            ))
+                            # Needs to be implemented first (change "coin type, cause incorrect")
+                        case "£" :
+                            self.wall_list.append(arcade.Sprite(
+                            ":resources:/images/tiles/lava.png",
+                            center_x= x_coordinate,
+                            center_y= y_coordinate,
+                            scale=SCALE
+                            ))
+                            # Needs to be implemented first (change "wall type, cause incorrect")
+                        case "S" :
+                            if start_is_placed :
+                                raise Exception("Player can't be placed twice")
+                            else : 
+                                start_is_placed = True
+                                self.player_sprite = arcade.Sprite(
+                                ":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png",
+                                center_x= x_coordinate,
+                                center_y= y_coordinate,
+                                scale=SCALE
+                                )
+
+
+
+        # Il faut mettre des else apres raise exception? À checker
+        # Dans case, répétition de code...
+        # Il faut print exceptions
+                
+
+        self.player_sprite_list.append(self.player_sprite)
         self.camera = arcade.camera.Camera2D()
         self.camera.position = self.player_sprite.position #type: ignore
-
-
-        for x in range(0, 1250, 64) :
-            self.wall_list.append(arcade.Sprite(
-                ":resources:images/tiles/grassMid.png",
-                center_x=x,
-                center_y=32,
-                scale=0.5
-            ))
-
-        for x in [256,512,768] :
-            self.wall_list.append(arcade.Sprite(
-                ":resources:images/tiles/boxCrate_double.png",
-                center_x=x,
-                center_y=96,
-                scale=0.5
-            ))
-
-        for x in range (128,1250,256) :
-            self.coin_list.append(arcade.Sprite(
-                ":resources:images/items/coinGold.png",
-                center_x=x,
-                center_y=96,
-                scale=0.5
-            ))
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player_sprite,
