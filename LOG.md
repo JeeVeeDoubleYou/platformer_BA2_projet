@@ -21,7 +21,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] ANSWERS.MD (deux premières questions)
 
 ### Paul : 
-* [] Test sauts multiples
 * [] Blobs (monstres)
 * [] Lave
 * [] Test blobs
@@ -55,6 +54,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Semaine 3
 
 * [x] Test clavier                                                    20
+* [x] Test sauts multiples                                            15
+
 ### Semaine 4
 
 ### Semaine 5
