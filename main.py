@@ -1,6 +1,5 @@
 import arcade
 from gameview import GameView
-
 # Constants
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720

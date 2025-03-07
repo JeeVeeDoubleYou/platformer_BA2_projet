@@ -16,10 +16,15 @@ class GameView(arcade.View):
     player_sprite_list: arcade.SpriteList[arcade.Sprite]
     wall_list: arcade.SpriteList[arcade.Sprite]
     coin_list: arcade.SpriteList[arcade.Sprite]
-    
-
+    is_going_left = False
+    is_going_right = False
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
+
+    allow_multi_jump: bool
+    allowed_jumps: int
+    allow_multi_jump = False
+    allowed_jumps = 1
 
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
@@ -45,7 +50,6 @@ class GameView(arcade.View):
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.camera = arcade.camera.Camera2D()
         self.camera.position = self.player_sprite.position #type: ignore
-
 
         for x in range(0, 1250, 64) :
             self.wall_list.append(arcade.Sprite(
@@ -76,27 +80,30 @@ class GameView(arcade.View):
             walls=self.wall_list,
             gravity_constant=PLAYER_GRAVITY
         )
+    
+    
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
-
         match key:
             case arcade.key.RIGHT | arcade.key.D:
                 # start moving to the right
-                self.player_sprite.change_x = +PLAYER_MOVEMENT_SPEED
+                self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+                self.is_going_right = True
         
             case arcade.key.LEFT | arcade.key.A :
                 # start moving to the left
                 self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+                self.is_going_left = True
+            
+
             
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
-                self.player_sprite.center_y -= 20
-                a=len(arcade.check_for_collision_with_list(self.player_sprite, self.wall_list))
-                if a != 0:
+
+                if self.physics_engine.can_jump(5) :
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
                     arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
-                self.player_sprite.center_y += 20
                 
             
             case arcade.key.ESCAPE:
@@ -105,17 +112,25 @@ class GameView(arcade.View):
     
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
-
         match key:
+              # stop lateral movement
             case arcade.key.RIGHT | arcade.key.D:
-                # stop lateral movement
-                if self.player_sprite.change_x > 0:
+                self.is_going_right = False
+                if self.is_going_left == False:
                     self.player_sprite.change_x = 0
-            case arcade.key.LEFT | arcade.key.A:
-                if self.player_sprite.change_x < 0:
-                    self.player_sprite.change_x = 0
+                    
+                else :
+                    self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
 
-            #pourrait avoire probleme avec plateformes qui bouges
+            case arcade.key.LEFT | arcade.key.A:
+                self.is_going_left = False
+                if self.is_going_right == False:
+                    self.player_sprite.change_x = 0
+                else :
+                    self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+                
+
+            #pourrait avoir des probleme avec les plateformes qui bouges
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
@@ -129,8 +144,11 @@ class GameView(arcade.View):
         elif (self.camera.center_left.x > self.player_sprite.center_x - 400):
             camera_x -= PLAYER_MOVEMENT_SPEED
         
-        if ((self.camera.top_center[1] < self.player_sprite.center_y + 150) or (self.camera.bottom_center[1] + 250 > self.player_sprite.center_y)):
-            camera_y += self.player_sprite.change_y
+        if (self.camera.top_center[1] < self.player_sprite.center_y + 150):
+            camera_y += 5
+        elif (self.camera.bottom_center[1] > self.player_sprite.center_y - 250):
+            camera_y -= 5
+        # not convinced by recentering of platform, check back later when player must climb platforms
 
         self.camera.position = arcade.Vec2(camera_x, camera_y)
 
