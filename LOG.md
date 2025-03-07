@@ -15,7 +15,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test collisions
 * [] Test caméra
-* [] Importer maps
 * [] Test maps
 * [] Concorder autres test avec fichier maps
 * [] ANSWERS.MD (deux premières questions)
@@ -52,6 +51,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Ajouté touches A, W, D et espace pour le mouvement              10
 * [x] Bruitages                                                       10
 * [x] Enlevé les doubles sauts                                        30
+* [x] Importer maps                                                  135
 
 ### Semaine 3
 
