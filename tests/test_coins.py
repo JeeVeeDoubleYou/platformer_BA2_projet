@@ -8,7 +8,7 @@ def test_collect_coins(window: arcade.Window) -> None:
     view = GameView()
     window.show_view(view)
 
-    # Make sure we have the amount pf coins we expect at the start
+    # Make sure we have the amount of coins we expect at the start
     assert len(view.coin_list) == INITIAL_COIN_COUNT
 
     # Start moving right

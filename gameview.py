@@ -1,3 +1,4 @@
+import os
 import arcade
 
 """Lateral speed of the player, in pixels per frame"""
@@ -41,7 +42,16 @@ class GameView(arcade.View):
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
 
-        map_name = "maps/broken_map.txt"
+
+        for i in range(3) :
+            map_name = "maps/" + input("Enter the file path for the map you would like, without any quotation marks : ")
+            if os.path.exists(map_name) :
+                break
+            elif i == 2 :
+                print("----- I give up ! -----")
+                raise SystemExit(1)
+            else : 
+                print("Please enter a valid file name. It must be in the 'maps' folder.")
 
         with open(map_name, "r", encoding="utf-8", newline='') as f:
      
@@ -125,20 +135,18 @@ class GameView(arcade.View):
                             case "S" :
                                 if start_is_placed :
                                     raise Exception("Player can't be placed twice")
-                                else : 
-                                    start_is_placed = True
-                                    self.player_sprite = arcade.Sprite(
-                                    ":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png",
-                                    center_x= x_coordinate,
-                                    center_y= y_coordinate,
-                                    scale=SCALE
-                                    )
+                                start_is_placed = True
+                                self.player_sprite = arcade.Sprite(
+                                ":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png",
+                                center_x= x_coordinate,
+                                center_y= y_coordinate,
+                                scale=SCALE
+                                )
             except Exception as e:
                 print("ERROR : ", e)
                 raise SystemExit(1)
 
 
-        # Il faut mettre des else apres raise exception? À checker
         # Dans case, répétition de code...
                 
 
