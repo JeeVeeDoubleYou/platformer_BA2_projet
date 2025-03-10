@@ -15,7 +15,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test collisions
 * [] Test caméra
-* [] Test maps
 * [] Concorder autres test avec fichier maps
 * [] ANSWERS.MD (deux premières questions)
 
@@ -29,6 +28,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Test lave
 * [] ANSWERS.MD (deux dernières questions)
 
+Je pense pas qu'on aie encapsulé comme il faut : À FIX
 ---
 
 ## Suivi
@@ -52,6 +52,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Bruitages                                                       10
 * [x] Enlevé les doubles sauts                                        30
 * [x] Importer maps                                                  135
+* [x] Test maps                                                       83
 
 ### Semaine 3
 
