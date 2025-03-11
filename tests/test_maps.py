@@ -47,6 +47,3 @@ def test_good_maps(window: arcade.Window) -> None :
     window.show_view(view)
     view = GameView("maps/map2.txt")
     window.show_view(view)
-
-    assert GameView().map_name == GameView("maps/map1.txt").map_name
-    # ATTENTION : Mauvais de pouvoir accéder à map_name depuis extérieur?

@@ -15,7 +15,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test collisions
 * [] Test caméra
-* [] Concorder autres test avec fichier maps
 * [] ANSWERS.MD (deux premières questions)
 
 ### Paul : 
@@ -29,6 +28,9 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] ANSWERS.MD (deux dernières questions)
 
 Je pense pas qu'on aie encapsulé comme il faut : À FIX
+Mauvais de pouvoir accéder à map_name depuis extérieur, par exemple, je pense.
+Create_map() c'est ok d'accéder? Sinon, repenser les tests
+
 ---
 
 ## Suivi
@@ -51,10 +53,12 @@ Je pense pas qu'on aie encapsulé comme il faut : À FIX
 * [x] Ajouté touches A, W, D et espace pour le mouvement              10
 * [x] Bruitages                                                       10
 * [x] Enlevé les doubles sauts                                        30
-* [x] Importer maps                                                  135
-* [x] Test maps                                                       83
 
 ### Semaine 3
+
+* [x] Importer maps                                                  135
+* [x] Test maps                                                       83
+* [x] Concorder autres test avec fichier maps                         15
 
 ### Semaine 4
 

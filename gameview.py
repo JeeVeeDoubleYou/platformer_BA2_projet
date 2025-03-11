@@ -25,7 +25,7 @@ class GameView(arcade.View):
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
 
-    def __init__(self, map_name : str = "maps/map1.txt") -> None:
+    def __init__(self, map_name : str = "maps/default_map.txt") -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
 
