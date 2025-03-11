@@ -2,7 +2,7 @@ import arcade
 import pytest
 from gameview import GameView
 
-def test_bad_maps() -> None: 
+def test_bad_maps(window: arcade.Window) -> None: 
 
     # Creates GameView instance without calling __init__
     view = GameView.__new__(GameView)
@@ -40,6 +40,12 @@ def test_bad_maps() -> None:
     view.map_name = "maps/bad_maps/too_many_char.txt"
     with pytest.raises(Exception, match=r"There are too many characters on line .* \(counting from after config\)") :
         view.create_map()
+
+    # Test bad path
+    with pytest.raises(SystemExit) :
+        view = GameView("maps/bad_maps/no_such_map.txt")
+        window.show_view(view)
+
 
 def test_good_maps(window: arcade.Window) -> None :
     

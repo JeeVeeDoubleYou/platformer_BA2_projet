@@ -11,7 +11,7 @@ def main() -> None:
 
     # Create the (unique) Window, setup our GameView, and launch
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
-    game_view = GameView()
+    game_view = GameView("maps/map1.txt")
     window.show_view(game_view)
     arcade.run()
 
