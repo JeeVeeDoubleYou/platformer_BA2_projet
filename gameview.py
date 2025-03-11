@@ -18,10 +18,11 @@ class GameView(arcade.View):
 
     player_sprite: arcade.Sprite
     player_sprite_list: arcade.SpriteList[arcade.Sprite]
-    wall_list: arcade.SpriteList[arcade.Sprite]
-    coin_list: arcade.SpriteList[arcade.Sprite]
     is_going_left = False
     is_going_right = False
+    wall_list: arcade.SpriteList[arcade.Sprite]
+    coin_list: arcade.SpriteList[arcade.Sprite]
+    blob_list: arcade.SpriteList[arcade.Sprite]
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
 
@@ -49,6 +50,7 @@ class GameView(arcade.View):
         self.player_sprite_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
+        self.blob_list = arcade.SpriteList()
 
     def create_map(self) -> None : 
 
@@ -164,7 +166,21 @@ class GameView(arcade.View):
             gravity_constant=PLAYER_GRAVITY
         )
     
-    
+        
+
+    def blob_move  (self) -> None:
+            for blob in self.blob_list:
+                #blob.center_x -= 2
+                blob.strafe(blob.change_x)
+                blob.center_x += 20*blob.change_x
+                blob.center_y -= 10
+                edge =(arcade.check_for_collision_with_list(blob, self.wall_list) == [])
+                blob.center_x -= 20*blob.change_x
+                blob.center_y += 10
+                if arcade.check_for_collision_with_list(blob, self.wall_list) != [] or edge:
+                    blob.change_x = -blob.change_x 
+
+        
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
@@ -220,12 +236,13 @@ class GameView(arcade.View):
         This is where in-world time "advances" or "ticks". """
 
         self.physics_engine.update()
+        self.blob_move()
 
         camera_x, camera_y = self.camera.position
-        if (self.camera.center_right.x < self.player_sprite.center_x + 400):
-            camera_x += PLAYER_MOVEMENT_SPEED
-        elif (self.camera.center_left.x > self.player_sprite.center_x - 400):
-            camera_x -= PLAYER_MOVEMENT_SPEED
+        if (self.camera.center_right[0] < self.player_sprite.center_x + 400):
+            camera_x += 5
+        elif (self.camera.center_left[0] > self.player_sprite.center_x - 400):
+            camera_x -= 5
         
         if (self.camera.top_center[1] < self.player_sprite.center_y + 150):
             camera_y += 5
@@ -248,5 +265,6 @@ class GameView(arcade.View):
             self.wall_list.draw()
             self.player_sprite_list.draw()
             self.coin_list.draw()
+            self.blob_list.draw()
 
     
