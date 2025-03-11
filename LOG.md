@@ -57,7 +57,6 @@ Create_map() c'est ok d'accéder? Sinon, repenser les tests
 * [x] Importer maps                                                  135
 * [x] Test maps                                                       83
 * [x] Concorder autres test avec fichier maps                         15
-
 * [x] Test clavier                                                    20
 * [x] Test sauts multiples                                            15
 

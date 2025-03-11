@@ -118,13 +118,12 @@ class GameView(arcade.View):
                             scale=SCALE
                             ))
                         case "o" :
-                            self.coin_list.append(arcade.Sprite(
+                            self.blob_list.append(arcade.Sprite(
                             ":resources:/images/enemies/slimeBlue.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
                             scale=SCALE
                             ))
-                            # Needs to be implemented first (change "coin type, cause incorrect")
                         case "£" :
                             self.wall_list.append(arcade.Sprite(
                             ":resources:/images/tiles/lava.png",
