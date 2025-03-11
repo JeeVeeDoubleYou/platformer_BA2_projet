@@ -15,9 +15,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test collisions
 * [] Test caméra
-* [] Importer maps
-* [] Test maps
-* [] Concorder autres test avec fichier maps
 * [] ANSWERS.MD (deux premières questions)
 
 ### Paul : 
@@ -26,6 +23,10 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Test blobs
 * [] Test lave
 * [] ANSWERS.MD (deux dernières questions)
+
+Je pense pas qu'on aie encapsulé comme il faut : À FIX
+Mauvais de pouvoir accéder à map_name depuis extérieur, par exemple, je pense.
+Create_map() c'est ok d'accéder? Sinon, repenser les tests
 
 ---
 
@@ -52,6 +53,10 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Meilleure gestion du clavier                                   120
 
 ### Semaine 3
+
+* [x] Importer maps                                                  135
+* [x] Test maps                                                       83
+* [x] Concorder autres test avec fichier maps                         15
 
 * [x] Test clavier                                                    20
 * [x] Test sauts multiples                                            15

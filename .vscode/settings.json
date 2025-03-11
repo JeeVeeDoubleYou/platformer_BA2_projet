@@ -1,6 +1,7 @@
 {
     "python.testing.pytestArgs": [
-        "__pycache__"
+        "__pycache__",
+        "tests"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true
