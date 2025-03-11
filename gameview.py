@@ -21,6 +21,7 @@ class GameView(arcade.View):
     is_going_left = False
     is_going_right = False
     wall_list: arcade.SpriteList[arcade.Sprite]
+    lava_list: arcade.SpriteList[arcade.Sprite]
     coin_list: arcade.SpriteList[arcade.Sprite]
     blob_list: arcade.SpriteList[arcade.Sprite]
     physics_engine: arcade.PhysicsEnginePlatformer
@@ -50,6 +51,7 @@ class GameView(arcade.View):
         self.player_sprite_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
+        self.lava_list = arcade.SpriteList(use_spatial_hash=True)
         self.blob_list = arcade.SpriteList()
 
     def create_map(self) -> None : 
@@ -125,7 +127,7 @@ class GameView(arcade.View):
                             scale=SCALE
                             ))
                         case "£" :
-                            self.wall_list.append(arcade.Sprite(
+                            self.lava_list.append(arcade.Sprite(
                             ":resources:/images/tiles/lava.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
@@ -142,6 +144,8 @@ class GameView(arcade.View):
                             center_y= y_coordinate,
                             scale=SCALE
                             )
+                    for blob in self.blob_list :
+                        blob.change_x=2
         if not start_is_placed :
             raise Exception("Player must have a starting point")
 
@@ -255,6 +259,12 @@ class GameView(arcade.View):
             coin.remove_from_sprite_lists()
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
+        if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list) != [] :
+            self.setup()
+        if arcade.check_for_collision_with_list(self.player_sprite, self.blob_list) != [] :
+            self.setup()
+        
+
     def on_draw(self) -> None:
         """Render the screen."""
 
@@ -265,5 +275,7 @@ class GameView(arcade.View):
             self.player_sprite_list.draw()
             self.coin_list.draw()
             self.blob_list.draw()
+            self.lava_list.draw()
+
 
     

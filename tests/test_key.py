@@ -1,9 +1,8 @@
 import arcade
 
 from gameview import GameView
+from gameview import *
 
-"""Lateral speed of the player, in pixels per frame"""
-PLAYER_MOVEMENT_SPEED = 5
 
 def test_key(window: arcade.Window) -> None:
     view = GameView()

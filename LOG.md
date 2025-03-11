@@ -18,8 +18,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] ANSWERS.MD (deux premières questions)
 
 ### Paul : 
-* [] Blobs (monstres)
-* [] Lave
 * [] Test blobs
 * [] Test lave
 * [] ANSWERS.MD (deux dernières questions)
@@ -59,6 +57,8 @@ Create_map() c'est ok d'accéder? Sinon, repenser les tests
 * [x] Concorder autres test avec fichier maps                         15
 * [x] Test clavier                                                    20
 * [x] Test sauts multiples                                            15
+* [x] Blobs (monstres)                                                60
+* [x] Lave                                                            10
 
 ### Semaine 4
 
