@@ -172,15 +172,13 @@ class GameView(arcade.View):
         """Updates camera position when player moves/dies"""
 
         camera_x, camera_y = self.__camera.position
-        if (self.__camera.center_right[0] < self.__player.center_x + 400):
-            camera_x += 5
-        elif (self.__camera.center_left[0] > self.__player.center_x - 400):
-            camera_x -= 5
-        
-        if (self.__camera.top_center[1] < self.__player.center_y + 150):
-            camera_y += 5
-        elif (self.__camera.bottom_center[1] > self.__player.center_y - 250):
-            camera_y -= 5
+        if (self.__camera.center_right.x < self.__player.center_x + 400):
+            camera_x += constants.PLAYER_MOVEMENT_SPEED
+        elif (self.__camera.center_left.x > self.__player.center_x - 400):
+            camera_x -= constants.PLAYER_MOVEMENT_SPEED
+
+        if ((self.__camera.top_center.y < self.__player.center_y + 150) or (self.__camera.bottom_center.y + 250 > self.__player.center_y)):
+            camera_y += self.__player.change_y
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
 
@@ -229,3 +227,11 @@ class GameView(arcade.View):
     @property
     def player_speed_y(self) -> float:
         return self.__player.change_y
+    
+    @property
+    def camera_x(self) -> float:
+        return self.__camera.center_left.x
+    
+    @property
+    def camera_y(self) -> float:
+        return self.__camera.center_left.y
