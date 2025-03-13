@@ -1,25 +1,13 @@
 import os
 import arcade
+import constants
+from player import Player
 
-"""Lateral speed of the player, in pixels per frame"""
-PLAYER_MOVEMENT_SPEED = 5
-
-"""Gravity applied to the player, in pixels per frame"""
-PLAYER_GRAVITY = 1
-
-"""Instant vertical speed for jumping, in pixels per frame"""
-PLAYER_JUMP_SPEED = 18
-
-"""Scale for all sprites"""
-SCALE = 0.5
 
 class GameView(arcade.View):
     """Main in-game view."""
 
-    player_sprite: arcade.Sprite
     player_sprite_list: arcade.SpriteList[arcade.Sprite]
-    is_going_left = False
-    is_going_right = False
     wall_list: arcade.SpriteList[arcade.Sprite]
     lava_list: arcade.SpriteList[arcade.Sprite]
     coin_list: arcade.SpriteList[arcade.Sprite]
@@ -27,10 +15,6 @@ class GameView(arcade.View):
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
 
-    allow_multi_jump: bool
-    allowed_jumps: int
-    allow_multi_jump = False
-    allowed_jumps = 1
 
     def __init__(self, map_name : str = "maps/default_map.txt") -> None:
         # Magical incantion: initialize the Arcade view
@@ -43,6 +27,8 @@ class GameView(arcade.View):
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
 
+        self.player = Player()
+        
         # Setup our game
         self.setup()
 
@@ -96,53 +82,52 @@ class GameView(arcade.View):
                             ":resources:images/tiles/grassMid.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
-                            scale=SCALE
+                            scale=constants.SCALE
                             ))
                         case "-" :
                             self.wall_list.append(arcade.Sprite(
                             ":resources:/images/tiles/grassHalf_mid.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
-                            scale=SCALE
+                            scale=constants.SCALE
                             ))
                         case "x" :
                             self.wall_list.append(arcade.Sprite(
                             ":resources:/images/tiles/boxCrate_double.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
-                            scale=SCALE
+                            scale=constants.SCALE
                             ))
                         case "*" :
                             self.coin_list.append(arcade.Sprite(
                             ":resources:images/items/coinGold.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
-                            scale=SCALE
+                            scale=constants.SCALE
                             ))
                         case "o" :
                             self.blob_list.append(arcade.Sprite(
                             ":resources:/images/enemies/slimeBlue.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
-                            scale=SCALE
+                            scale=constants.SCALE
                             ))
                         case "£" :
                             self.lava_list.append(arcade.Sprite(
                             ":resources:/images/tiles/lava.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
-                            scale=SCALE
+                            scale=constants.SCALE
                             ))
-                            # Needs to be implemented first (change "wall type, cause incorrect")
                         case "S" :
                             if start_is_placed :
                                 raise Exception("Player can't be placed twice")
                             start_is_placed = True
-                            self.player_sprite = arcade.Sprite(
+                            self.player.player_sprite = arcade.Sprite(
                             ":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png",
                             center_x= x_coordinate,
                             center_y= y_coordinate,
-                            scale=SCALE
+                            scale=constants.SCALE
                             )
                     for blob in self.blob_list :
                         blob.change_x=2
@@ -153,21 +138,19 @@ class GameView(arcade.View):
     def setup(self) -> None:
         """Set up the game here."""
 
-        try :
-            self.create_map()
-        except Exception as e:
-            print("ERROR : ", e)
-            raise SystemExit(1)
+        self.create_map()
                 
-        self.player_sprite_list.append(self.player_sprite)
+        self.player_sprite_list.append(self.player.player_sprite)
         self.camera = arcade.camera.Camera2D()
-        self.camera.position = self.player_sprite.position #type: ignore
+        self.camera.position = self.player.player_sprite.position #type: ignore
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player_sprite,
+            self.player.player_sprite,
             walls=self.wall_list,
-            gravity_constant=PLAYER_GRAVITY
+            gravity_constant = constants.PLAYER_GRAVITY
         )
+
+        self.player.physics_engine = self.physics_engine
     
         
 
@@ -187,81 +170,50 @@ class GameView(arcade.View):
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
-        match key:
-            case arcade.key.RIGHT | arcade.key.D:
-                # start moving to the right
-                self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
-                self.is_going_right = True
-        
-            case arcade.key.LEFT | arcade.key.A :
-                # start moving to the left
-                self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
-                self.is_going_left = True
-            
 
-            
-            case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
-                # jump by giving an initial vertical speed
+        self.player.on_key_press(key, modifiers)
 
-                if self.physics_engine.can_jump(5) :
-                    self.player_sprite.change_y = PLAYER_JUMP_SPEED
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
-                
-            
+        match key:   
             case arcade.key.ESCAPE:
                 # reset game
                 self.setup()
     
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
-        match key:
-              # stop lateral movement
-            case arcade.key.RIGHT | arcade.key.D:
-                self.is_going_right = False
-                if self.is_going_left == False:
-                    self.player_sprite.change_x = 0
-                    
-                else :
-                    self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
 
-            case arcade.key.LEFT | arcade.key.A:
-                self.is_going_left = False
-                if self.is_going_right == False:
-                    self.player_sprite.change_x = 0
-                else :
-                    self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
-                
-
-            #pourrait avoir des probleme avec les plateformes qui bouges
+        self.player.on_key_release(key, modifiers)
+        
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
         This is where in-world time "advances" or "ticks". """
 
+        print(delta_time)
+
         self.physics_engine.update()
         self.blob_move()
 
         camera_x, camera_y = self.camera.position
-        if (self.camera.center_right[0] < self.player_sprite.center_x + 400):
+        if (self.camera.center_right[0] < self.player.player_sprite.center_x + 400):
             camera_x += 5
-        elif (self.camera.center_left[0] > self.player_sprite.center_x - 400):
+        elif (self.camera.center_left[0] > self.player.player_sprite.center_x - 400):
             camera_x -= 5
         
-        if (self.camera.top_center[1] < self.player_sprite.center_y + 150):
+        if (self.camera.top_center[1] < self.player.player_sprite.center_y + 150):
             camera_y += 5
-        elif (self.camera.bottom_center[1] > self.player_sprite.center_y - 250):
+        elif (self.camera.bottom_center[1] > self.player.player_sprite.center_y - 250):
             camera_y -= 5
         # not convinced by recentering of platform, check back later when player must climb platforms
 
         self.camera.position = arcade.Vec2(camera_x, camera_y)
 
-        for coin in arcade.check_for_collision_with_list(self.player_sprite, self.coin_list) :
+        for coin in arcade.check_for_collision_with_list(self.player.player_sprite, self.coin_list) :
             coin.remove_from_sprite_lists()
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
-        if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list) != [] :
+        if arcade.check_for_collision_with_list(self.player.player_sprite, self.lava_list) != [] :
             self.setup()
-        if arcade.check_for_collision_with_list(self.player_sprite, self.blob_list) != [] :
+        if arcade.check_for_collision_with_list(self.player.player_sprite, self.blob_list) != [] :
             self.setup()
         
 
