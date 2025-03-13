@@ -14,7 +14,7 @@ class GameView(arcade.View):
     coin_list: arcade.SpriteList[arcade.Sprite]
     blob_list: arcade.SpriteList[Blob]
     physics_engine: arcade.PhysicsEnginePlatformer
-    camera: arcade.camera.Camera2D
+    __camera: arcade.camera.Camera2D
 
 
     def __init__(self, map_name : str = "maps/default_map.txt") -> None:
@@ -23,7 +23,7 @@ class GameView(arcade.View):
 
         if not os.path.exists(map_name) :
             raise SystemExit(1)
-        self.map_name = map_name
+        self.__map_name = map_name
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
@@ -33,7 +33,7 @@ class GameView(arcade.View):
         # Setup our game
         self.setup()
 
-    def create_setup_lists(self) -> None :
+    def __create_setup_lists(self) -> None :
 
         self.player_sprite_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
@@ -43,9 +43,9 @@ class GameView(arcade.View):
 
     def create_map(self) -> None : 
 
-        self.create_setup_lists()
+        self.__create_setup_lists()
 
-        with open(self.map_name, "r", encoding="utf-8", newline='') as f :
+        with open(self.__map_name, "r", encoding="utf-8", newline='') as f :
             map_width = None
             map_height = None
             for line in f :
@@ -136,8 +136,8 @@ class GameView(arcade.View):
         self.create_map()
                 
         self.player_sprite_list.append(self.player.player_sprite)
-        self.camera = arcade.camera.Camera2D()
-        self.camera.position = self.player.player_sprite.position #type: ignore
+        self.__camera = arcade.camera.Camera2D()
+        self.__camera.position = self.player.player_sprite.position #type: ignore
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player.player_sprite,
@@ -170,31 +170,31 @@ class GameView(arcade.View):
 
         for blob in self.blob_list :
             blob.blob_move(self.wall_list)
-            
+
         self.physics_engine.update()
-        self.update_camera()
-        self.check_collisions()
+        self.__update_camera()
+        self.__check_collisions()
             
-    def update_camera(self) -> None :
+    def __update_camera(self) -> None :
         """Updates camera position when player moves/dies"""
 
-        camera_x, camera_y = self.camera.position
-        if (self.camera.center_right[0] < self.player.player_sprite.center_x + 400):
+        camera_x, camera_y = self.__camera.position
+        if (self.__camera.center_right[0] < self.player.player_sprite.center_x + 400):
             camera_x += 5
-        elif (self.camera.center_left[0] > self.player.player_sprite.center_x - 400):
+        elif (self.__camera.center_left[0] > self.player.player_sprite.center_x - 400):
             camera_x -= 5
         
-        if (self.camera.top_center[1] < self.player.player_sprite.center_y + 150):
+        if (self.__camera.top_center[1] < self.player.player_sprite.center_y + 150):
             camera_y += 5
-        elif (self.camera.bottom_center[1] > self.player.player_sprite.center_y - 250):
+        elif (self.__camera.bottom_center[1] > self.player.player_sprite.center_y - 250):
             camera_y -= 5
 
-        self.camera.position = arcade.Vec2(camera_x, camera_y)
+        self.__camera.position = arcade.Vec2(camera_x, camera_y)
 
         # not convinced by recentering of platform, check back later when player must climb platforms
 
     
-    def check_collisions(self) -> None :
+    def __check_collisions(self) -> None :
         """
         Checks collisions between player and coins : takes coins
         Checks collisions between player and lava or blobs : dies
@@ -214,7 +214,7 @@ class GameView(arcade.View):
 
         self.clear() # always start with self.clear()
 
-        with self.camera.activate():
+        with self.__camera.activate():
             self.wall_list.draw()
             self.player_sprite_list.draw()
             self.coin_list.draw()
