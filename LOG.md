@@ -15,14 +15,20 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test collisions
 * [] Test caméra
+* [] Levels et progression
+* [] Test levels
+* [] Test that makes sure that player doesnt stay on screen when it dies
 
 ### Paul : 
 * [] Test blobs
 * [] Test lave
 * [] ANSWERS.MD (deux dernières questions)
+* [] Coin counter
+* [] Test coin counter
+* [] Test player death
+* [] Epée
+* [] Test épée
 
-
-Write test that makes sure that player doesnt stay on screen when it dies
 
 ---
 
@@ -61,6 +67,8 @@ Write test that makes sure that player doesnt stay on screen when it dies
 * [x] ANSWERS.MD (deux premières questions)                           20                                         
 
 ### Semaine 4
+
+Il faut remplir ici maintenant.
 
 ### Semaine 5
 
