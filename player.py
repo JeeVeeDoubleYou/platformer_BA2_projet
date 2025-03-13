@@ -14,8 +14,8 @@ class Player(arcade.Sprite):
         super().__init__(":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png", constants.SCALE)
         self.physics_engine = None
 
-        self.__center_x = x
-        self.__center_y = y
+        self.center_x = x
+        self.center_y = y
 
     is_going_left = False
     is_going_right = False

@@ -31,17 +31,10 @@ class GameView(arcade.View):
         # Setup our game
         self.setup()
 
-    def __create_setup_lists(self) -> None :
-
-        self.player_sprite_list = arcade.SpriteList()
-        self.wall_list = arcade.SpriteList(use_spatial_hash=True)
-        self.coin_list = arcade.SpriteList(use_spatial_hash=True)
-        self.lava_list = arcade.SpriteList(use_spatial_hash=True)
-        self.blob_list = arcade.SpriteList()
+        
 
     def create_map(self) -> None : 
-
-        self.__create_setup_lists()
+        """Creates map from file"""
 
         with open(self.__map_name, "r", encoding="utf-8", newline='') as f :
             map_width = None
@@ -125,6 +118,13 @@ class GameView(arcade.View):
 
     def setup(self) -> None:
         """Set up the game here."""
+
+        # Initialisation of all lists
+        self.player_sprite_list = arcade.SpriteList()
+        self.wall_list = arcade.SpriteList(use_spatial_hash=True)
+        self.coin_list = arcade.SpriteList(use_spatial_hash=True)
+        self.lava_list = arcade.SpriteList(use_spatial_hash=True)
+        self.blob_list = arcade.SpriteList()
 
         self.create_map()
                 

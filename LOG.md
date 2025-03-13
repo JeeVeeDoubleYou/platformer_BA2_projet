@@ -22,9 +22,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Test lave
 * [] ANSWERS.MD (deux dernières questions)
 
-Je pense pas qu'on aie encapsulé comme il faut : À FIX
-Mauvais de pouvoir accéder à map_name depuis extérieur, par exemple, je pense.
-Create_map() c'est ok d'accéder? Sinon, repenser les tests
+
+Write test that makes sure that player doesnt stay on screen when it dies
 
 ---
 
