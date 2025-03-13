@@ -2,6 +2,7 @@ import os
 import arcade
 import constants
 from player import Player
+from blob import Blob
 
 
 class GameView(arcade.View):
@@ -11,7 +12,7 @@ class GameView(arcade.View):
     wall_list: arcade.SpriteList[arcade.Sprite]
     lava_list: arcade.SpriteList[arcade.Sprite]
     coin_list: arcade.SpriteList[arcade.Sprite]
-    blob_list: arcade.SpriteList[arcade.Sprite]
+    blob_list: arcade.SpriteList[Blob]
     physics_engine: arcade.PhysicsEnginePlatformer
     camera: arcade.camera.Camera2D
 
@@ -106,12 +107,8 @@ class GameView(arcade.View):
                             scale=constants.SCALE
                             ))
                         case "o" :
-                            self.blob_list.append(arcade.Sprite(
-                            ":resources:/images/enemies/slimeBlue.png",
-                            center_x= x_coordinate,
-                            center_y= y_coordinate,
-                            scale=constants.SCALE
-                            ))
+                            blob = Blob(x_coordinate, y_coordinate)
+                            self.blob_list.append(blob)
                         case "£" :
                             self.lava_list.append(arcade.Sprite(
                             ":resources:/images/tiles/lava.png",
@@ -129,8 +126,6 @@ class GameView(arcade.View):
                             center_y= y_coordinate,
                             scale=constants.SCALE
                             )
-                    for blob in self.blob_list :
-                        blob.change_x=2
         if not start_is_placed :
             raise Exception("Player must have a starting point")
 
@@ -151,21 +146,6 @@ class GameView(arcade.View):
         )
 
         self.player.physics_engine = self.physics_engine
-    
-        
-
-    def blob_move  (self) -> None:
-            for blob in self.blob_list:
-                #blob.center_x -= 2
-                blob.strafe(blob.change_x)
-                blob.center_x += 20*blob.change_x
-                blob.center_y -= 10
-                edge =(arcade.check_for_collision_with_list(blob, self.wall_list) == [])
-                blob.center_x -= 20*blob.change_x
-                blob.center_y += 10
-                if arcade.check_for_collision_with_list(blob, self.wall_list) != [] or edge:
-                    blob.change_x = -blob.change_x 
-
         
 
     def on_key_press(self, key: int, modifiers: int) -> None:
@@ -188,10 +168,15 @@ class GameView(arcade.View):
         """Called once per frame, before drawing.
         This is where in-world time "advances" or "ticks". """
 
-        print(delta_time)
-
+        for blob in self.blob_list :
+            blob.blob_move(self.wall_list)
+            
         self.physics_engine.update()
-        self.blob_move()
+        self.update_camera()
+        self.check_collisions()
+            
+    def update_camera(self) -> None :
+        """Updates camera position when player moves/dies"""
 
         camera_x, camera_y = self.camera.position
         if (self.camera.center_right[0] < self.player.player_sprite.center_x + 400):
@@ -203,9 +188,17 @@ class GameView(arcade.View):
             camera_y += 5
         elif (self.camera.bottom_center[1] > self.player.player_sprite.center_y - 250):
             camera_y -= 5
-        # not convinced by recentering of platform, check back later when player must climb platforms
 
         self.camera.position = arcade.Vec2(camera_x, camera_y)
+
+        # not convinced by recentering of platform, check back later when player must climb platforms
+
+    
+    def check_collisions(self) -> None :
+        """
+        Checks collisions between player and coins : takes coins
+        Checks collisions between player and lava or blobs : dies
+        """
 
         for coin in arcade.check_for_collision_with_list(self.player.player_sprite, self.coin_list) :
             coin.remove_from_sprite_lists()
@@ -215,7 +208,6 @@ class GameView(arcade.View):
             self.setup()
         if arcade.check_for_collision_with_list(self.player.player_sprite, self.blob_list) != [] :
             self.setup()
-        
 
     def on_draw(self) -> None:
         """Render the screen."""

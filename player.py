@@ -1,6 +1,5 @@
 import arcade
 import constants
-from typing import Optional
 
 class Player():
     """
