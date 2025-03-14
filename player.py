@@ -1,7 +1,7 @@
 import arcade
 import constants
 
-class Player():
+class Player(arcade.Sprite):
     """
     Represents the player sprite in the game.
 
@@ -9,14 +9,13 @@ class Player():
     """
 
     physics_engine : arcade.PhysicsEnginePlatformer | None
-    player_sprite: arcade.Sprite
 
-    def __init__(self) -> None :
-
+    def __init__(self, x: float, y: float) -> None :
+        super().__init__(":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png", constants.SCALE)
         self.physics_engine = None
 
-    
-
+        self.center_x = x
+        self.center_y = y
 
     is_going_left = False
     is_going_right = False
@@ -35,12 +34,12 @@ class Player():
         match key:
             case arcade.key.RIGHT | arcade.key.D:
                 # start moving to the right
-                self.player_sprite.change_x = constants.PLAYER_MOVEMENT_SPEED
+                self.change_x = constants.PLAYER_MOVEMENT_SPEED
                 self.is_going_right = True
         
             case arcade.key.LEFT | arcade.key.A :
                 # start moving to the left
-                self.player_sprite.change_x = -constants.PLAYER_MOVEMENT_SPEED
+                self.change_x = -constants.PLAYER_MOVEMENT_SPEED
                 self.is_going_left = True
             
 
@@ -49,7 +48,7 @@ class Player():
                 # jump by giving an initial vertical speed
                 if self.physics_engine is not None : 
                     if self.physics_engine.can_jump(5) :
-                        self.player_sprite.change_y = constants.PLAYER_JUMP_SPEED
+                        self.change_y = constants.PLAYER_JUMP_SPEED
                         arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
 
     def on_key_release(self, key: int, modifiers: int) -> None:
@@ -62,14 +61,14 @@ class Player():
             case arcade.key.RIGHT | arcade.key.D:
                 self.is_going_right = False
                 if self.is_going_left == False:
-                    self.player_sprite.change_x = 0
+                    self.change_x = 0
                     
                 else :
-                    self.player_sprite.change_x = -constants.PLAYER_MOVEMENT_SPEED
+                    self.change_x = -constants.PLAYER_MOVEMENT_SPEED
 
             case arcade.key.LEFT | arcade.key.A:
                 self.is_going_left = False
                 if self.is_going_right == False:
-                    self.player_sprite.change_x = 0
+                    self.change_x = 0
                 else :
-                    self.player_sprite.change_x = constants.PLAYER_MOVEMENT_SPEED
+                    self.change_x = constants.PLAYER_MOVEMENT_SPEED

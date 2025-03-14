@@ -15,16 +15,20 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test collisions
 * [] Test caméra
-* [] ANSWERS.MD (deux premières questions)
+* [] Levels et progression
+* [] Test levels
+* [] Test that makes sure that player doesnt stay on screen when it dies
 
 ### Paul : 
 * [] Test blobs
 * [] Test lave
 * [] ANSWERS.MD (deux dernières questions)
+* [] Coin counter
+* [] Test coin counter
+* [] Test player death
+* [] Epée
+* [] Test épée
 
-Je pense pas qu'on aie encapsulé comme il faut : À FIX
-Mauvais de pouvoir accéder à map_name depuis extérieur, par exemple, je pense.
-Create_map() c'est ok d'accéder? Sinon, repenser les tests
 
 ---
 
@@ -59,8 +63,12 @@ Create_map() c'est ok d'accéder? Sinon, repenser les tests
 * [x] Test sauts multiples                                            15
 * [x] Blobs (monstres)                                                60
 * [x] Lave                                                            10
+* [x] Encapsulation, modularisation et réorganisation du code        180    
+* [x] ANSWERS.MD (deux premières questions)                           20                                         
 
 ### Semaine 4
+
+Il faut remplir ici maintenant.
 
 ### Semaine 5
 

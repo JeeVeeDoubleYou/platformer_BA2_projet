@@ -28,22 +28,13 @@ class GameView(arcade.View):
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
 
-        self.player = Player()
-        
         # Setup our game
         self.setup()
 
-    def __create_setup_lists(self) -> None :
-
-        self.player_sprite_list = arcade.SpriteList()
-        self.wall_list = arcade.SpriteList(use_spatial_hash=True)
-        self.coin_list = arcade.SpriteList(use_spatial_hash=True)
-        self.lava_list = arcade.SpriteList(use_spatial_hash=True)
-        self.blob_list = arcade.SpriteList()
+        
 
     def create_map(self) -> None : 
-
-        self.__create_setup_lists()
+        """Creates map from file"""
 
         with open(self.__map_name, "r", encoding="utf-8", newline='') as f :
             map_width = None
@@ -120,12 +111,7 @@ class GameView(arcade.View):
                             if start_is_placed :
                                 raise Exception("Player can't be placed twice")
                             start_is_placed = True
-                            self.player.player_sprite = arcade.Sprite(
-                            ":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png",
-                            center_x= x_coordinate,
-                            center_y= y_coordinate,
-                            scale=constants.SCALE
-                            )
+                            self.__player = Player(x_coordinate, y_coordinate)
         if not start_is_placed :
             raise Exception("Player must have a starting point")
 
@@ -133,25 +119,32 @@ class GameView(arcade.View):
     def setup(self) -> None:
         """Set up the game here."""
 
+        # Initialisation of all lists
+        self.player_sprite_list = arcade.SpriteList()
+        self.wall_list = arcade.SpriteList(use_spatial_hash=True)
+        self.coin_list = arcade.SpriteList(use_spatial_hash=True)
+        self.lava_list = arcade.SpriteList(use_spatial_hash=True)
+        self.blob_list = arcade.SpriteList()
+
         self.create_map()
                 
-        self.player_sprite_list.append(self.player.player_sprite)
+        self.player_sprite_list.append(self.__player)
         self.__camera = arcade.camera.Camera2D()
-        self.__camera.position = self.player.player_sprite.position #type: ignore
+        self.__camera.position = self.__player.position #type: ignore
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player.player_sprite,
+            self.__player,
             walls=self.wall_list,
             gravity_constant = constants.PLAYER_GRAVITY
         )
 
-        self.player.physics_engine = self.physics_engine
+        self.__player.physics_engine = self.physics_engine
         
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
 
-        self.player.on_key_press(key, modifiers)
+        self.__player.on_key_press(key, modifiers)
 
         match key:   
             case arcade.key.ESCAPE:
@@ -161,7 +154,7 @@ class GameView(arcade.View):
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
 
-        self.player.on_key_release(key, modifiers)
+        self.__player.on_key_release(key, modifiers)
         
 
     def on_update(self, delta_time: float) -> None:
@@ -179,15 +172,13 @@ class GameView(arcade.View):
         """Updates camera position when player moves/dies"""
 
         camera_x, camera_y = self.__camera.position
-        if (self.__camera.center_right[0] < self.player.player_sprite.center_x + 400):
-            camera_x += 5
-        elif (self.__camera.center_left[0] > self.player.player_sprite.center_x - 400):
-            camera_x -= 5
-        
-        if (self.__camera.top_center[1] < self.player.player_sprite.center_y + 150):
-            camera_y += 5
-        elif (self.__camera.bottom_center[1] > self.player.player_sprite.center_y - 250):
-            camera_y -= 5
+        if (self.__camera.center_right.x < self.__player.center_x + 400):
+            camera_x += constants.PLAYER_MOVEMENT_SPEED
+        elif (self.__camera.center_left.x > self.__player.center_x - 400):
+            camera_x -= constants.PLAYER_MOVEMENT_SPEED
+
+        if ((self.__camera.top_center.y < self.__player.center_y + 150) or (self.__camera.bottom_center.y + 250 > self.__player.center_y)):
+            camera_y += self.__player.change_y
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
 
@@ -200,13 +191,13 @@ class GameView(arcade.View):
         Checks collisions between player and lava or blobs : dies
         """
 
-        for coin in arcade.check_for_collision_with_list(self.player.player_sprite, self.coin_list) :
+        for coin in arcade.check_for_collision_with_list(self.__player, self.coin_list) :
             coin.remove_from_sprite_lists()
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
-        if arcade.check_for_collision_with_list(self.player.player_sprite, self.lava_list) != [] :
+        if arcade.check_for_collision_with_list(self.__player, self.lava_list) != [] :
             self.setup()
-        if arcade.check_for_collision_with_list(self.player.player_sprite, self.blob_list) != [] :
+        if arcade.check_for_collision_with_list(self.__player, self.blob_list) != [] :
             self.setup()
 
     def on_draw(self) -> None:
@@ -221,5 +212,26 @@ class GameView(arcade.View):
             self.blob_list.draw()
             self.lava_list.draw()
 
-
+    @property
+    def player_x(self) -> float:
+        return self.__player.center_x
     
+    @property
+    def player_y(self) -> float:
+        return self.__player.center_y
+    
+    @property
+    def player_speed_x(self) -> float:
+        return self.__player.change_x
+
+    @property
+    def player_speed_y(self) -> float:
+        return self.__player.change_y
+    
+    @property
+    def camera_x(self) -> float:
+        return self.__camera.center_left.x
+    
+    @property
+    def camera_y(self) -> float:
+        return self.__camera.center_left.y

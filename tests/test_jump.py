@@ -8,9 +8,8 @@ def test_jump(window: arcade.Window) -> None:
     view = GameView()
     window.show_view(view)
     
-   
     view.on_key_press(arcade.key.UP, 0)
-    assert view.player.player_sprite.change_y == constants.PLAYER_JUMP_SPEED
+    assert view.player_speed_y == constants.PLAYER_JUMP_SPEED
     
     #we wait one frame and try to jump while in the air each frame while in the air 
     # window.test(1)
@@ -18,7 +17,7 @@ def test_jump(window: arcade.Window) -> None:
     while view.physics_engine.can_jump(5) == False :
         window.test(1)
         view.on_key_press(arcade.key.UP, 0)
-        assert view.player.player_sprite.change_y < constants.PLAYER_JUMP_SPEED
+        assert view.player_speed_y < constants.PLAYER_JUMP_SPEED
     
     
 
