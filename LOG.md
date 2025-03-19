@@ -13,7 +13,6 @@ Format :
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 
 ### Gaëlle : 
-* [] Test collisions
 * [] Test caméra
 * [] Test that makes sure that player doesnt stay on screen when it dies
 
@@ -70,6 +69,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Levels et progression                                          120
 * [x] Test levels                                                    120
 * [x] ANSWERS.MD (2 dernières questions)                              10
+* [x] Test collisions                                                 15
 
 ### Semaine 5
 
