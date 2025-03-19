@@ -1,0 +1,7 @@
+width: 9
+height: 2
+next-map: maps/testing_maps/easy_next_level2.txt
+---
+S       E
+=========
+---

@@ -101,8 +101,27 @@ def test_key(window: arcade.Window) -> None:
     window.test(6)
     assert view.player_speed_x == 0
 
+def test_reset(window: arcade.Window) -> None :
 
-    
+    view = GameView("maps/testing_maps/easy_next_level1.txt")
+    window.show_view(view)
+
+    assert view.current_map == "maps/testing_maps/easy_next_level1.txt"
+    view.on_key_press(arcade.key.RIGHT, 0)
+    window.test(100)
+    assert view.current_map == "maps/testing_maps/easy_next_level2.txt"
+    view.on_key_press(arcade.key.RIGHT, 0)
+    window.test(10)
+    view.on_key_press(arcade.key.ESCAPE, 0)
+    assert view.current_map == "maps/testing_maps/easy_next_level2.txt"
+    view.on_key_press(arcade.key.ESCAPE, arcade.key.MOD_SHIFT)
+    assert view.current_map == "maps/testing_maps/easy_next_level1.txt"
+    view.on_key_press(arcade.key.RIGHT, 0)
+    window.test(10)
+    assert view.current_map == "maps/testing_maps/easy_next_level1.txt"
+
+
+
 
 
 

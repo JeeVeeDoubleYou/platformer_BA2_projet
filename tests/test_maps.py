@@ -10,7 +10,6 @@ def test_bad_maps(window: arcade.Window) -> None:
     
     # ATTENTION : Doesn't work with all bad config
 
-
     with pytest.raises(Exception, match="Width and height should be positive numbers") :
         view = GameView("maps/bad_maps/negative_height.txt")
 
@@ -32,9 +31,15 @@ def test_bad_maps(window: arcade.Window) -> None:
     with pytest.raises(Exception, match=r"There are too many characters on line .* \(counting from after config\)") :
         view = GameView("maps/bad_maps/too_many_char.txt")
 
+    with pytest.raises(Exception, match="You can't set the height twice") :
+        view = GameView("maps/bad_maps/height_set_twice.txt")
+
+    with pytest.raises(Exception, match="You can't set the width twice") :
+        view = GameView("maps/bad_maps/width_set_twice.txt")
+
 
     # Test bad path
-    with pytest.raises(SystemExit) :
+    with pytest.raises(Exception, match="The file path for initial level is incorrect") :
         view = GameView("maps/bad_maps/no_such_map.txt")
         window.show_view(view)
 
@@ -45,3 +50,28 @@ def test_good_maps(window: arcade.Window) -> None :
     window.show_view(view)
     view = GameView("maps/map2.txt")
     window.show_view(view)
+
+    # File with next-map
+    view = GameView("maps/testing_maps/easy_next_level1.txt")
+    window.show_view(view)
+
+def test_chaining_levels(window: arcade.Window) -> None :
+    with pytest.raises(Exception, match="You can't set the next map twice") :
+        view = GameView("maps/bad_maps/next-map_set_twice.txt")
+        window.show_view(view)
+
+    with pytest.raises(Exception, match="The next map path is incorrect") :
+        view = GameView("maps/bad_maps/bad_next-map_name.txt")
+        window.show_view(view)
+
+    with pytest.raises(Exception, match="There is no next map, but there is an exit") :
+        view = GameView("maps/bad_maps/exit_without_next_level.txt")
+        window.show_view(view)
+
+    with pytest.raises(Exception, match="There can't be two ending points to a level") :
+        view = GameView("maps/bad_maps/two_exits.txt")
+        window.show_view(view)
+    
+    with pytest.raises(Exception, match="The file sets the next map but no end to the level") :
+        view = GameView("maps/bad_maps/next-map_and_no_exit.txt")
+        window.show_view(view)

@@ -20,12 +20,12 @@ class GameView(arcade.View):
 
     __next_map : Optional[str]
 
-    def __init__(self, map_name : str = "maps/default_map.txt") -> None:
+    def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
 
         if not os.path.exists(map_name) :
-            raise SystemExit(1)
+            raise Exception("The file path for initial level is incorrect")
         self.__initial_map_name = map_name
         self.__current_map_name = self.__initial_map_name
         self.__next_map = None
@@ -90,7 +90,7 @@ class GameView(arcade.View):
                     match sprite : 
                         case "E" :
                             if not has_next_map :
-                                raise Exception("There is no next map") 
+                                raise Exception("There is no next map, but there is an exit") 
                                 # Question : accepter end of map même sans prochain niveau?
                             if end_is_placed :
                                 raise Exception("There can't be two ending points to a level")
@@ -148,7 +148,7 @@ class GameView(arcade.View):
         if not start_is_placed :
             raise Exception("Player must have a starting point")
         if has_next_map and not end_is_placed :
-            raise Exception("The file sets the next map but no ending to the level")
+            raise Exception("The file sets the next map but no end to the level")
 
 
     def setup(self) -> None:
@@ -290,3 +290,7 @@ class GameView(arcade.View):
     @property
     def camera_y(self) -> float:
         return self.__camera.center_left.y
+    
+    @property
+    def current_map(self) -> str:
+        return self.__current_map_name
