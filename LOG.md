@@ -18,16 +18,18 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Levels et progression
 * [] Test levels
 * [] Test that makes sure that player doesnt stay on screen when it dies
+* [] ANSWERS.MD (2 dernières ?, semaine 4)
 
 ### Paul : 
 * [] Test blobs
 * [] Test lave
-* [] ANSWERS.MD (deux dernières questions)
+* [] ANSWERS.MD (deux dernières questions, semaine 3)
 * [] Coin counter
 * [] Test coin counter
 * [] Test player death
 * [] Epée
 * [] Test épée
+* [] ANSWERS.MD (4 premieres ?, semaine 4)
 
 
 ---
