@@ -15,10 +15,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test collisions
 * [] Test caméra
-* [] Levels et progression
-* [] Test levels
 * [] Test that makes sure that player doesnt stay on screen when it dies
-* [] ANSWERS.MD (2 dernières ?, semaine 4)
 
 ### Paul : 
 * [] Test blobs
@@ -70,7 +67,9 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 
 ### Semaine 4
 
-Il faut remplir ici maintenant.
+* [x] Levels et progression                                          120
+* [x] Test levels                                                    120
+* [x] ANSWERS.MD (2 dernières questions)                              10
 
 ### Semaine 5
 

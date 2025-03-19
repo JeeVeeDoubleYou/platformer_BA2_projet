@@ -1,4 +1,4 @@
-## Semaine 3
+# Semaine 3
 
 ### Question 1 : Comment avez-vous conçu la lecture du fichier ? Comment l’avez-vous structurée de sorte à pouvoir la tester de manière efficace ?
 
@@ -15,3 +15,18 @@ Nous avons recrée la map de départ dans un fichier nommé "default_map.txt". L
 ### Question 3 (Paul)
 
 ### Question 4 (Paul)
+
+# Semaine 4
+
+### Question 1 (Paul)
+### Question 2 (Paul)
+### Question 3 (Paul)
+### Question 4 (Paul)
+
+### Question 5 (Gaëlle) : Comment modélisez-vous la “next-map” ? Où la stockez-vous, et comment la traitez-vous quand la joueuse atteint le point E ?
+
+La next map est le chemin du prochain niveau, qui est stocké comme string dans un attribut de la class GameView. Cet attribut est mis à jour à chauque fois qu'une nouvelle map est crée par la méthode create_map(). Quand la joueuse atteint le point E, la méthode load_next_map() est appelée. Cette méthode s'assure que le nom de la prochaine map est bien stockée, puis remplace la map actuelle par la prochaine map dans l'attribut current_map_name, avant d'appeler la méthode setup qui crée le prochain niveau. 
+
+### Question 6 (Gaëlle) : Que se passe-t-il si la joueuse atteint le E mais la carte n’a pas de next-map ?
+
+Pour l'instant, ce cas de figure n'est pas possible. Si la carte a un "E" mais pas de next-map, la méthode create_map() appelé dès le début lèvera une exception. La map est ainsi considérée comme non-valide. On pourrait éventuellement considérer qu'arriver à la fin d'un niveau qui n'a pas de suite signifie que la joueuse a gagné le jeu, et afficher un message de victoire.
