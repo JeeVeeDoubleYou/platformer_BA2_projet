@@ -3,6 +3,7 @@ import arcade
 import constants
 from player import Player
 from blob import Blob
+import math
 
 
 class GameView(arcade.View):
@@ -12,6 +13,7 @@ class GameView(arcade.View):
     wall_list: arcade.SpriteList[arcade.Sprite]
     lava_list: arcade.SpriteList[arcade.Sprite]
     coin_list: arcade.SpriteList[arcade.Sprite]
+    weapon_list: arcade.SpriteList[arcade.Sprite]
     blob_list: arcade.SpriteList[Blob]
     physics_engine: arcade.PhysicsEnginePlatformer
     __camera: arcade.camera.Camera2D
@@ -125,6 +127,7 @@ class GameView(arcade.View):
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.lava_list = arcade.SpriteList(use_spatial_hash=True)
         self.blob_list = arcade.SpriteList()
+        self.weapon_list = arcade.SpriteList()
 
         self.create_map()
                 
@@ -150,12 +153,39 @@ class GameView(arcade.View):
             case arcade.key.ESCAPE:
                 # reset game
                 self.setup()
+
     
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
 
         self.__player.on_key_release(key, modifiers)
-        
+        match key:
+            case arcade.key.F:
+                    #self.weapon_list[-1].remove_from_sprite_lists()
+                    for weapon in self.weapon_list:
+                        weapon.remove_from_sprite_lists()
+                    print("no sword")
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
+            match button:
+                case arcade.MOUSE_BUTTON_LEFT:
+                    teta=(math.atan2(x+self.__camera.bottom_left.x-self.__player.center_x, y+self.__camera.bottom_left.y-self.__player.center_y))
+                    self.weapon_list.append(arcade.Sprite(
+                                "assets/kenney-voxel-items-png/sword_silver.png",
+                                angle=teta*(180/math.pi)-45,
+                                center_x= self.__player.center_x +20*math.sin(teta) ,
+                                center_y= self.__player.center_y +20*math.cos(teta),
+                                
+                                scale=constants.SCALE*0.7
+                                ))
+                
+
+    def on_mouse_release(self, x: int, y: int, button: int, modifiers: int) -> None:
+        match button:
+            case arcade.MOUSE_BUTTON_LEFT:
+                for weapon in self.weapon_list:
+                        weapon.remove_from_sprite_lists()
+
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
@@ -163,7 +193,12 @@ class GameView(arcade.View):
 
         for blob in self.blob_list :
             blob.blob_move(self.wall_list)
-
+        for weapon in self.weapon_list:
+            rad_angle = weapon.angle*(math.pi/180)+math.pi/4
+            height_ofset = 30*math.cos(rad_angle)
+            side_ofset = 30*math.sin(rad_angle)
+            weapon.center_x= self.__player.center_x +side_ofset#*math.sin(rad_angle) ,
+            weapon.center_y= self.__player.center_y + height_ofset#*math.cos(rad_angle),
         self.physics_engine.update()
         self.__update_camera()
         self.__check_collisions()
@@ -195,6 +230,11 @@ class GameView(arcade.View):
             coin.remove_from_sprite_lists()
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
+        for weapon in self.weapon_list:
+            for blob in arcade.check_for_collision_with_list(weapon, self.blob_list) :
+                blob.remove_from_sprite_lists()
+                arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
+
         if arcade.check_for_collision_with_list(self.__player, self.lava_list) != [] :
             self.setup()
         if arcade.check_for_collision_with_list(self.__player, self.blob_list) != [] :
@@ -211,6 +251,7 @@ class GameView(arcade.View):
             self.coin_list.draw()
             self.blob_list.draw()
             self.lava_list.draw()
+            self.weapon_list.draw()
 
     @property
     def player_x(self) -> float:

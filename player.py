@@ -1,5 +1,6 @@
 import arcade
 import constants
+import math
 
 class Player(arcade.Sprite):
     """
@@ -32,7 +33,7 @@ class Player(arcade.Sprite):
         """
 
         match key:
-            case arcade.key.RIGHT | arcade.key.D:
+            case arcade.key.RIGHT | arcade.key.D :
                 # start moving to the right
                 self.change_x = constants.PLAYER_MOVEMENT_SPEED
                 self.is_going_right = True
@@ -42,8 +43,6 @@ class Player(arcade.Sprite):
                 self.change_x = -constants.PLAYER_MOVEMENT_SPEED
                 self.is_going_left = True
             
-
-            
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
                 if self.physics_engine is not None : 
@@ -51,13 +50,15 @@ class Player(arcade.Sprite):
                         self.change_y = constants.PLAYER_JUMP_SPEED
                         arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
 
+           
+
     def on_key_release(self, key: int, modifiers: int) -> None:
         """
         Called by gameview when the user releases a key on the keyboard.
         Makes the player stop moving or change directions.
         """
         match key:
-              # stop lateral movement
+            # stop lateral movement
             case arcade.key.RIGHT | arcade.key.D:
                 self.is_going_right = False
                 if self.is_going_left == False:
@@ -72,3 +73,5 @@ class Player(arcade.Sprite):
                     self.change_x = 0
                 else :
                     self.change_x = constants.PLAYER_MOVEMENT_SPEED
+
+    

@@ -12,6 +12,11 @@ main() s'occupe ensuite des exceptions lancées par create_map(), en imprimant l
 
 Nous avons recrée la map de départ dans un fichier nommé "default_map.txt". Le chemin de ce fichier est passé par défaut à GameView, si aucun autre argument n'est donné pour le chemin de la map. Les tests existants n'ont alors pas dû être modifiés. On aurait aussi pu simplement passer le chemin de cette map à tous les tests déjà écrits. Il se peut que nous fassions cela plus tard, s'il pour une raison quelconque nous devons changer la map proposée par defaut. Nous ne voyons pas de raison pour laquelle les tests ne résisteraient pas à d'autres changements (raisonnables) dans le futur, surtout si la méthode de passer la map à GameView ne change pas. Il sera à priori toujours possible de choisir quel map utiliser pour chaque test individuellement.
 
-### Question 3 (Paul)
+### Question 3 : Le code qui gère la lave ressemble-t-il plus à celui de l’herbe, des pièces, ou des blobs ? Expliquez votre réponse.
+Le code qui gere la lave resemble au code qui gere les colision avec les blob car il fais pratiquement la meme chose (tue la joueuse et recomence instantanement le le niveau)
 
-### Question 4 (Paul)
+
+
+
+### Question 4 : Comment détectez-vous les conditions dans lesquelles les blobs doivent changer de direction ?
+cette partie resemble beaucoup a celle de la gestion du saut de la joueuse dans arcade (un abaisement temporaire de la position puis un check de colision avec un mur et une remise a la position initiale) j'ai juste ajouter un deplacement selon y dans le sens d'avancement du slime
