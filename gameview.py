@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Any, List, Optional
 import arcade
 import constants
 from player import Player
@@ -17,6 +17,8 @@ class GameView(arcade.View):
     end_list: arcade.SpriteList[arcade.Sprite]
     physics_engine: arcade.PhysicsEnginePlatformer
     __camera: arcade.camera.Camera2D
+
+    sprite_lists: List[arcade.SpriteList[Any]]
 
     __next_map : Optional[str]
 
@@ -162,6 +164,9 @@ class GameView(arcade.View):
         self.blob_list = arcade.SpriteList()
         self.end_list = arcade.SpriteList(use_spatial_hash=True)
 
+        self.sprite_lists = [self.player_sprite_list, self.wall_list, self.coin_list, self.lava_list,
+                            self.blob_list, self.end_list] 
+
         self.__create_map()
                 
         self.player_sprite_list.append(self.__player)
@@ -260,12 +265,8 @@ class GameView(arcade.View):
         self.clear() # always start with self.clear()
 
         with self.__camera.activate():
-            self.wall_list.draw()
-            self.player_sprite_list.draw()
-            self.coin_list.draw()
-            self.blob_list.draw()
-            self.lava_list.draw()
-            self.end_list.draw()
+            for list in self.sprite_lists :
+                list.draw()
 
     @property
     def player_x(self) -> float:
