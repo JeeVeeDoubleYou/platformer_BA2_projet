@@ -66,7 +66,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Encapsulation, modularisation et réorganisation du code        180    
 * [x] ANSWERS.MD (deux premières questions)                           20 
 * [x] ANSWERS.MD (deux dernières questions)                           10
-* [x] Epée                                                           150
+* [x] Epée                                                           200
 
 ### Semaine 4
 

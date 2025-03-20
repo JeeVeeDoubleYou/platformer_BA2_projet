@@ -4,6 +4,7 @@ import constants
 from player import Player
 from blob import Blob
 import math
+from weapon import Weapon
 
 
 class GameView(arcade.View):
@@ -159,27 +160,19 @@ class GameView(arcade.View):
         """Called when the user releases a key on the keyboard."""
 
         self.__player.on_key_release(key, modifiers)
-        match key:
-            case arcade.key.F:
-                    #self.weapon_list[-1].remove_from_sprite_lists()
-                    for weapon in self.weapon_list:
-                        weapon.remove_from_sprite_lists()
-                    print("no sword")
+        
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
             match button:
                 case arcade.MOUSE_BUTTON_LEFT:
-                    teta=(math.atan2(x+self.__camera.bottom_left.x-self.__player.center_x, y+self.__camera.bottom_left.y-self.__player.center_y))
-                    self.weapon_list.append(arcade.Sprite(
-                                "assets/kenney-voxel-items-png/sword_silver.png",
-                                angle=teta*(180/math.pi)-45,
-                                center_x= self.__player.center_x +20*math.sin(teta) ,
-                                center_y= self.__player.center_y +20*math.cos(teta),
-                                
-                                scale=constants.SCALE*0.7
-                                ))
-                
-
+                    #calclule l'angle (en radiant) entre la sourie et le joueur
+                    delta_x=x+self.__camera.bottom_left.x-self.__player.center_x
+                    delta_y=y+self.__camera.bottom_left.y-self.__player.center_y
+                    weapon = Weapon(delta_x, delta_y, self.__player.center_x ,self.__player.center_y)
+                    self.weapon_list.append(weapon)
+                    #weapon = Weapon.__init__(angle)
+                    #self.weapon_list.append(weapon)
+                                  
     def on_mouse_release(self, x: int, y: int, button: int, modifiers: int) -> None:
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
@@ -193,12 +186,10 @@ class GameView(arcade.View):
 
         for blob in self.blob_list :
             blob.blob_move(self.wall_list)
+        
         for weapon in self.weapon_list:
-            rad_angle = weapon.angle*(math.pi/180)+math.pi/4
-            height_ofset = 30*math.cos(rad_angle)
-            side_ofset = 30*math.sin(rad_angle)
-            weapon.center_x= self.__player.center_x +side_ofset#*math.sin(rad_angle) ,
-            weapon.center_y= self.__player.center_y + height_ofset#*math.cos(rad_angle),
+            Weapon.move(weapon, self.__player.center_x ,self.__player.center_y)
+        
         self.physics_engine.update()
         self.__update_camera()
         self.__check_collisions()
@@ -231,7 +222,7 @@ class GameView(arcade.View):
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
         for weapon in self.weapon_list:
-            for blob in arcade.check_for_collision_with_list(weapon, self.blob_list) :
+           for blob in arcade.check_for_collision_with_list(weapon, self.blob_list) :
                 blob.remove_from_sprite_lists()
                 arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
