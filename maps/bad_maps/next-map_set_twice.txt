@@ -1,0 +1,15 @@
+next-map: maps/level_2.txt
+width: 11
+height: 9
+next-map: maps/level_2.txt
+---
+     ---
+* o       E
+---       -
+       *
+     - -
+   -
+-
+ S     *
+=====££==
+---

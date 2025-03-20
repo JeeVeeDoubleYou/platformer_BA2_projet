@@ -1,0 +1,14 @@
+next-map: maps/no_such_file.txt
+width: 11
+height: 9
+---
+     ---
+* o       E
+---       -
+       *
+     - -
+   -
+-
+ S     *
+=====££==
+---

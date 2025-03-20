@@ -1,4 +1,4 @@
-## Semaine 3
+# Semaine 3
 
 ### Question 1 : Comment avez-vous conçu la lecture du fichier ? Comment l’avez-vous structurée de sorte à pouvoir la tester de manière efficace ?
 
@@ -12,11 +12,21 @@ main() s'occupe ensuite des exceptions lancées par create_map(), en imprimant l
 
 Nous avons recrée la map de départ dans un fichier nommé "default_map.txt". Le chemin de ce fichier est passé par défaut à GameView, si aucun autre argument n'est donné pour le chemin de la map. Les tests existants n'ont alors pas dû être modifiés. On aurait aussi pu simplement passer le chemin de cette map à tous les tests déjà écrits. Il se peut que nous fassions cela plus tard, s'il pour une raison quelconque nous devons changer la map proposée par defaut. Nous ne voyons pas de raison pour laquelle les tests ne résisteraient pas à d'autres changements (raisonnables) dans le futur, surtout si la méthode de passer la map à GameView ne change pas. Il sera à priori toujours possible de choisir quel map utiliser pour chaque test individuellement.
 
-### Question 3 : Le code qui gère la lave ressemble-t-il plus à celui de l’herbe, des pièces, ou des blobs ? Expliquez votre réponse.
-Le code qui gere la lave resemble au code qui gere les colision avec les blob car il fais pratiquement la meme chose (tue la joueuse et recomence instantanement le le niveau)
+### Question 3 (Paul)
 
+### Question 4 (Paul)
 
+# Semaine 4
 
+### Question 1 (Paul)
+### Question 2 (Paul)
+### Question 3 (Paul)
+### Question 4 (Paul)
 
-### Question 4 : Comment détectez-vous les conditions dans lesquelles les blobs doivent changer de direction ?
-cette partie resemble beaucoup a celle de la gestion du saut de la joueuse dans arcade (un abaisement temporaire de la position puis un check de colision avec un mur et une remise a la position initiale) j'ai juste ajouter un deplacement selon y dans le sens d'avancement du slime
+### Question 5 (Gaëlle) : Comment modélisez-vous la “next-map” ? Où la stockez-vous, et comment la traitez-vous quand la joueuse atteint le point E ?
+
+La next map est le chemin du prochain niveau, qui est stocké comme string dans un attribut de la class GameView. Cet attribut est mis à jour à chauque fois qu'une nouvelle map est crée par la méthode create_map(). Quand la joueuse atteint le point E, la méthode load_next_map() est appelée. Cette méthode s'assure que le nom de la prochaine map est bien stockée, puis remplace la map actuelle par la prochaine map dans l'attribut current_map_name, avant d'appeler la méthode setup qui crée le prochain niveau. 
+
+### Question 6 (Gaëlle) : Que se passe-t-il si la joueuse atteint le E mais la carte n’a pas de next-map ?
+
+Pour l'instant, ce cas de figure n'est pas possible. Si la carte a un "E" mais pas de next-map, la méthode create_map() appelé dès le début lèvera une exception. La map est ainsi considérée comme non-valide. On pourrait éventuellement considérer qu'arriver à la fin d'un niveau qui n'a pas de suite signifie que la joueuse a gagné le jeu, et afficher un message de victoire.

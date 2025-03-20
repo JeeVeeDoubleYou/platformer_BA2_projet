@@ -1,4 +1,5 @@
 import os
+from typing import Any, List, Optional
 import arcade
 import constants
 from player import Player
@@ -16,17 +17,23 @@ class GameView(arcade.View):
     coin_list: arcade.SpriteList[arcade.Sprite]
     weapon_list: arcade.SpriteList[arcade.Sprite]
     blob_list: arcade.SpriteList[Blob]
+    end_list: arcade.SpriteList[arcade.Sprite]
     physics_engine: arcade.PhysicsEnginePlatformer
     __camera: arcade.camera.Camera2D
 
+    sprite_lists: List[arcade.SpriteList[Any]]
 
-    def __init__(self, map_name : str = "maps/default_map.txt") -> None:
+    __next_map : Optional[str]
+
+    def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
 
         if not os.path.exists(map_name) :
-            raise SystemExit(1)
-        self.__map_name = map_name
+            raise Exception("The file path for initial level is incorrect")
+        self.__initial_map_name = map_name
+        self.__current_map_name = self.__initial_map_name
+        self.__next_map = None
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
@@ -36,20 +43,31 @@ class GameView(arcade.View):
 
         
 
-    def create_map(self) -> None : 
+    def __create_map(self) -> None : 
         """Creates map from file"""
 
-        with open(self.__map_name, "r", encoding="utf-8", newline='') as f :
+        with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             map_width = None
             map_height = None
+            self.__next_map = None
             for line in f :
                 if line == "---\n" or line == "---" :
                     break
                 line.split()
+                if line.startswith("next-map") :
+                    if self.__next_map is not None :
+                        raise Exception("You can't set the next map twice")
+                    self.__next_map = line.split()[-1]
+                    if not os.path.exists(self.__next_map) :
+                        raise Exception("The next map path is incorrect")
                 try : 
                     if line.startswith("width") :
+                        if map_width is not None :
+                            raise Exception("You can't set the width twice")
                         map_width = int(line.split()[-1])
                     if line.startswith("height") :
+                        if map_height is not None :
+                            raise Exception("You can't set the height twice")
                         map_height = int(line.split()[-1])
                 except ValueError :
                     raise Exception("Configuration lines on file aren't formated correctly")
@@ -60,6 +78,9 @@ class GameView(arcade.View):
                 raise Exception("Width and height should be positive numbers")
             
             start_is_placed = False
+            has_next_map = self.__next_map is not None
+            end_is_placed = False
+
             # Starts looping from where last loop stopped
             for line_num, line in enumerate(f) :
                 line_number_arcade_coordinates = map_height - (line_num + 1)
@@ -72,6 +93,20 @@ class GameView(arcade.View):
                     x_coordinate = 64 * position_x
                     y_coordinate =  64 * line_number_arcade_coordinates
                     match sprite : 
+                        case "E" :
+                            if not has_next_map :
+                                raise Exception("There is no next map, but there is an exit") 
+                                # Question : accepter end of map même sans prochain niveau?
+                            if end_is_placed :
+                                raise Exception("There can't be two ending points to a level")
+                            self.end_list.append(arcade.Sprite(
+                            ":resources:/images/tiles/signExit.png",
+                            center_x= x_coordinate,
+                            center_y= y_coordinate,
+                            scale=constants.SCALE
+                            ))
+                            end_is_placed = True
+
                         case "=" :
                             self.wall_list.append(arcade.Sprite(
                             ":resources:images/tiles/grassMid.png",
@@ -117,6 +152,8 @@ class GameView(arcade.View):
                             self.__player = Player(x_coordinate, y_coordinate)
         if not start_is_placed :
             raise Exception("Player must have a starting point")
+        if has_next_map and not end_is_placed :
+            raise Exception("The file sets the next map but no end to the level")
 
 
     def setup(self) -> None:
@@ -129,8 +166,12 @@ class GameView(arcade.View):
         self.lava_list = arcade.SpriteList(use_spatial_hash=True)
         self.blob_list = arcade.SpriteList()
         self.weapon_list = arcade.SpriteList()
+        self.end_list = arcade.SpriteList(use_spatial_hash=True)
 
-        self.create_map()
+        self.sprite_lists = [self.player_sprite_list, self.wall_list, self.coin_list, self.lava_list,
+                            self.blob_list,self.weapon_list ,self.end_list] 
+
+        self.__create_map()
                 
         self.player_sprite_list.append(self.__player)
         self.__camera = arcade.camera.Camera2D()
@@ -151,8 +192,11 @@ class GameView(arcade.View):
         self.__player.on_key_press(key, modifiers)
 
         match key:   
+            case arcade.key.ESCAPE if modifiers & arcade.key.MOD_SHIFT :
+                # reset game from start
+                self.__setup_from_initial()
             case arcade.key.ESCAPE:
-                # reset game
+                # reset level
                 self.setup()
 
     
@@ -227,9 +271,24 @@ class GameView(arcade.View):
                 arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
         if arcade.check_for_collision_with_list(self.__player, self.lava_list) != [] :
-            self.setup()
+            self.__setup_from_initial()
         if arcade.check_for_collision_with_list(self.__player, self.blob_list) != [] :
-            self.setup()
+            self.__setup_from_initial()
+        if arcade.check_for_collision_with_list(self.__player, self.end_list) != [] :
+            self.__load_next_map()
+
+    def __load_next_map(self) -> None :
+        assert self.__next_map is not None
+        assert os.path.exists(self.__next_map)
+        self.__current_map_name = self.__next_map
+        self.__next_map = None
+        self.setup()
+
+    def __setup_from_initial(self) -> None :
+        assert os.path.exists(self.__initial_map_name)
+        self.__current_map_name = self.__initial_map_name
+        self.setup()
+
 
     def on_draw(self) -> None:
         """Render the screen."""
@@ -243,6 +302,8 @@ class GameView(arcade.View):
             self.blob_list.draw()
             self.lava_list.draw()
             self.weapon_list.draw()
+            for list in self.sprite_lists :
+                list.draw()
 
     @property
     def player_x(self) -> float:
@@ -267,3 +328,7 @@ class GameView(arcade.View):
     @property
     def camera_y(self) -> float:
         return self.__camera.center_left.y
+    
+    @property
+    def current_map(self) -> str:
+        return self.__current_map_name

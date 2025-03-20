@@ -13,21 +13,20 @@ Format :
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 
 ### Gaëlle : 
-* [] Test collisions
 * [] Test caméra
-* [] Levels et progression
-* [] Test levels
 * [] Test that makes sure that player doesnt stay on screen when it dies
 
 ### Paul : 
 * [] Test blobs
 * [] Test lave
 
+* [] ANSWERS.MD (deux dernières questions, semaine 3)
 * [] Coin counter
 * [] Test coin counter
 * [] Test player death
 * [] Epée
 * [] Test épée
+* [] ANSWERS.MD (4 premieres ?, semaine 4)
 
 
 ---
@@ -70,7 +69,10 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 
 ### Semaine 4
 
-Il faut remplir ici maintenant.
+* [x] Levels et progression                                          120
+* [x] Test levels                                                    120
+* [x] ANSWERS.MD (2 dernières questions)                              10
+* [x] Test collisions                                                 15
 
 ### Semaine 5
 
