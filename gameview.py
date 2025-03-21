@@ -18,7 +18,6 @@ class GameView(arcade.View):
     physics_engine: arcade.PhysicsEnginePlatformer
     __camera: arcade.camera.Camera2D
 
-    sprite_lists: List[arcade.SpriteList[Any]]
 
     __next_map : Optional[str]
 
@@ -90,63 +89,40 @@ class GameView(arcade.View):
                     x_coordinate = 64 * position_x
                     y_coordinate =  64 * line_number_arcade_coordinates
                     match sprite : 
-                        case "E" :
-                            if not has_next_map :
-                                raise Exception("There is no next map, but there is an exit") 
-                                # Question : accepter end of map même sans prochain niveau?
-                            if end_is_placed :
-                                raise Exception("There can't be two ending points to a level")
-                            self.end_list.append(arcade.Sprite(
-                            ":resources:/images/tiles/signExit.png",
-                            center_x= x_coordinate,
-                            center_y= y_coordinate,
-                            scale=constants.SCALE
-                            ))
-                            end_is_placed = True
-
-                        case "=" :
-                            self.wall_list.append(arcade.Sprite(
-                            ":resources:images/tiles/grassMid.png",
-                            center_x= x_coordinate,
-                            center_y= y_coordinate,
-                            scale=constants.SCALE
-                            ))
-                        case "-" :
-                            self.wall_list.append(arcade.Sprite(
-                            ":resources:/images/tiles/grassHalf_mid.png",
-                            center_x= x_coordinate,
-                            center_y= y_coordinate,
-                            scale=constants.SCALE
-                            ))
-                        case "x" :
-                            self.wall_list.append(arcade.Sprite(
-                            ":resources:/images/tiles/boxCrate_double.png",
-                            center_x= x_coordinate,
-                            center_y= y_coordinate,
-                            scale=constants.SCALE
-                            ))
-                        case "*" :
-                            self.coin_list.append(arcade.Sprite(
-                            ":resources:images/items/coinGold.png",
-                            center_x= x_coordinate,
-                            center_y= y_coordinate,
-                            scale=constants.SCALE
-                            ))
-                        case "o" :
-                            blob = Blob(x_coordinate, y_coordinate)
-                            self.blob_list.append(blob)
-                        case "£" :
-                            self.lava_list.append(arcade.Sprite(
-                            ":resources:/images/tiles/lava.png",
-                            center_x= x_coordinate,
-                            center_y= y_coordinate,
-                            scale=constants.SCALE
-                            ))
                         case "S" :
                             if start_is_placed :
                                 raise Exception("Player can't be placed twice")
                             start_is_placed = True
                             self.__player = Player(x_coordinate, y_coordinate)
+                        case "o" :
+                            blob = Blob(x_coordinate, y_coordinate)
+                            self.blob_list.append(blob)
+                        case " " | "\n" :
+                            # Pour que les espaces et retours à la ligne
+                            # ne soient pas gérés dans l'autre 'match', où tout caractère est mis dans une sprite list
+                            pass
+                        case _ :
+                            match sprite :
+                                case "E" :
+                                    if not has_next_map :
+                                        raise Exception("There is no next map, but there is an exit") 
+                                        # Question : accepter end of map même sans prochain niveau?
+                                    if end_is_placed :
+                                        raise Exception("There can't be two ending points to a level")
+                                    end_is_placed = True
+                                    name_and_list = (":resources:/images/tiles/signExit.png", self.end_list)
+                                case "=" :
+                                    name_and_list = (":resources:images/tiles/grassMid.png", self.wall_list)
+                                case "-" :
+                                    name_and_list = (":resources:/images/tiles/grassHalf_mid.png", self.wall_list)
+                                case "x" :
+                                    name_and_list = (":resources:/images/tiles/boxCrate_double.png", self.wall_list)
+                                case "*" :
+                                    name_and_list = (":resources:images/items/coinGold.png", self.coin_list)
+                                case "£" :
+                                    name_and_list = (":resources:/images/tiles/lava.png", self.lava_list)
+                            name_and_list[1].append(arcade.Sprite(name_and_list[0], center_x= x_coordinate, 
+                                                    center_y= y_coordinate, scale=constants.SCALE))             
         if not start_is_placed :
             raise Exception("Player must have a starting point")
         if has_next_map and not end_is_placed :
@@ -164,8 +140,8 @@ class GameView(arcade.View):
         self.blob_list = arcade.SpriteList()
         self.end_list = arcade.SpriteList(use_spatial_hash=True)
 
-        self.sprite_lists = [self.player_sprite_list, self.wall_list, self.coin_list, self.lava_list,
-                            self.blob_list, self.end_list] 
+        self.sprite_tuple = (self.player_sprite_list, self.wall_list, self.coin_list, self.lava_list,
+                            self.blob_list, self.end_list) 
 
         self.__create_map()
                 
@@ -265,7 +241,7 @@ class GameView(arcade.View):
         self.clear() # always start with self.clear()
 
         with self.__camera.activate():
-            for list in self.sprite_lists :
+            for list in self.sprite_tuple :
                 list.draw()
 
     @property

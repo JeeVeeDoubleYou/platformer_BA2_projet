@@ -15,6 +15,9 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test caméra
 * [] Test that makes sure that player doesnt stay on screen when it dies
+Tuple pour rentre le match dans create map plus lisible
+* [] Bat Monster
+* [] Test bat monster
 
 ### Paul : 
 * [] Test blobs
@@ -26,6 +29,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Epée
 * [] Test épée
 * [] ANSWERS.MD (4 premieres ?, semaine 4)
+* [] Bow and arrow
+* [] Test bow and arrow
 
 
 ---
