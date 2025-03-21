@@ -4,7 +4,6 @@ import arcade
 import constants
 from player import Player
 from blob import Blob
-import math
 from weapon import Weapon
 
 
@@ -228,7 +227,7 @@ class GameView(arcade.View):
         delta_x=mouse_x+self.__camera.bottom_left.x-self.__player.center_x
         delta_y=mouse_y+self.__camera.bottom_left.y-self.__player.center_y-5
         for weapon in self.weapon_list:
-            weapon=Weapon.set_angle(weapon, delta_x, delta_y)
+            Weapon.set_angle(weapon, delta_x, delta_y)
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
@@ -303,12 +302,6 @@ class GameView(arcade.View):
         self.clear() # always start with self.clear()
 
         with self.__camera.activate():
-            self.wall_list.draw()
-            self.player_sprite_list.draw()
-            self.coin_list.draw()
-            self.blob_list.draw()
-            self.lava_list.draw()
-            self.weapon_list.draw()
             for list in self.sprite_lists :
                 list.draw()
 
