@@ -33,3 +33,4 @@ class Blob(arcade.Sprite):
         # Checks if blob is on the edge of the platform or if it is touching a wall other than the floor underneath it
         if arcade.check_for_collision_with_list(self, wall_list) != [] or is_on_edge:
             self.speed = -self.speed
+            self.texture.flip_left_right

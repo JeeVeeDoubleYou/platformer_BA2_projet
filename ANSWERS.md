@@ -12,9 +12,13 @@ main() s'occupe ensuite des exceptions lancées par create_map(), en imprimant l
 
 Nous avons recrée la map de départ dans un fichier nommé "default_map.txt". Le chemin de ce fichier est passé par défaut à GameView, si aucun autre argument n'est donné pour le chemin de la map. Les tests existants n'ont alors pas dû être modifiés. On aurait aussi pu simplement passer le chemin de cette map à tous les tests déjà écrits. Il se peut que nous fassions cela plus tard, s'il pour une raison quelconque nous devons changer la map proposée par defaut. Nous ne voyons pas de raison pour laquelle les tests ne résisteraient pas à d'autres changements (raisonnables) dans le futur, surtout si la méthode de passer la map à GameView ne change pas. Il sera à priori toujours possible de choisir quel map utiliser pour chaque test individuellement.
 
-### Question 3 (Paul)
+### Question 3 Le code qui gère la lave ressemble-t-il plus à celui de l’herbe, des pièces, ou des blobs ? 
+Le code qui gere la lave est proche de celui qui gere la lave car il fait la meme chose, il tue la joueuse en recommencent le niveau.
+Sinon la  lave resmenle un peu au pieces car c'est un objet amovible qui a une inteaction avec la joueuse.
 
-### Question 4 (Paul)
+### Question 4 Comment détectez-vous les conditions dans lesquelles les blobs doivent changer de direction ?
+-pour les colision avec les mur je test pour chaques blobs si il est a l'interieur d'un mur si oui il change de direction sinon il continue a avancer
+-pour le bord des plateformes je fais un peut comme la fonction is on ground est definit: j'avance le blob de sa longeur dans le sens de son deplacement et ensuite je l'abaisse de quelques unite temporairement et je check si le blob est en colision avec un mur si le blob est en colision avec un mur alors sa prochaine position est entierement sur le sol et il continue d'avencer  sinon il va tomber et donc il fait demi tour
 
 # Semaine 4
 

@@ -22,6 +22,7 @@ Tuple pour rentre le match dans create map plus lisible
 ### Paul : 
 * [] Test blobs
 * [] Test lave
+
 * [] ANSWERS.MD (deux dernières questions, semaine 3)
 * [] Coin counter
 * [] Test coin counter
@@ -67,7 +68,9 @@ Tuple pour rentre le match dans create map plus lisible
 * [x] Blobs (monstres)                                                60
 * [x] Lave                                                            10
 * [x] Encapsulation, modularisation et réorganisation du code        180    
-* [x] ANSWERS.MD (deux premières questions)                           20                                         
+* [x] ANSWERS.MD (deux premières questions)                           20 
+* [x] ANSWERS.MD (deux dernières questions)                           10
+* [x] Epée                                                           200
 
 ### Semaine 4
 
