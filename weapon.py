@@ -11,7 +11,7 @@ class Weapon(arcade.Sprite):
         self.set_angle(delta_x, delta_y)
         self.update_position(player_x, player_y)
         self.time = 0
-        self.color=255,0,0
+        self.rgb =255, 0, 0
 
     def move(self, player_x: float, player_y :float) -> None :
         self.update_position(player_x, player_y)
@@ -19,7 +19,7 @@ class Weapon(arcade.Sprite):
     def hit_frame(self, timer: int) -> bool :
         self.time +=1
         if timer < self.time:
-            self.color=255,255,255
+            self.rgb = 255 ,255 ,255
             return False
         return True
 
