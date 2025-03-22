@@ -27,7 +27,7 @@ class Player(arcade.Sprite):
     allow_multi_jump = False
     allowed_jumps = 1
 
-    def coin_score_update (self, coin :int):
+    def coin_score_update (self, coin :int) -> None:
         self.coin_score += coin
 
     def on_key_press(self, key: int, modifiers: int) -> None:
