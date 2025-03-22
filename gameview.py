@@ -5,6 +5,7 @@ import constants
 from player import Player
 from blob import Blob
 from weapon import Weapon
+from pyglet.graphics import Batch
 
 
 class GameView(arcade.View):
@@ -19,6 +20,8 @@ class GameView(arcade.View):
     end_list: arcade.SpriteList[arcade.Sprite]
     physics_engine: arcade.PhysicsEnginePlatformer
     __camera: arcade.camera.Camera2D
+    fixed_camera: arcade.camera.Camera2D
+
 
 
     __next_map : Optional[str]
@@ -150,7 +153,9 @@ class GameView(arcade.View):
                 
         self.player_sprite_list.append(self.__player)
         self.__camera = arcade.camera.Camera2D()
+        self.fixed_camera = arcade.camera.Camera2D()
         self.__camera.position = self.__player.position #type: ignore
+        self. fixed_camera.position = arcade.Vec2(0, 0)
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
@@ -244,13 +249,14 @@ class GameView(arcade.View):
 
         for coin in arcade.check_for_collision_with_list(self.__player, self.coin_list) :
             coin.remove_from_sprite_lists()
+            Player.coin_score_update(self.__player, 1)
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
         for weapon in self.weapon_list:
            if Weapon.hit_frame(weapon, 5):
                 for blob in arcade.check_for_collision_with_list(weapon, self.blob_list) :
                     blob.remove_from_sprite_lists()
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/hurt2.wav"))
+                    arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
 
         if arcade.check_for_collision_with_list(self.__player, self.lava_list) != [] :
             self.__setup_from_initial()
@@ -276,10 +282,15 @@ class GameView(arcade.View):
         """Render the screen."""
 
         self.clear() # always start with self.clear()
-
         with self.__camera.activate():
             for list in self.sprite_tuple :
                 list.draw()
+        string_score ="coin score = " + str(self.__player.coin_score)
+        text = arcade.Text(string_score, self.fixed_camera.bottom_left.x+10, self.fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+        with self.fixed_camera.activate():
+                text.draw()
+            #text.draw()
+            
 
     @property
     def player_x(self) -> float:

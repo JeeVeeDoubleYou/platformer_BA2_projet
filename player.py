@@ -17,6 +17,7 @@ class Player(arcade.Sprite):
 
         self.center_x = x
         self.center_y = y
+        self.coin_score=0
 
     is_going_left = False
     is_going_right = False
@@ -25,6 +26,9 @@ class Player(arcade.Sprite):
     allowed_jumps: int
     allow_multi_jump = False
     allowed_jumps = 1
+
+    def coin_score_update (self, coin :int):
+        self.coin_score += coin
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """
