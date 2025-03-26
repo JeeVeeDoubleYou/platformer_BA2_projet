@@ -15,7 +15,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test caméra
 * [] Test that makes sure that player doesnt stay on screen when it dies
-Tuple pour rentre le match dans create map plus lisible
 * [] Bat Monster
 * [] Test bat monster
 * [] ANSWERS.MD (2,4 questions, semaine 5)
@@ -80,6 +79,7 @@ Tuple pour rentre le match dans create map plus lisible
 * [x] Test levels                                                    120
 * [x] ANSWERS.MD (2 dernières questions)                              10
 * [x] Test collisions                                                 15
+* [x] Tuple pour rentre le match dans create map plus lisible         40
 
 ### Semaine 5
 
