@@ -1,15 +1,16 @@
 import arcade 
 import constants
+from monster import Monster
 
 """Speed of the blue blobs"""
 BLUE_BLOB_SPEED = 2
 
-class Blob(arcade.Sprite):
+class Blob(Monster):
     """Represents a blob, how it moves and checks for collistions"""
 
     def __init__(self, x: float, y: float) -> None :
         
-        super().__init__(":resources:/images/enemies/slimeBlue.png", constants.SCALE)
+        super().__init__(":resources:/images/enemies/slimeBlue.png")
         
         self.speed = BLUE_BLOB_SPEED
 
@@ -34,7 +35,3 @@ class Blob(arcade.Sprite):
         if arcade.check_for_collision_with_list(self, wall_list) != [] or is_on_edge:
             self.speed = -self.speed
             self.texture.flip_left_right
-
-    def die(self) -> None:
-        """Makes the blob disappear"""
-        self.remove_from_sprite_lists()
