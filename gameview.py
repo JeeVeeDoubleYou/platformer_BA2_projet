@@ -215,7 +215,7 @@ class GameView(arcade.View):
         This is where in-world time "advances" or "ticks". """
 
         for blob in self.blob_list :
-            blob.blob_move(self.wall_list)
+            blob.move(self.wall_list)
         
         for weapon in self.weapon_list:
             Weapon.move(weapon, self.__player.center_x ,self.__player.center_y)
@@ -245,6 +245,7 @@ class GameView(arcade.View):
         """
         Checks collisions between player and coins : takes coins
         Checks collisions between player and lava or blobs : dies
+        Checks collisions between weapon and monster : monster dies
         """
 
         for coin in arcade.check_for_collision_with_list(self.__player, self.coin_list) :
@@ -255,7 +256,7 @@ class GameView(arcade.View):
         for weapon in self.weapon_list:
            if Weapon.hit_frame(weapon, 5):
                 for blob in arcade.check_for_collision_with_list(weapon, self.blob_list) :
-                    blob.remove_from_sprite_lists()
+                    blob.die()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
 
         if arcade.check_for_collision_with_list(self.__player, self.lava_list) != [] :

@@ -16,7 +16,7 @@ class Blob(arcade.Sprite):
         self.center_x = x
         self.center_y = y
 
-    def blob_move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
+    def move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
         """Makes blob move without falling or hitting boxes, changes direction when necessary"""
         
         self.strafe(self.speed)
@@ -34,3 +34,7 @@ class Blob(arcade.Sprite):
         if arcade.check_for_collision_with_list(self, wall_list) != [] or is_on_edge:
             self.speed = -self.speed
             self.texture.flip_left_right
+
+    def die(self) -> None:
+        """Makes the blob disappear"""
+        self.remove_from_sprite_lists()
