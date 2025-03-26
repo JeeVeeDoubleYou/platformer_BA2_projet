@@ -24,10 +24,8 @@ Tuple pour rentre le match dans create map plus lisible
 * [] Test lave
 
 * [] ANSWERS.MD (deux dernières questions, semaine 3)
-* [] Coin counter
 * [] Test coin counter
 * [] Test player death
-* [] Epée
 * [] Test épée
 * [] ANSWERS.MD (4 premieres ?, semaine 4)
 * [] Bow and arrow
@@ -70,7 +68,7 @@ Tuple pour rentre le match dans create map plus lisible
 * [x] Encapsulation, modularisation et réorganisation du code        180    
 * [x] ANSWERS.MD (deux premières questions)                           20 
 * [x] ANSWERS.MD (deux dernières questions)                           10
-* [x] Epée                                                           200
+* 
 
 ### Semaine 4
 
@@ -80,6 +78,8 @@ Tuple pour rentre le match dans create map plus lisible
 * [x] Test collisions                                                 15
 
 ### Semaine 5
+* [x] Coin counter                                                    15
+* [x] Epée                                                           200
 
 ### Semaine 6
 

@@ -22,10 +22,26 @@ Sinon la  lave resmenle un peu au pieces car c'est un objet amovible qui a une i
 
 # Semaine 4
 
-### Question 1 (Paul)
-### Question 2 (Paul)
-### Question 3 (Paul)
+### Question 1 (Paul) :Quelles formules utilisez-vous exactement pour l’épée ? Comment passez-vous des coordonnées écran aux coordonnées monde ?
+j'utillise cette formule pour calculer la difference entre la position de la souris et celle de la joueuse
+    delta_x=mouse_x+self.__camera.bottom_left.x-self.__player.center_x
+    delta_y=mouse_y+self.__camera.bottom_left.y-self.__player.center_y-5
+ensuite j'utilise l'arctangente (atan2(delta_x,delta_y)) pour calculer l'angle
+
+les coordonees de l'ecran commencent en bas a gauche donc j'utilise les coordonees point en bas a gauche de la camera auquelle j'ajoute les coordone de la souris pour passer au coordonée monde
+
+
+### Question 2 (Paul) :
+
+
+
+### Question 3 (Paul) :Où le remettez-vous à zéro ? Avez-vous du code dupliqué entre les cas où la joueuse perd parce qu’elle a touché un ou monstre ou de la lave ?
+le score est initialiser en meme temps que la joueuse du coup il est remis a zero lors de l'inintialisation
+
+
 ### Question 4 (Paul)
+
+
 
 ### Question 5 (Gaëlle) : Comment modélisez-vous la “next-map” ? Où la stockez-vous, et comment la traitez-vous quand la joueuse atteint le point E ?
 
