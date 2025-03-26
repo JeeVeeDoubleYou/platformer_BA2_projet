@@ -323,6 +323,6 @@ class GameView(arcade.View):
         return self.__current_map_name
     
     @property
-    def coins(self) -> int:
+    def coin_count(self) -> int:
         return len(self.__coin_list)
     
