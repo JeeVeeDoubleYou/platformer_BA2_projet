@@ -18,6 +18,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 Tuple pour rentre le match dans create map plus lisible
 * [] Bat Monster
 * [] Test bat monster
+* [] ANSWERS.MD (2,4 questions, semaine 5)
 
 ### Paul : 
 * [] Test blobs
@@ -32,6 +33,7 @@ Tuple pour rentre le match dans create map plus lisible
 * [] ANSWERS.MD (4 premieres ?, semaine 4)
 * [] Bow and arrow
 * [] Test bow and arrow
+* [] ANSWERS.MD (1,2,4 questions, semaine 5)
 
 
 ---
