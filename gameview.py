@@ -7,6 +7,7 @@ from blob import Blob
 from monster import Monster
 from weapon import Weapon
 from pyglet.graphics import Batch
+from bat import Bat
 
 
 class GameView(arcade.View):
@@ -103,6 +104,9 @@ class GameView(arcade.View):
                         case "o" :
                             blob = Blob(x_coordinate, y_coordinate)
                             self.__monster_list.append(blob)
+                        case "v" :
+                            bat = Bat(x_coordinate, y_coordinate)
+                            self.__monster_list.append(bat)
                         case " " | "\n" :
                             # Pour que les espaces et retours à la ligne
                             # ne soient pas gérés dans l'autre 'match', où tout caractère est mis dans une sprite list

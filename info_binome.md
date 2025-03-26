@@ -7,3 +7,7 @@ Create list of all lists (gameview) to loop through for draw, for example
 Die is falls for too long
 
 Run sur maps du prof?
+
+QUESTION : def move(self, wall_list: arcade.SpriteList[arcade.Sprite] = None) -> None: 
+ou def move(self, *args) -> None: + def move(self, wall_list: arcade.SpriteList[arcade.Sprite]) -> None: ?
+IF réponse 1, assert dans bat que wall list = None ou juste ignorer?
