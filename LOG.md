@@ -15,7 +15,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test caméra
 * [] Test that makes sure that player doesnt stay on screen when it dies
-* [] Bat Monster
 * [] Test bat monster
 * [] ANSWERS.MD (2,4 questions, semaine 5)
 
@@ -84,6 +83,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Semaine 5
 
 ### Semaine 6
+
+* [x] Bat monster                                                    200 
 
 ### Semaine 7
 
