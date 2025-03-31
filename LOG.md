@@ -88,6 +88,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 
 ### Semaine 7
 
+* [x] Player dies when falls too much                                  5
+
 ### Semaine 8
 
 ### Semaine 9

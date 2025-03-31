@@ -219,6 +219,9 @@ class GameView(arcade.View):
         """Called once per frame, before drawing.
         This is where in-world time "advances" or "ticks". """
 
+        if self.player_y < -500 :
+            self.__setup_from_initial()
+
         for monster in self.__monster_list :
             monster.move(self.__wall_list)
         
