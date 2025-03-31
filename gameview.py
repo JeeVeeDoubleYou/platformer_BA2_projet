@@ -40,7 +40,7 @@ class GameView(arcade.View):
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
-
+    
         # Setup our game
         self.setup()
 

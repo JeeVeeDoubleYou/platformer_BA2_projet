@@ -17,9 +17,8 @@ class Blob(Monster):
         self.center_x = x
         self.center_y = y
 
-    def move(self, wall_list : arcade.SpriteList[arcade.Sprite] | None = None) -> None:
+    def move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
         """Makes blob move without falling or hitting boxes, changes direction when necessary"""
-        assert wall_list is not None
 
         self.strafe(self.speed)
 
