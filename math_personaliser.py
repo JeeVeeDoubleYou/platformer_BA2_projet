@@ -23,17 +23,17 @@ def atan2_deg_aprox(x: float, y: float) -> float:
         return -90-tan_deg_aprox(y/x)
     return -180+tan_deg_aprox(x/y)
     
-def tan_deg_aprox(x: float):
+def tan_deg_aprox(x: float) -> float:
     return (-15.5450048923999*x+60.7150688287897)*x
 
 
-def atan2_deg(x,y):
+def atan2_deg(x: float,y: float) -> float:
     return math.atan2(x,y)*180/math.pi
 
-def sin_deg(x):
+def sin_deg(x: float) -> float:
     return math.sin(x*math.pi/180)
 
-def cos_deg(x):
+def cos_deg(x: float) -> float:
     return math.cos(x*math.pi/180)
 
 

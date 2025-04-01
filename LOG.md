@@ -15,9 +15,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test caméra
 * [] Test that makes sure that player doesnt stay on screen when it dies
-Tuple pour rentre le match dans create map plus lisible
-* [] Bat Monster
 * [] Test bat monster
+* [] ANSWERS.MD (2,4 questions, semaine 5)
 
 ### Paul : 
 * [] Test blobs
@@ -30,6 +29,7 @@ Tuple pour rentre le match dans create map plus lisible
 * [] ANSWERS.MD (4 premieres ?, semaine 4)
 * [] Bow and arrow
 * [] Test bow and arrow
+* [] ANSWERS.MD (1,2,4 questions, semaine 5)
 
 
 ---
@@ -76,6 +76,7 @@ Tuple pour rentre le match dans create map plus lisible
 * [x] Test levels                                                    120
 * [x] ANSWERS.MD (2 dernières questions)                              10
 * [x] Test collisions                                                 15
+* [x] Tuple pour rentre le match dans create map plus lisible         40
 
 ### Semaine 5
 * [x] Coin counter                                                    15
@@ -83,7 +84,11 @@ Tuple pour rentre le match dans create map plus lisible
 
 ### Semaine 6
 
+* [x] Bat monster                                                    200 
+
 ### Semaine 7
+
+* [x] Player dies when falls too much                                  5
 
 ### Semaine 8
 

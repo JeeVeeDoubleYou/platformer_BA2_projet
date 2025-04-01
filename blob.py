@@ -1,24 +1,25 @@
 import arcade 
 import constants
+from monster import Monster
 
 """Speed of the blue blobs"""
 BLUE_BLOB_SPEED = -2
 
-class Blob(arcade.Sprite):
+class Blob(Monster):
     """Represents a blob, how it moves and checks for collistions"""
 
     def __init__(self, x: float, y: float) -> None :
         
-        super().__init__(":resources:/images/enemies/slimeBlue.png", constants.SCALE)
+        super().__init__(":resources:/images/enemies/slimeBlue.png")
         
         self.speed = BLUE_BLOB_SPEED
 
         self.center_x = x
         self.center_y = y
 
-    def blob_move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
+    def move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
         """Makes blob move without falling or hitting boxes, changes direction when necessary"""
-        
+
         self.strafe(self.speed)
 
         self.center_x += 20*self.speed

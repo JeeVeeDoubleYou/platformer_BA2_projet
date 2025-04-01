@@ -50,3 +50,13 @@ La next map est le chemin du prochain niveau, qui est stocké comme string dans 
 ### Question 6 (Gaëlle) : Que se passe-t-il si la joueuse atteint le E mais la carte n’a pas de next-map ?
 
 Pour l'instant, ce cas de figure n'est pas possible. Si la carte a un "E" mais pas de next-map, la méthode create_map() appelé dès le début lèvera une exception. La map est ainsi considérée comme non-valide. On pourrait éventuellement considérer qu'arriver à la fin d'un niveau qui n'a pas de suite signifie que la joueuse a gagné le jeu, et afficher un message de victoire.
+
+# Semaine 5
+
+### Question 1 (Paul)
+
+### Question 2 (Gaëlle)
+
+### Question 3 (Paul)
+
+### Question 4 (Paul et Gaëlle)

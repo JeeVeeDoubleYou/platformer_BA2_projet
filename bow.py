@@ -17,7 +17,7 @@ class Bow(Weapon):
         #Sword.start(delta_x, delta_y, player_x, player_y)
     
     def can_shoot_arrow(self) -> None :
-        TIMMER = 30
+        TIMMER = 15
         if TIMMER < self.time:
            #arcade.Sprite.texture.fset(self, "assets/kenney-voxel-items-png/bow.png")
            self.texture = arcade.load_texture("assets/kenney-voxel-items-png/bowArrow.png")
