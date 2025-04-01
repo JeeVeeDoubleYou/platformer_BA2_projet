@@ -5,9 +5,11 @@ import constants
 from player import Player
 from blob import Blob
 from weapon import Weapon
+from sword import Sword
+from bow import Bow
 from pyglet.graphics import Batch
-
-
+import random
+from arrow import Arrow
 class GameView(arcade.View):
     """Main in-game view."""
 
@@ -16,13 +18,12 @@ class GameView(arcade.View):
     lava_list: arcade.SpriteList[arcade.Sprite]
     coin_list: arcade.SpriteList[arcade.Sprite]
     weapon_list: arcade.SpriteList[Weapon]
+    arrow_list: arcade.SpriteList[Arrow]
     blob_list: arcade.SpriteList[Blob]
     end_list: arcade.SpriteList[arcade.Sprite]
     physics_engine: arcade.PhysicsEnginePlatformer
     __camera: arcade.camera.Camera2D
     fixed_camera: arcade.camera.Camera2D
-
-
 
     __next_map : Optional[str]
 
@@ -144,10 +145,11 @@ class GameView(arcade.View):
         self.lava_list = arcade.SpriteList(use_spatial_hash=True)
         self.blob_list = arcade.SpriteList()
         self.weapon_list = arcade.SpriteList()
+        self.arrow_list = arcade.SpriteList()
         self.end_list = arcade.SpriteList(use_spatial_hash=True)
 
         self.sprite_tuple = (self.player_sprite_list, self.wall_list, self.coin_list, self.lava_list,
-                            self.blob_list, self.weapon_list, self.end_list) 
+                            self.blob_list, self.weapon_list, self.arrow_list, self.end_list) 
 
         self.__create_map()
                 
@@ -190,18 +192,45 @@ class GameView(arcade.View):
             match button:
                 case arcade.MOUSE_BUTTON_LEFT:
                     """calclule la difference x et y entre la souris et le joueur"""
-                    delta_x=mouse_x+self.__camera.bottom_left.x-self.__player.center_x
-                    delta_y=mouse_y+self.__camera.bottom_left.y-self.__player.center_y-5
-                    weapon = Weapon(delta_x, delta_y, self.__player.center_x ,self.__player.center_y)
-                    self.weapon_list.append(weapon)
-                    #weapon = Weapon.__init__(angle)
-                    #self.weapon_list.append(weapon)
+                    delta_x=mouse_x+self.__camera.bottom_left.x-self.player_x
+                    delta_y=mouse_y+self.__camera.bottom_left.y-self.player_y-5
+                    """
+                    match self.player_weapon:
+                        case "sword":
+                            weapon = Sword(delta_x, delta_y, self.player_x ,self.player_y)
+                            self.weapon_list.append(weapon)
+                        case "bow":
+                            weapon = Bow(delta_x, delta_y, self.player_x ,self.player_y)
+                            self.weapon_list.append(weapon)
+                        """
+                    if self.player_weapon == "sword":
+                        weapon = Sword(delta_x, delta_y, self.player_x ,self.player_y)
+                        self.weapon_list.append(weapon)
+                    if self.player_weapon == "bow":
+                        weapon = Bow(delta_x, delta_y, self.player_x ,self.player_y)
+                        self.weapon_list.append(weapon)
+
+
+                case arcade.MOUSE_BUTTON_RIGHT:
+                    """change d'arme equiper"""
+                    Player.change_weapon(self.__player)
+                    
+
+            
+
+                
                                   
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
-                for weapon in self.weapon_list:
-                        weapon.remove_from_sprite_lists()
+                if self.player_weapon == "bow" :
+                        for weapon in self.weapon_list:
+                            if  weapon.charged  :
+                                arrow = Arrow(weapon, self.player_speed_x, self.player_speed_y)
+                                self.arrow_list.append(arrow)
+                                Arrow.move(arrow)
+                self.weapon_list.clear()
+
 
     def on_mouse_motion(self, mouse_x: int, mouse_y: int, _buttons: int, _modifiers: int) -> None:
         """calclule la difference x et y entre la souris et le joueur"""
@@ -216,13 +245,25 @@ class GameView(arcade.View):
 
         for blob in self.blob_list :
             blob.blob_move(self.wall_list)
+
         
         for weapon in self.weapon_list:
-            Weapon.move(weapon, self.__player.center_x ,self.__player.center_y)
-        
+                Weapon.update_position(weapon, self.__player.center_x ,self.__player.center_y)
+                Weapon.time(weapon)
+                match self.player_weapon:
+                    case "bow":
+                        if not weapon.charged:
+                            Bow.can_shoot_arrow(weapon)                        
+
+        for arrow in self.arrow_list :
+            arrow.move()
+
+
+
         self.physics_engine.update()
         self.__update_camera()
         self.__check_collisions()
+        
             
     def __update_camera(self) -> None :
         """Updates camera position when player moves/dies"""
@@ -249,14 +290,28 @@ class GameView(arcade.View):
 
         for coin in arcade.check_for_collision_with_list(self.__player, self.coin_list) :
             coin.remove_from_sprite_lists()
-            Player.coin_score_update(self.__player, 1)
-            arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
+            Player.coin_score_update(self.__player)
+            arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))            
+                                                                            
+        for arrow in self.arrow_list :
+            for list in self.sprite_tuple:
+                for dead_arrow in arcade.check_for_collision_with_list(arrow, list) :
+                    for blob in arcade.check_for_collision_with_list(arrow, self.blob_list):
+                        blob.remove_from_sprite_lists()
+                        arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
+                    arrow.remove_from_sprite_lists()
+                    arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
+           
         for weapon in self.weapon_list:
-           if Weapon.hit_frame(weapon, 5):
-                for blob in arcade.check_for_collision_with_list(weapon, self.blob_list) :
-                    blob.remove_from_sprite_lists()
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
+                match self.player_weapon:
+                    case "sword" :
+                        if Sword.hit_frame(weapon, 5):
+                            for blob in arcade.check_for_collision_with_list(weapon, self.blob_list) :
+                                blob.remove_from_sprite_lists()
+                                arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))  
+                
+
 
         if arcade.check_for_collision_with_list(self.__player, self.lava_list) != [] :
             self.__setup_from_initial()
@@ -286,7 +341,7 @@ class GameView(arcade.View):
             for list in self.sprite_tuple :
                 list.draw()
         string_score ="coin score = " + str(self.__player.coin_score)
-        text = arcade.Text(string_score, self.fixed_camera.bottom_left.x+10, self.fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+        text = arcade.Text(string_score, self.fixed_camera.top_left.x+10, self.fixed_camera.top_left.y-10, arcade.color.BLACK, 12)
         with self.fixed_camera.activate():
                 text.draw()
             #text.draw()
@@ -307,6 +362,10 @@ class GameView(arcade.View):
     @property
     def player_speed_y(self) -> float:
         return self.__player.change_y
+    
+    @property
+    def player_weapon(self) -> str:
+        return self.__player.equiped_weapon
     
     @property
     def camera_x(self) -> float:

@@ -9,15 +9,19 @@ class Player(arcade.Sprite):
     Manages its movements, animations and interactions with the world.
     """
 
+
+
     physics_engine : arcade.PhysicsEnginePlatformer | None
 
     def __init__(self, x: float, y: float) -> None :
         super().__init__(":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png", constants.SCALE)
         self.physics_engine = None
-
         self.center_x = x
         self.center_y = y
         self.coin_score=0
+        self.weapon_type_list = ["sword" , "bow"]   #need to not be empty
+        self.equiped_weapon_id = 0
+        self.equiped_weapon = self.weapon_type_list[self.equiped_weapon_id]
 
     is_going_left = False
     is_going_right = False
@@ -27,8 +31,12 @@ class Player(arcade.Sprite):
     allow_multi_jump = False
     allowed_jumps = 1
 
-    def coin_score_update (self, coin :int) -> None:
-        self.coin_score += coin
+    def coin_score_update (self) -> None:
+        self.coin_score += 1
+
+    def change_weapon(self) -> None:
+        self.equiped_weapon_id = (self.equiped_weapon_id+1)%len(self.weapon_type_list)
+        self.equiped_weapon = self.weapon_type_list[self.equiped_weapon_id]
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """
@@ -77,5 +85,6 @@ class Player(arcade.Sprite):
                     self.change_x = 0
                 else :
                     self.change_x = constants.PLAYER_MOVEMENT_SPEED
+
 
     
