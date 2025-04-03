@@ -1,6 +1,6 @@
 import arcade 
 import constants
-import math_personal
+from math_personal import sin_deg, cos_deg, atan2_deg
 from bow import Bow
 
 
@@ -14,14 +14,14 @@ class Arrow(arcade.Sprite):
         self.angle = bow.angle+bow.texture_angle
         self.center_x = bow.center_x
         self.center_y = bow.center_y
-        self.change_x = player_x_speed+ARROW_SPEED*math_personal.sin_deg(self.angle)
-        self.change_y = player_y_speed+ARROW_SPEED*math_personal.cos_deg(self.angle)
+        self.change_x = player_x_speed+ARROW_SPEED*sin_deg(self.angle)
+        self.change_y = player_y_speed+ARROW_SPEED*cos_deg(self.angle)
         
     def move(self) -> None :
         self.change_y -= ARROW_GRAVITY
         self.center_x += self.change_x
         self.center_y += self.change_y
-        self.angle = math_personal.atan2_deg(self.change_x,self.change_y)-45
+        self.angle = atan2_deg(self.change_x,self.change_y)-45
         
 
     
