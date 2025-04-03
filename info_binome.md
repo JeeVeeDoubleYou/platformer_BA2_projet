@@ -7,3 +7,5 @@ Die is falls for too long
 
 Run sur maps du prof? Oui
 Tester si tous caractères sont valides dans les maps
+
+ATTENTION ASSERT DANS ON MOUSE RELEASE VEUT DIRE PROBLEME DE POLYMORPHISME

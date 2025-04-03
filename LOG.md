@@ -17,6 +17,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Test that makes sure that player doesnt stay on screen when it dies
 * [] Test bat monster
 * [] ANSWERS.MD (2,4 questions, semaine 5)
+* [] Coins counter reset
 
 ### Paul : 
 * [] Test blobs
@@ -27,7 +28,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Test player death
 * [] Test épée
 * [] ANSWERS.MD (4 premieres ?, semaine 4)
-* [] Bow and arrow
 * [] Test bow and arrow
 * [] ANSWERS.MD (1,2,4 questions, semaine 5)
 
@@ -79,16 +79,19 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Tuple pour rentre le match dans create map plus lisible         40
 
 ### Semaine 5
+
 * [x] Coin counter                                                    15
 * [x] Epée                                                           200
 
 ### Semaine 6
 
-* [x] Bat monster                                                    200 
+* [x] Bat monster                                                    200
+* [x] Bow and arrow                                                  400
 
 ### Semaine 7
 
 * [x] Player dies when falls too much                                  5
+* [x] Refactoring weapons                                            230
 
 ### Semaine 8
 

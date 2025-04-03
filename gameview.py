@@ -3,6 +3,7 @@ from typing import Optional
 import arcade
 import constants
 from player import Player
+from player import WeaponType
 from blob import Blob
 from monster import Monster
 from weapon import Weapon
@@ -203,41 +204,32 @@ class GameView(arcade.View):
     def on_mouse_press(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
             match button:
                 case arcade.MOUSE_BUTTON_LEFT:
-                    """calclule la difference x et y entre la souris et le joueur"""
-                    delta_x=mouse_x+self.__camera.bottom_left.x-self.player_x
-                    delta_y=mouse_y+self.__camera.bottom_left.y-self.player_y-5
                    
-                    match self.player_weapon:
-                        case "sword":
-                            self.__sword_list.append(Sword(delta_x, delta_y, self.player_x ,self.player_y))
-                        case "bow":
-                            self.__bow_list.append(Bow(delta_x, delta_y, self.player_x ,self.player_y))
-
+                    match self.__player.selected_weapon_type:
+                        case WeaponType.SWORD:
+                            self.__weapon_list.append(Sword(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
+                        case WeaponType.BOW:
+                            self.__weapon_list.append(Bow(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
 
                 case arcade.MOUSE_BUTTON_RIGHT:
-                    """change d'arme equiper"""
-                    Player.change_weapon(self.__player)
-                        
+                    self.__weapon_list.clear()
+                    self.__player.change_weapon()
                                   
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
-                for bow in self.__bow_list:
-                    if bow.charged  :
-                        arrow = Arrow(bow, self.player_speed_x, self.player_speed_y)
-                        self.__arrow_list.append(arrow)
-                        Arrow.move(arrow)
-                self.__sword_list.clear()
-                self.__bow_list.clear()
+                if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.BOW :
+                    current_weapon = self.__weapon_list[0]
+                    if current_weapon.is_active :
+                        assert(type(current_weapon) == Bow)
+                        self.__arrow_list.append(Arrow(current_weapon))
+                self.__weapon_list.clear()
 
-    def on_mouse_motion(self, mouse_x: int, mouse_y: int, _buttons: int, _modifiers: int) -> None:
-        """calclule la difference x et y entre la souris et le joueur"""
-        delta_x=mouse_x+self.__camera.bottom_left.x-self.__player.center_x
-        delta_y=mouse_y+self.__camera.bottom_left.y-self.__player.center_y-5
-        for sword in self.__sword_list:
-            Weapon.set_angle(sword, delta_x, delta_y)
-        for bow in self.__bow_list:
-            Weapon.set_angle(bow, delta_x, delta_y)
+            
+
+    def on_mouse_motion(self, mouse_x: int, mouse_y: int, buttons: int, modifiers: int) -> None:
+        for weapon in self.__weapon_list:
+            weapon.update_angle(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
@@ -248,16 +240,9 @@ class GameView(arcade.View):
 
         for monster in self.__monster_list :
             monster.move(self.__wall_list)
-        
-        for bow in self.__bow_list:
-                Weapon.update_position(bow, self.__player.center_x ,self.__player.center_y)
-                Weapon.time_counting(bow)
-                if not bow.charged:
-                    Bow.can_shoot_arrow(bow)      
 
-        for sword in self.__sword_list:
-            Weapon.update_position(sword, self.__player.center_x ,self.__player.center_y)
-            Weapon.time_counting(sword)
+        for weapon in self.__weapon_list :
+            weapon.update_position(arcade.Vec2(self.player_x, self.player_y))
 
         for arrow in self.__arrow_list :
             arrow.move()
@@ -309,9 +294,10 @@ class GameView(arcade.View):
                 arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
 
            
-        for sword in self.__sword_list:
-            if Sword.hit_frame(sword):
-                for monster in arcade.check_for_collision_with_list(sword, self.__monster_list) :
+        if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.SWORD :
+            current_weapon = self.__weapon_list[0]
+            if current_weapon.is_active :
+                for monster in arcade.check_for_collision_with_list(current_weapon, self.__monster_list) :
                     monster.die()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
 
@@ -355,7 +341,6 @@ class GameView(arcade.View):
                 text.draw()
             #text.draw()
             
-
     @property
     def player_x(self) -> float:
         return self.__player.center_x
@@ -373,10 +358,6 @@ class GameView(arcade.View):
         return self.__player.change_y
     
     @property
-    def player_weapon(self) -> str:
-        return self.__player.equiped_weapon
-    
-    @property
     def camera_x(self) -> float:
         return self.__camera.center_left.x
     
@@ -391,4 +372,10 @@ class GameView(arcade.View):
     @property
     def coin_count(self) -> int:
         return len(self.__coin_list)
+    
+    @property
+    def has_weapon_in_hand(self) -> bool :
+        if len(self.__weapon_list) == 0 :
+            return False
+        return True
     
