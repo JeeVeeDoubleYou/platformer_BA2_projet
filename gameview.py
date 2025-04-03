@@ -206,21 +206,12 @@ class GameView(arcade.View):
                     """calclule la difference x et y entre la souris et le joueur"""
                     delta_x=mouse_x+self.__camera.bottom_left.x-self.player_x
                     delta_y=mouse_y+self.__camera.bottom_left.y-self.player_y-5
-                    """
+                   
                     match self.player_weapon:
                         case "sword":
-                            weapon = Sword(delta_x, delta_y, self.player_x ,self.player_y)
-                            self.weapon_list.append(weapon)
+                            self.__sword_list.append(Sword(delta_x, delta_y, self.player_x ,self.player_y))
                         case "bow":
-                            weapon = Bow(delta_x, delta_y, self.player_x ,self.player_y)
-                            self.weapon_list.append(weapon)
-                        """
-                    if self.player_weapon == "sword":
-                        sword = Sword(delta_x, delta_y, self.player_x ,self.player_y)
-                        self.__sword_list.append(sword)
-                    if self.player_weapon == "bow":
-                        bow = Bow(delta_x, delta_y, self.player_x ,self.player_y)
-                        self.__bow_list.append(bow)
+                            self.__bow_list.append(Bow(delta_x, delta_y, self.player_x ,self.player_y))
 
 
                 case arcade.MOUSE_BUTTON_RIGHT:
@@ -346,6 +337,10 @@ class GameView(arcade.View):
         self.__current_map_name = self.__initial_map_name
         self.setup()
 
+    def user_interface(self) -> None :
+        string_score ="coin score = " + str(self.__player.coin_score)
+        text = arcade.Text(string_score, self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+
 
     def on_draw(self) -> None:
         """Render the screen."""
@@ -356,7 +351,7 @@ class GameView(arcade.View):
                 list.draw()
         string_score ="coin score = " + str(self.__player.coin_score)
         text = arcade.Text(string_score, self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
-        with self.__fixed_camera.activate():
+        with self.__fixed_camera.activate(): 
                 text.draw()
             #text.draw()
             
