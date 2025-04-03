@@ -76,7 +76,8 @@ class Bat(Monster):
         x_speed = math.cos(math.radians(angle__deg)) * BAT_SPEED
         y_speed = math.sin(math.radians(angle__deg)) * BAT_SPEED
         if x_speed*self.scale_x > 0.5  :
-            self.scale_x *= -1
+            """flip the bat if it go fast enought in the direction it is not facing"""
+            self.scale_x *= -1      #flip the sprite horizontaly
 
         return (x_speed, y_speed)
 
