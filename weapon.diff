@@ -33,38 +33,7 @@ index c6306c3..abb641b 100644
  ### Question 5 (Gaëlle) : Comment modélisez-vous la “next-map” ? Où la stockez-vous, et comment la traitez-vous quand la joueuse atteint le point E ?
  
  La next map est le chemin du prochain niveau, qui est stocké comme string dans un attribut de la class GameView. Cet attribut est mis à jour à chauque fois qu'une nouvelle map est crée par la méthode create_map(). Quand la joueuse atteint le point E, la méthode load_next_map() est appelée. Cette méthode s'assure que le nom de la prochaine map est bien stockée, puis remplace la map actuelle par la prochaine map dans l'attribut current_map_name, avant d'appeler la méthode setup qui crée le prochain niveau. 
-diff --git a/LOG.md b/LOG.md
-index cacfc12..0cd91e4 100644
---- a/LOG.md
-+++ b/LOG.md
-@@ -23,10 +23,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
- * [] Test lave
- 
- * [] ANSWERS.MD (deux dernières questions, semaine 3)
--* [] Coin counter
- * [] Test coin counter
- * [] Test player death
--* [] Epée
- * [] Test épée
- * [] ANSWERS.MD (4 premieres ?, semaine 4)
- * [] Bow and arrow
-@@ -70,7 +68,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
- * [x] Encapsulation, modularisation et réorganisation du code        180    
- * [x] ANSWERS.MD (deux premières questions)                           20 
- * [x] ANSWERS.MD (deux dernières questions)                           10
--* [x] Epée                                                           200
-+* 
- 
- ### Semaine 4
- 
-@@ -81,6 +79,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
- * [x] Tuple pour rentre le match dans create map plus lisible         40
- 
- ### Semaine 5
-+* [x] Coin counter                                                    15
-+* [x] Epée                                                           200
- 
- ### Semaine 6
+
  
 diff --git a/arrow.py b/arrow.py
 new file mode 100644
@@ -88,14 +57,14 @@ index 0000000..107e4df
 +        self.angle = bow.angle+bow.texture_angle
 +        self.center_x = bow.center_x
 +        self.center_y = bow.center_y
-+        self.change_x = player_x_speed+ARROW_SPEED*math_personaliser.sin_deg(self.angle)
-+        self.change_y = player_y_speed+ARROW_SPEED*math_personaliser.cos_deg(self.angle)
++        self.change_x = player_x_speed+ARROW_SPEED*sin_deg(self.angle)
++        self.change_y = player_y_speed+ARROW_SPEED*cos_deg(self.angle)
 +        
 +    def move(self) -> None :
 +        self.change_y -= ARROW_GRAVITY
 +        self.center_x += self.change_x
 +        self.center_y += self.change_y
-+        self.angle = math_personaliser.atan2_deg_aprox(self.change_x,self.change_y)-45
++        self.angle = atan2_deg_aprox(self.change_x,self.change_y)-45
 +        
 +
 +    
@@ -530,7 +499,7 @@ index eabb589..02a9ec0 100644
 -        self.angle = self.angle_rad*(180/math.pi)-45
 +        #self.angle_rad = math.atan2(delta_x, delta_y)
 +        #self.angle = self.angle_rad*(180/math.pi)-45 
-+        self.angle = math_personaliser.atan2_deg(delta_x, delta_y)-self.texture_angle
++        self.angle =atan2_deg(delta_x, delta_y)-self.texture_angle
 +
  
      def update_position(self, player_x: float, player_y: float) -> None :
@@ -540,8 +509,8 @@ index eabb589..02a9ec0 100644
          
 -        self.center_x = player_x+DISTANCE_EPEE_JOUEUR*math.sin(self.angle_rad)
 -        self.center_y = player_y+DISTANCE_EPEE_JOUEUR*math.cos(self.angle_rad)-DELTA_H
-+        self.center_x = player_x+DISTANCE_ARME_JOUEUR*math_personaliser.sin_deg(self.angle+self.texture_angle)
-+        self.center_y = player_y+DISTANCE_ARME_JOUEUR*math_personaliser.cos_deg(self.angle+self.texture_angle)-DELTA_H
++        self.center_x = player_x+DISTANCE_ARME_JOUEUR*sin_deg(self.angle+self.texture_angle)
++        self.center_y = player_y+DISTANCE_ARME_JOUEUR*cos_deg(self.angle+self.texture_angle)-DELTA_H
  
  
      
