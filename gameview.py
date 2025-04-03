@@ -207,11 +207,9 @@ class GameView(arcade.View):
                    
                     match self.player_weapon:
                         case "sword":
-                            weapon = Sword(delta_x, delta_y, self.player_x ,self.player_y)
-                            self.__sword_list.append(weapon)
+                            self.__sword_list.append(Sword(delta_x, delta_y, self.player_x ,self.player_y))
                         case "bow":
-                            weapon = Bow(delta_x, delta_y, self.player_x ,self.player_y)
-                            self.__arrow_list.append(weapon)
+                            self.__bow_list.append(Bow(delta_x, delta_y, self.player_x ,self.player_y))
 
 
                 case arcade.MOUSE_BUTTON_RIGHT:
