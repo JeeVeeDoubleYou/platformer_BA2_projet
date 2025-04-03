@@ -1,7 +1,7 @@
 import arcade
 import constants
 import math
-import math_personaliser
+import math_personal
 
 
 
@@ -19,15 +19,15 @@ class Weapon(arcade.Sprite):
     def set_angle(self, delta_x: float, delta_y: float) -> None :
         #self.angle_rad = math.atan2(delta_x, delta_y)
         #self.angle = self.angle_rad*(180/math.pi)-45 
-        self.angle = math_personaliser.atan2_deg(delta_x, delta_y)-self.texture_angle
+        self.angle = math_personal.atan2_deg(delta_x, delta_y)-self.texture_angle
 
 
     def update_position(self, player_x: float, player_y: float) -> None :
         DISTANCE_ARME_JOUEUR = 25 
         DELTA_H = 5
         
-        self.center_x = player_x+DISTANCE_ARME_JOUEUR*math_personaliser.sin_deg(self.angle+self.texture_angle)
-        self.center_y = player_y+DISTANCE_ARME_JOUEUR*math_personaliser.cos_deg(self.angle+self.texture_angle)-DELTA_H
+        self.center_x = player_x+DISTANCE_ARME_JOUEUR*math_personal.sin_deg(self.angle+self.texture_angle)
+        self.center_y = player_y+DISTANCE_ARME_JOUEUR*math_personal.cos_deg(self.angle+self.texture_angle)-DELTA_H
 
 
     
