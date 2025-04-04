@@ -26,8 +26,7 @@ class Player(arcade.Sprite):
     def __init__(self, x: float, y: float) -> None :
         super().__init__(":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png", constants.SCALE)
         self.physics_engine = None
-        self.center_x = x
-        self.center_y = y
+        self.set_position(x, y)
         self.coin_score = 0
 
         self.selected_weapon_type : WeaponType = WeaponType.SWORD
@@ -85,4 +84,8 @@ class Player(arcade.Sprite):
                     self.change_x = 0
                 else :
                     self.change_x = constants.PLAYER_MOVEMENT_SPEED
+
+    def set_position(self, new_x : float, new_y : float) -> None :
+        self.center_x = new_x
+        self.center_y = new_y
 

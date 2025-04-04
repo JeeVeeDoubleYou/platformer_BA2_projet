@@ -107,7 +107,10 @@ class GameView(arcade.View):
                             if start_is_placed :
                                 raise Exception("Player can't be placed twice")
                             start_is_placed = True
-                            self.__player = Player(x_coordinate, y_coordinate)
+                            if self.__current_map_name == self.__initial_map_name :
+                                self.__player = Player(x_coordinate, y_coordinate)
+                            else :
+                                self.__player.set_position(x_coordinate, y_coordinate)
                         case "o" :
                             blob = Blob(x_coordinate, y_coordinate)
                             self.__monster_list.append(blob)
