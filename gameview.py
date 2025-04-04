@@ -138,6 +138,8 @@ class GameView(arcade.View):
                                     name_and_list = (":resources:images/items/coinGold.png", self.__coin_list)
                                 case "£" :
                                     name_and_list = (":resources:/images/tiles/lava.png", self.__lava_list)
+                                case _ :
+                                    raise Exception("The map contains an unknown character")
                             name_and_list[1].append(arcade.Sprite(name_and_list[0], center_x= x_coordinate, 
                                                     center_y= y_coordinate, scale=constants.SCALE))             
         if not start_is_placed :
