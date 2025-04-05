@@ -288,10 +288,9 @@ class GameView(arcade.View):
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
                 #arrow.remove_from_sprite_lists()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
             for wall_hit in arcade.check_for_collision_with_list(arrow, self.__wall_list) :
                 arrow.remove_from_sprite_lists()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.ogg"))
 
            
         if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.SWORD :
@@ -378,4 +377,24 @@ class GameView(arcade.View):
         if len(self.__weapon_list) == 0 :
             return False
         return True
+    
+    #needed for the test
+
+    @property
+    def get_wall_list(self) -> arcade.SpriteList[arcade.Sprite]:
+        return self.__wall_list
+    
+    @property
+    def get_monster_list(self) -> arcade.SpriteList[Monster]:
+        return self.__monster_list
+    
+    @property
+    def get_weapon_list(self) -> arcade.SpriteList[Weapon]:
+        return self.__weapon_list
+    
+    @property
+    def get_arrow_list(self) -> int:
+        return self.__arrow_list
+    
+
     

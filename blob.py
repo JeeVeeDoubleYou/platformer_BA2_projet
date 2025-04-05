@@ -35,3 +35,4 @@ class Blob(Monster):
         if arcade.check_for_collision_with_list(self, wall_list) != [] or is_on_edge:
             self.speed = -self.speed
             self.scale_x *= -1      #flip the slime horizontaly
+            self.strafe(self.speed)
