@@ -107,7 +107,10 @@ class GameView(arcade.View):
                             if start_is_placed :
                                 raise Exception("Player can't be placed twice")
                             start_is_placed = True
-                            self.__player = Player(x_coordinate, y_coordinate)
+                            if self.__current_map_name == self.__initial_map_name :
+                                self.__player = Player(x_coordinate, y_coordinate)
+                            else :
+                                self.__player.set_position(x_coordinate, y_coordinate)
                         case "o" :
                             blob = Blob(x_coordinate, y_coordinate)
                             self.__monster_list.append(blob)
@@ -138,6 +141,8 @@ class GameView(arcade.View):
                                     name_and_list = (":resources:images/items/coinGold.png", self.__coin_list)
                                 case "£" :
                                     name_and_list = (":resources:/images/tiles/lava.png", self.__lava_list)
+                                case _ :
+                                    raise Exception("The map contains an unknown character")
                             name_and_list[1].append(arcade.Sprite(name_and_list[0], center_x= x_coordinate, 
                                                     center_y= y_coordinate, scale=constants.SCALE))             
         if not start_is_placed :

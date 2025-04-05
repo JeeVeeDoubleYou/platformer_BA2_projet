@@ -37,6 +37,9 @@ def test_bad_maps(window: arcade.Window) -> None:
     with pytest.raises(Exception, match="You can't set the width twice") :
         view = GameView("maps/bad_maps/width_set_twice.txt")
 
+    with pytest.raises(Exception, match="The map contains an unknown character") :
+        view = GameView("maps/bad_maps/bad_character.txt")
+
 
     # Test bad path
     with pytest.raises(Exception, match="The file path for initial level is incorrect") :
