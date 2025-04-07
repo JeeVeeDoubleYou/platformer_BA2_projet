@@ -215,6 +215,8 @@ class GameView(arcade.View):
                             self.__weapon_list.append(Sword(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
                         case WeaponType.BOW:
                             self.__weapon_list.append(Bow(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
+                            current_weapon = self.__weapon_list[0]
+                            self.__arrow_list.append(Arrow(current_weapon))
 
                 case arcade.MOUSE_BUTTON_RIGHT:
                     self.__weapon_list.clear()
@@ -223,11 +225,11 @@ class GameView(arcade.View):
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
-                if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.BOW :
-                    current_weapon = self.__weapon_list[0]
-                    if current_weapon.is_active :
-                        assert(type(current_weapon) == Bow)
-                        self.__arrow_list.append(Arrow(current_weapon))
+                #if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.BOW :
+                #    current_weapon = self.__weapon_list[0]
+                #    if current_weapon.is_active :
+                #        assert(type(current_weapon) == Bow)
+                #        self.__arrow_list.append(Arrow(current_weapon))
                 self.__weapon_list.clear()
 
             

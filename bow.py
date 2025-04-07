@@ -15,7 +15,7 @@ class Bow(Weapon):
         necessary_time_before_shooting = 15
         if necessary_time_before_shooting == self.frames_from_spawn:
            self.texture = arcade.load_texture("assets/kenney-voxel-items-png/bowArrow.png")
-           self.angle += 90
+           self.angle += 80
            self.set_texture_angle(55)
            self.is_active = True
            
