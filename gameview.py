@@ -216,6 +216,7 @@ class GameView(arcade.View):
                         case WeaponType.BOW:
                             self.__weapon_list.append(Bow(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
                             current_weapon = self.__weapon_list[0]
+                            assert(type(current_weapon) == Bow)
                             self.__arrow_list.append(Arrow(current_weapon))
 
                 case arcade.MOUSE_BUTTON_RIGHT:
