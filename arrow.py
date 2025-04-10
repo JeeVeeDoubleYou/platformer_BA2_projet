@@ -4,8 +4,8 @@ from math_personal import sin_deg, cos_deg, atan2_deg
 from bow import Bow
 
 
-ARROW_SPEED = 20
-ARROW_GRAVITY = 1
+ARROW_SPEED = 25
+ARROW_GRAVITY = 0.8
 
 class Arrow(arcade.Sprite):
     def __init__(self, bow: Bow) -> None :

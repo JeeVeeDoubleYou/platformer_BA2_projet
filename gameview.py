@@ -32,6 +32,7 @@ class GameView(arcade.View):
 
 
 
+
     __next_map : Optional[str]
 
     def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
@@ -168,6 +169,8 @@ class GameView(arcade.View):
         self.sprite_tuple = (self.player_sprite_list, self.__wall_list, self.__coin_list, self.__lava_list,
                             self.__monster_list, self.__weapon_list, self.__sword_list, self.__bow_list, self.__arrow_list, self.__end_list) 
 
+       
+
         self.__create_map()
                 
         self.player_sprite_list.append(self.__player)
@@ -175,6 +178,11 @@ class GameView(arcade.View):
         self.__fixed_camera = arcade.camera.Camera2D()
         self.__camera.position = self.__player.position #type: ignore
         self. __fixed_camera.position = arcade.Vec2(0, 0)
+
+        self.icon = arcade.Sprite()
+        self.text_score = arcade.Text("!", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+        self.ui_element = (self.icon,self.text_score)
+        self.update_user_interface()
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
@@ -196,6 +204,7 @@ class GameView(arcade.View):
                 self.__setup_from_initial()
             case arcade.key.ESCAPE:
                 # reset level
+                self.__player.reset_coin_counter()
                 self.setup()
 
     
@@ -251,6 +260,8 @@ class GameView(arcade.View):
         if self.player_y < -500 :
             self.__setup_from_initial()
 
+        self.physics_engine.update()
+
         for monster in self.__monster_list :
             monster.move(self.__wall_list)
 
@@ -260,7 +271,7 @@ class GameView(arcade.View):
         for arrow in self.__arrow_list :
             arrow.move()
 
-        self.physics_engine.update()
+        
         self.__update_camera()
         self.__check_collisions()
         
@@ -291,20 +302,20 @@ class GameView(arcade.View):
 
         for coin in arcade.check_for_collision_with_list(self.__player, self.__coin_list) :
             coin.remove_from_sprite_lists()
-            Player.coin_score_update(self.__player)
+            self.__player.coin_score_update()
+            self.update_user_interface()
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))            
                                                                             
         for arrow in self.__arrow_list :
             for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                 for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
-                    Monster.die(monster)
+                    monster.die()
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
                 #arrow.remove_from_sprite_lists()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
             for wall_hit in arcade.check_for_collision_with_list(arrow, self.__wall_list) :
                 arrow.remove_from_sprite_lists()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.ogg"))
 
            
         if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.SWORD :
@@ -338,10 +349,10 @@ class GameView(arcade.View):
         self.__current_map_name = self.__initial_map_name
         self.setup()
 
-    def user_interface(self) -> None :
-        string_score ="coin score = " + str(self.__player.coin_score)
-        text = arcade.Text(string_score, self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
-
+    def update_user_interface(self) -> None :
+        """"geres les compteur et icones sur l'ecran"""
+        string_score ="Coin score = " + str(self.__player.coin_score)
+        self.text_score.text = string_score
 
     def on_draw(self) -> None:
         """Render the screen."""
@@ -350,11 +361,9 @@ class GameView(arcade.View):
         with self.__camera.activate():
             for list in self.sprite_tuple :
                 list.draw()
-        string_score ="coin score = " + str(self.__player.coin_score)
-        text = arcade.Text(string_score, self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+
         with self.__fixed_camera.activate(): 
-                text.draw()
-            #text.draw()
+                self.text_score.draw()
             
     @property
     def player_x(self) -> float:
@@ -393,4 +402,24 @@ class GameView(arcade.View):
         if len(self.__weapon_list) == 0 :
             return False
         return True
+    
+    #needed for the tests
+
+    @property
+    def get_wall_list(self) -> arcade.SpriteList[arcade.Sprite]:
+        return self.__wall_list
+    
+    @property
+    def get_monster_list(self) -> arcade.SpriteList[Monster]:
+        return self.__monster_list
+    
+    @property
+    def get_weapon_list(self) -> arcade.SpriteList[Weapon]:
+        return self.__weapon_list
+    
+    @property
+    def get_arrow_list(self) -> arcade.SpriteList[Arrow]:
+        return self.__arrow_list
+    
+
     

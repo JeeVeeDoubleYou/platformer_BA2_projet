@@ -35,6 +35,9 @@ class Player(arcade.Sprite):
         """Updates coin score by one."""
         self.coin_score += 1
 
+    def reset_coin_counter (self) -> None:
+        self.coin_score = 0
+
     def change_weapon(self) -> None:
         """
         Switches the available weapon in hand. Calls to this function should always be preceded by clearing the
@@ -62,7 +65,7 @@ class Player(arcade.Sprite):
             
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
-                if self.physics_engine is not None : 
+                if self.physics_engine is not None :
                     if self.physics_engine.can_jump(5) :
                         self.change_y = constants.PLAYER_JUMP_SPEED
                         arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
