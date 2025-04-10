@@ -15,7 +15,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test caméra
 * [] Test that makes sure that player doesnt stay on screen when it dies
-* [] Test bat monster
 * [] ANSWERS.MD (2,4 questions, semaine 5)
 * [] Coins counter reset
 * [] Print errors on map standard si mauvaise map.
@@ -101,6 +100,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Semaine 8
 
 * [x] Test épée                                                       10
+* [x] Test bat monster                                                15
 
 ### Semaine 9
 

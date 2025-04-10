@@ -96,7 +96,7 @@ class Disk :
     __center_y : Final[float]
     __radius : Final[float]
 
-    def __init__(self, center_x : float, center_y : float, radius :float) -> None:
+    def __init__(self, center_x : float, center_y : float, radius : float) -> None:
         assert radius > 0
         self.__center_x = center_x
         self.__center_y = center_y
