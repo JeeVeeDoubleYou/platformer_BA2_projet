@@ -9,7 +9,6 @@ from monster import Monster
 from weapon import Weapon
 from sword import Sword
 from bow import Bow
-from pyglet.graphics import Batch
 from bat import Bat
 from arrow import Arrow
 
@@ -46,7 +45,8 @@ class GameView(arcade.View):
         self.__next_map = None
 
         # Choose a nice comfy background color
-        self.background_color = arcade.csscolor.CORNFLOWER_BLUE
+        self.background_color = arcade.types.Color(223, 153, 153)
+        #arcade.color.LIGHT_CORAL
     
         # Setup our game
         self.setup()
@@ -54,7 +54,7 @@ class GameView(arcade.View):
         
 
     def __create_map(self) -> None : 
-        """Creates map from file"""
+        """Creates map from file, raises exceptions in case of errors in map."""
 
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             map_width = None
@@ -81,7 +81,6 @@ class GameView(arcade.View):
                         map_height = int(line.split()[-1])
                 except ValueError :
                     raise Exception("Configuration lines on file aren't formated correctly")
-                # What to do with other parameters?
             if (map_width == None or map_height == None) :
                 raise Exception("Width and height should be defined in configuration of file")
             if (map_width <= 0 or map_height <= 0) :
@@ -126,7 +125,7 @@ class GameView(arcade.View):
                                 case "E" :
                                     if not has_next_map :
                                         raise Exception("There is no next map, but there is an exit") 
-                                        # Question : accepter end of map même sans prochain niveau?
+                                        # ATTENTION : Question : accepter end of map même sans prochain niveau?
                                     if end_is_placed :
                                         raise Exception("There can't be two ending points to a level")
                                     end_is_placed = True
@@ -207,38 +206,47 @@ class GameView(arcade.View):
         
 
     def on_mouse_press(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
-            match button:
-                case arcade.MOUSE_BUTTON_LEFT:
-                   
-                    match self.__player.selected_weapon_type:
-                        case WeaponType.SWORD:
-                            self.__weapon_list.append(Sword(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
-                        case WeaponType.BOW:
-                            self.__weapon_list.append(Bow(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
-
-                case arcade.MOUSE_BUTTON_RIGHT:
-                    self.__weapon_list.clear()
-                    self.__player.change_weapon()
-                                  
-    def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
+        """Called when the user presses a mouse button."""
+        
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
-                if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.BOW :
+                
+                match self.__player.selected_weapon_type:
+                    case WeaponType.SWORD:
+                        self.__weapon_list.append(Sword(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
+                    case WeaponType.BOW:
+                        self.__weapon_list.append(Bow(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
+
+            case arcade.MOUSE_BUTTON_RIGHT:
+                self.__weapon_list.clear()
+                self.__player.change_weapon()
+                                  
+    def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
+        """Called when the user a mouse button."""
+
+        # ATTENTION : Problème de polymorphisme, cette méthode ne devrait pas devoir choisir si c'est Bow ou pas. 
+        # Relire tuto polymorphisme pour voir comment amméliorer.
+        match button:
+            case arcade.MOUSE_BUTTON_LEFT:
+                if self.has_weapon_in_hand :
                     current_weapon = self.__weapon_list[0]
-                    if current_weapon.is_active :
-                        assert(type(current_weapon) == Bow)
+                    if isinstance(current_weapon, Bow) and current_weapon.is_active :
                         self.__arrow_list.append(Arrow(current_weapon))
                 self.__weapon_list.clear()
 
             
 
     def on_mouse_motion(self, mouse_x: int, mouse_y: int, buttons: int, modifiers: int) -> None:
+        """Called when the mouse moves."""
+
+        # ATTENTION : Problem if player moves but not mouse for weapons.
+
         for weapon in self.__weapon_list:
             weapon.update_angle(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
-        This is where in-world time "advances" or "ticks". """
+        This is where in-world time "advances" or "ticks"."""
 
         if self.player_y < -500 :
             self.__setup_from_initial()
@@ -271,7 +279,7 @@ class GameView(arcade.View):
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
 
-        # not convinced by recentering of platform, check back later when player must climb platforms
+        # ATTENTION : not convinced by recentering of platform, check back later when player must climb platforms
 
     
     def __check_collisions(self) -> None :
@@ -306,9 +314,6 @@ class GameView(arcade.View):
                     monster.die()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
 
-                
-
-
         if arcade.check_for_collision_with_list(self.__player, self.__lava_list) != [] :
             self.__setup_from_initial()
         if arcade.check_for_collision_with_list(self.__player, self.__monster_list) != [] :
@@ -316,7 +321,10 @@ class GameView(arcade.View):
         if arcade.check_for_collision_with_list(self.__player, self.__end_list) != [] :
             self.__load_next_map()
 
+
     def __load_next_map(self) -> None :
+        """Load next_map of file. Should only be called if the file has a valid next map."""
+
         assert self.__next_map is not None
         assert os.path.exists(self.__next_map)
         self.__current_map_name = self.__next_map
@@ -324,6 +332,8 @@ class GameView(arcade.View):
         self.setup()
 
     def __setup_from_initial(self) -> None :
+        """Setup the game from the initial map."""
+
         assert os.path.exists(self.__initial_map_name)
         self.__current_map_name = self.__initial_map_name
         self.setup()

@@ -18,6 +18,8 @@ class Arrow(arcade.Sprite):
         self.change_y = ARROW_SPEED*cos_deg(self.angle)
         
     def move(self) -> None :
+        """Defines the movement of an arrow."""
+        
         self.change_y -= ARROW_GRAVITY
         self.center_x += self.change_x
         self.center_y += self.change_y

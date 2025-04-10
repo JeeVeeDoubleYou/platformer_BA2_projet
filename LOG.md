@@ -18,6 +18,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Test bat monster
 * [] ANSWERS.MD (2,4 questions, semaine 5)
 * [] Coins counter reset
+* [] Print errors on map standard si mauvaise map.
+
 
 ### Paul : 
 * [] Test blobs
@@ -30,6 +32,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] ANSWERS.MD (4 premieres ?, semaine 4)
 * [] Test bow and arrow
 * [] ANSWERS.MD (1,2,4 questions, semaine 5)
+
+* [] Écran de fin de jeu pour enlever problème si end mais pas next_map
 
 
 ---

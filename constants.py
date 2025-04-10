@@ -1,4 +1,4 @@
-"""All constants are defined here. File to be imported as needed."""
+"""All global constants are defined here. File to be imported as needed."""
 
 """Lateral speed of the player, in pixels per frame"""
 PLAYER_MOVEMENT_SPEED = 5

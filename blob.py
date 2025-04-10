@@ -3,7 +3,7 @@ import constants
 from monster import Monster
 
 """Speed of the blue blobs"""
-BLUE_BLOB_SPEED = -2            # is negative because to make the slime move in the direction it is facing
+BLUE_BLOB_SPEED = -2       # is negative to make the slime move in the direction it is facing (technicality)
 
 class Blob(Monster):
     """Represents a blob, how it moves and checks for collistions"""
@@ -34,4 +34,4 @@ class Blob(Monster):
         # Checks if blob is on the edge of the platform or if it is touching a wall other than the floor underneath it
         if arcade.check_for_collision_with_list(self, wall_list) != [] or is_on_edge:
             self.speed = -self.speed
-            self.scale_x *= -1      #flip the slime horizontaly
+            self.scale_x *= -1      # Flip the slime horizontaly

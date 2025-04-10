@@ -5,7 +5,7 @@ import arcade
 class Monster(arcade.Sprite):
     """A monster with a way to move and to die. 
     Monster is an abstract class, so it can't be instantiated.
-    The class extends arcade.Sprite
+    The class extends arcade.Sprite.
     """
 
     def __init__(self, texture : str) -> None :
@@ -17,5 +17,5 @@ class Monster(arcade.Sprite):
         ...
 
     def die(self) -> None:
-        """Kills the monster meaning removes it from it game"""
+        """Kills the monster, removing it from it game"""
         self.remove_from_sprite_lists()

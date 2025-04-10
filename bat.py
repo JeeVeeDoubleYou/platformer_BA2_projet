@@ -82,10 +82,16 @@ class Bat(Monster):
         return (x_speed, y_speed)
 
     
-    def __can_move(self, speed : tuple[float, float]) -> bool :    
+    def __can_move(self, speed : tuple[float, float]) -> bool : 
+        """Returns True if moving the bat once with (speed) keeps it inside it's action area,
+        False otherwise. """
+
         return self.action_area.contains_point((self.center_x + speed[0], self.center_y + speed[1]))
 
 class Disk :
+
+    """Immable class defining a 2D disk around a certain center point with a given radius."""
+
     __center_x : Final[float]
     __center_y : Final[float]
     __radius : Final[float]
@@ -97,5 +103,6 @@ class Disk :
         self.__radius = radius
     
     def contains_point(self, position : tuple[float, float]) -> bool :
+        """Returns True if the disk contains the point (position), False otherwise."""
         x, y = position
         return math.sqrt((self.__center_x - x)**2 + (self.__center_y - y)**2) <= self.__radius

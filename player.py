@@ -24,7 +24,7 @@ class Player(arcade.Sprite):
     physics_engine : arcade.PhysicsEnginePlatformer | None
 
     def __init__(self, x: float, y: float) -> None :
-        super().__init__(":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png", constants.SCALE)
+        super().__init__(":resources:/images/animated_characters/female_adventurer/femaleAdventurer_idle.png", constants.SCALE)
         self.physics_engine = None
         self.set_position(x, y)
         self.coin_score = 0
@@ -32,9 +32,15 @@ class Player(arcade.Sprite):
         self.selected_weapon_type : WeaponType = WeaponType.SWORD
 
     def coin_score_update (self) -> None:
+        """Updates coin score by one."""
         self.coin_score += 1
 
     def change_weapon(self) -> None:
+        """
+        Switches the available weapon in hand. Calls to this function should always be preceded by clearing the
+        weapon list in order to fully correlate the selected_weapon_type, which is the type of weapon a player could have in hand,
+        with the type of weapon that the player really has in hand, if it has one.
+        """
         self.selected_weapon_type = WeaponType((self.selected_weapon_type + 1) % len(WeaponType))
 
     def on_key_press(self, key: int, modifiers: int) -> None:
@@ -86,6 +92,7 @@ class Player(arcade.Sprite):
                     self.change_x = constants.PLAYER_MOVEMENT_SPEED
 
     def set_position(self, new_x : float, new_y : float) -> None :
+        """Sets new position for player without creating new instance of Player."""
         self.center_x = new_x
         self.center_y = new_y
 

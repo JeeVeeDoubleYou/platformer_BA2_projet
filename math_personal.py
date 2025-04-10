@@ -1,5 +1,7 @@
 import math
 
+"""Defines useful but non-standard simple math functions."""
+
 def atan2_deg(x: float,y: float) -> float:
     return math.atan2(x,y)*180/math.pi
 
