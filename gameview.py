@@ -12,6 +12,9 @@ from bow import Bow
 from bat import Bat
 from arrow import Arrow
 
+CAMERA_X_MARGIN = 400
+CAMERA_Y_MARGIN = 200
+
 
 class GameView(arcade.View):
     """Main in-game view."""
@@ -280,12 +283,12 @@ class GameView(arcade.View):
         """Updates camera position when player moves/dies"""
 
         camera_x, camera_y = self.__camera.position
-        if (self.__camera.center_right.x < self.__player.center_x + 400):
+        if (self.__camera.center_right.x < self.__player.center_x + CAMERA_X_MARGIN):
             camera_x += constants.PLAYER_MOVEMENT_SPEED
-        elif (self.__camera.center_left.x > self.__player.center_x - 400):
+        elif (self.__camera.center_left.x > self.__player.center_x - CAMERA_X_MARGIN):
             camera_x -= constants.PLAYER_MOVEMENT_SPEED
 
-        if ((self.__camera.top_center.y < self.__player.center_y + 150) or (self.__camera.bottom_center.y + 250 > self.__player.center_y)):
+        if ((self.__camera.top_center.y < self.__player.center_y + CAMERA_Y_MARGIN) or (self.__camera.bottom_center.y + CAMERA_Y_MARGIN > self.__player.center_y)):
             camera_y += self.__player.change_y
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
