@@ -31,6 +31,9 @@ class Player(arcade.Sprite):
 
         self.selected_weapon_type : WeaponType = WeaponType.SWORD
 
+    def __repr__(self) -> str :
+        return f"Player({self.position})"
+
     def coin_score_update (self) -> None:
         """Updates coin score by one."""
         self.coin_score += 1

@@ -15,7 +15,9 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Gaëlle : 
 * [] Test that makes sure that player doesnt stay on screen when it dies
 * [] ANSWERS.MD (2,4 questions, semaine 5)
-* [] Print errors on map standard si mauvaise map.
+* [] Print errors on map standard si mauvaise map
+* [] Plateformes
+* [] Test plateformes
 
 
 ### Paul : 
@@ -28,6 +30,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [] Bow and arrow
 * [] Test bow and arrow
 * [] ANSWERS.MD (1,2,4 questions, semaine 5)
+* [] Intérupteurs
+* [] Test intérupteurs
 
 * [] Écran de fin de jeu pour enlever problème si end mais pas next_map
 
@@ -102,6 +106,8 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Test caméra                                                     25
 
 ### Semaine 9
+
+* [x] Crée class map                                                 120
 
 ### Semaine 10
 
