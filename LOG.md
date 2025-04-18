@@ -108,6 +108,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 ### Semaine 9
 
 * [x] Crée class map                                                 120
+* [x] Tranformer fichier map en matrice                               60
 
 ### Semaine 10
 

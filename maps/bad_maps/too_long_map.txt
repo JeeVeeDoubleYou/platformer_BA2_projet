@@ -1,13 +1,13 @@
-next-map: maps/no_such_file.txt
 width: 11
-height: 9
+height: 8
+next-map: maps/level_2.txt
 ---
      ---
 * o       E
 ---       -
        *
      - -
-   -
+   - v
 -
  S     *
 =====££==

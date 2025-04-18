@@ -13,13 +13,13 @@ def test_bad_maps(window: arcade.Window) -> None:
     with pytest.raises(Exception, match="Width and height should be positive numbers") :
         view = GameView("maps/bad_maps/negative_height.txt")
 
-    with pytest.raises(Exception, match="Width and height should be positive numbers") :
+    with pytest.raises(Exception, match="Width and height should be defined and non-zero in configuration of file") :
         view = GameView("maps/bad_maps/zero_width.txt")
 
-    with pytest.raises(Exception, match="Width and height should be defined in configuration of file") :
+    with pytest.raises(Exception, match="Width and height should be defined and non-zero in configuration of file") :
         view = GameView("maps/bad_maps/no_height.txt")
 
-    with pytest.raises(Exception, match="Width and height should be defined in configuration of file") :
+    with pytest.raises(Exception, match="Width and height should be defined and non-zero in configuration of file") :
         view = GameView("maps/bad_maps/no_config.txt")
 
     with pytest.raises(Exception, match="Player must have a starting point") :
@@ -28,7 +28,7 @@ def test_bad_maps(window: arcade.Window) -> None:
     with pytest.raises(Exception, match="Player can't be placed twice") :
         view = GameView("maps/bad_maps/two_start.txt")
 
-    with pytest.raises(Exception, match=r"There are too many characters on line .* \(counting from after config\)") :
+    with pytest.raises(Exception, match="There is a line with more characters than 20") :
         view = GameView("maps/bad_maps/too_many_char.txt")
 
     with pytest.raises(Exception, match="You can't set the height twice") :
@@ -39,6 +39,9 @@ def test_bad_maps(window: arcade.Window) -> None:
 
     with pytest.raises(Exception, match="The map contains an unknown character") :
         view = GameView("maps/bad_maps/bad_character.txt")
+
+    with pytest.raises(Exception, match="The map isn't exactly 8 lines long") :
+        view = GameView("maps/bad_maps/too_long_map.txt")
 
 
     # Test bad path
