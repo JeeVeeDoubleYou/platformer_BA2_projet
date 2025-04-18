@@ -24,9 +24,7 @@ class GameView(arcade.View):
     __wall_list: arcade.SpriteList[arcade.Sprite]
     __lava_list: arcade.SpriteList[arcade.Sprite]
     __coin_list: arcade.SpriteList[arcade.Sprite]
-    __sword_list: arcade.SpriteList[Sword]
     __weapon_list: arcade.SpriteList[Weapon]
-    __bow_list: arcade.SpriteList[Bow]
     __arrow_list: arcade.SpriteList[Arrow]
     __monster_list: arcade.SpriteList[Monster]
     __end_list: arcade.SpriteList[arcade.Sprite]
@@ -67,14 +65,11 @@ class GameView(arcade.View):
         self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
         self.__monster_list = arcade.SpriteList()
         self.__weapon_list = arcade.SpriteList()
-        self.__sword_list = arcade.SpriteList()
-        self.__bow_list = arcade.SpriteList()
         self.__arrow_list = arcade.SpriteList()
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
 
         self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__coin_list, self.__lava_list,
-                            self.__monster_list, self.__weapon_list, self.__sword_list, self.__bow_list, self.__arrow_list, self.__end_list) 
-
+                            self.__monster_list, self.__weapon_list, self.__arrow_list, self.__end_list) 
        
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
                   self.__monster_list, self.__end_list)
