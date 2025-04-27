@@ -29,6 +29,15 @@ def test_camera(window: arcade.Window) -> None:
         window.test(10)
         assert(y_is_in_range(view))
 
+def test_camera_avec_platformes(window: arcade.Window) -> None: 
+    view = GameView("maps/testing_maps/vertical_camera_platform_map.txt")
+    window.show_view(view)
+
+
+    for i in range(0, 30) :
+        window.test(5)
+        assert(x_is_in_range(view))
+        assert(y_is_in_range(view))
 
 def x_is_in_range(view : GameView) -> bool :
     print(calculate_delta_x(view))

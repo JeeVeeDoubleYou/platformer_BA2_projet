@@ -191,12 +191,18 @@ class GameView(arcade.View):
         elif (self.__camera.center_left.x > self.__player.center_x - CAMERA_X_MARGIN):
             camera_x -= constants.PLAYER_MOVEMENT_SPEED
 
-        if ((self.__camera.top_center.y < self.__player.center_y + CAMERA_Y_MARGIN) or (self.__camera.bottom_center.y + CAMERA_Y_MARGIN > self.__player.center_y)):
-            camera_y += self.__player.change_y
+        if (self.__camera.top_center.y < self.__player.center_y + CAMERA_Y_MARGIN) :
+            if self.__player.change_y != 0 :
+                camera_y += self.__player.change_y
+            else :
+                camera_y += constants.PLATFORM_SPEED
+        elif (self.__camera.bottom_center.y + CAMERA_Y_MARGIN > self.__player.center_y) :
+            if self.__player.change_y != 0 :
+                camera_y += self.__player.change_y
+            else :
+                camera_y -= constants.PLATFORM_SPEED
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
-
-        # ATTENTION : not convinced by recentering of platform, check back later when player must climb platforms
 
     
     def __check_collisions(self) -> None :
