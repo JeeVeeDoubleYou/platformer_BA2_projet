@@ -22,6 +22,7 @@ class GameView(arcade.View):
 
     __player_sprite_list: arcade.SpriteList[arcade.Sprite]
     __wall_list: arcade.SpriteList[arcade.Sprite]
+    __platform_list : arcade.SpriteList[arcade.Sprite] # ATTENTION : Should add collisions with this
     __lava_list: arcade.SpriteList[arcade.Sprite]
     __coin_list: arcade.SpriteList[arcade.Sprite]
     __weapon_list: arcade.SpriteList[Weapon]
@@ -61,6 +62,7 @@ class GameView(arcade.View):
         # Initialisation of all lists
         self.__player_sprite_list = arcade.SpriteList()
         self.__wall_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__platform_list = arcade.SpriteList()
         self.__coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
         self.__monster_list = arcade.SpriteList()
@@ -68,14 +70,14 @@ class GameView(arcade.View):
         self.__arrow_list = arcade.SpriteList()
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
 
-        self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__coin_list, self.__lava_list,
+        self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
                             self.__monster_list, self.__weapon_list, self.__arrow_list, self.__end_list) 
        
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
-                  self.__monster_list, self.__end_list)
+                  self.__monster_list, self.__end_list, self.__platform_list)
         self.__player = Player(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         self.__next_map = map.get_next_map()
-                
+        
         self.__player_sprite_list.append(self.__player)
         self.__camera = arcade.camera.Camera2D()
         self.__fixed_camera = arcade.camera.Camera2D()
@@ -89,6 +91,7 @@ class GameView(arcade.View):
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
+            platforms=self.__platform_list,
             walls=self.__wall_list,
             gravity_constant = constants.PLAYER_GRAVITY
         )
@@ -215,9 +218,9 @@ class GameView(arcade.View):
                     monster.die()
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
-            for wall_hit in arcade.check_for_collision_with_list(arrow, self.__wall_list) :
+            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__wall_list, self.__platform_list)):
                 arrow.remove_from_sprite_lists()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.ogg"))
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
 
            
         if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.SWORD :
