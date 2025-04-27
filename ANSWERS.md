@@ -51,12 +51,22 @@ La next map est le chemin du prochain niveau, qui est stocké comme string dans 
 
 Pour l'instant, ce cas de figure n'est pas possible. Si la carte a un "E" mais pas de next-map, la méthode create_map() appelé dès le début lèvera une exception. La map est ainsi considérée comme non-valide. On pourrait éventuellement considérer qu'arriver à la fin d'un niveau qui n'a pas de suite signifie que la joueuse a gagné le jeu, et afficher un message de victoire.
 
-# Semaine 5
+# Semaine 5 (Arc et chauves-souris)
 
-### Question 1 (Paul)
+### Question 1 (Paul) : Quelles formules utilisez-vous exactement pour l’arc et les flèches ?
 
-### Question 2 (Gaëlle)
+### Question 2 (Gaëlle) : Quelles formules utilisez-vous exactement pour le déplacement des chauves-souris (champ d’action, changements de direction, etc.) ?
 
-### Question 3 (Paul)
+### Question 3 (Paul) : Comment avez-vous structuré votre programme pour que les flèches puissent poursuivre leur vol ?
 
-### Question 4 (Paul et Gaëlle)
+### Question 4 (Paul et Gaëlle) : Comment gérez-vous le fait que vous avez maintenant deux types de monstres, et deux types d’armes ? Comment faites-vous pour ne pas dupliquer du code entre ceux-ci ?
+
+# Semaine 8 (Plateformes et interrupteurs)
+
+### Question 1 (Gaëlle) : Quel algorithme utilisez-vous pour identifier tous les blocs d’une plateformes, et leurs limites de déplacement ?
+
+### Question 2 (Gaëlle) : Sur quelle structure travaille cet algorithme ? Quels sont les avantages et inconvénients de votre choix ?
+
+### Question 3 (Paul) : Quelle bibliothèque utilisez-vous pour lire les instructions des interrupteurs ? Dites en une ou deux phrases pourquoi vous avez choisi celle-là.
+
+### Question 4 (Paul) : Comment votre design général évolue-t-il pour tenir compte des interrupteurs et des portails ?

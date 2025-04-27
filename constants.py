@@ -11,3 +11,9 @@ PLAYER_JUMP_SPEED = 18
 
 """Scale for all sprites"""
 SCALE = 0.5
+
+"""Size in pixels of one block"""
+PIXELS_IN_BLOCK = 64
+
+"""Speed of platforms"""
+PLATFORM_SPEED = 2
