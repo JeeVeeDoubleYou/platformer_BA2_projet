@@ -31,15 +31,19 @@ ensuite j'utilise l'arctangente (atan2(delta_x,delta_y)) pour calculer l'angle
 les coordonees de l'ecran commencent en bas a gauche donc j'utilise les coordonees point en bas a gauche de la camera auquelle j'ajoute les coordone de la souris pour passer au coordonée monde
 
 
-### Question 2 (Paul) :
+### Question 2 (Paul) :Comment testez-vous l’épée ? Comment testez-vous que son orientation est importante pour déterminer si elle touche un monstre ?
 
+je test juste en faisant une map ou la joueuse aparait a côté d'un blob et on verifie si le blob moeur quand on utilise l'épée 
+dans la direction du blob
+
+
+### Question 4 (Paul):Comment transférez-vous le score de la joueuse d’un niveau à l’autre ?
+
+on transfere le score en ne reinitialisant pas la joueuse d'un niveau a l'autre. 
 
 
 ### Question 3 (Paul) :Où le remettez-vous à zéro ? Avez-vous du code dupliqué entre les cas où la joueuse perd parce qu’elle a touché un ou monstre ou de la lave ?
-le score est initialiser en meme temps que la joueuse du coup il est remis a zero lors de l'inintialisation
-
-
-### Question 4 (Paul)
+le score est initialiser en meme temps que la joueuse du coup il est remis a zero lors de l'inintialisation lors de la mort de la joueuse .
 
 
 
@@ -53,10 +57,17 @@ Pour l'instant, ce cas de figure n'est pas possible. Si la carte a un "E" mais p
 
 # Semaine 5
 
-### Question 1 (Paul)
+### Question 1 (Paul):Quelles formules utilisez-vous exactement pour l’arc et les flèches ?
+
+l'arc utilise plus ou moins la meme formule que pour l'épée (c'est une instance de Weapon)
+les fleches elles font une parabole donc on une compiosantes acceleration verticale et on un angle qui est calculer via 
+le rartio vitesse x et vitesse y et l'atan2
 
 ### Question 2 (Gaëlle)
 
-### Question 3 (Paul)
+### Question 3 (Paul):Comment avez-vous structuré votre programme pour que les flèches puissent poursuivre leur vol ?
+les fleches sont stoquer dans une liste et chaques frames on vas chercher si les fleches restent dans les conditions adequates pour poursuivre leur vol sinon on les suprimes de la liste
 
 ### Question 4 (Paul et Gaëlle)
+
+Pour les deux types d'armes on a crée une classe Weapon qui gere les parties en commun avec l'arc et l'épée (c'est a dire principalement la gestion de l'angle ainci que la position de l'arme)
