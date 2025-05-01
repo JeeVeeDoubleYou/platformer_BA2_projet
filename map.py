@@ -1,11 +1,16 @@
 import os
 from typing import Final
 import arcade
+import yaml
 
 from bat import Bat
 from blob import Blob
+from lever import Lever
+from door import Door
 import constants
 from monster import Monster
+
+from typing import Any # ATTENTION : chacker si on peut utiliser Any avec le prof, dans la fonction lever_door_linking() 
 
 
 class Map :
@@ -29,12 +34,63 @@ class Map :
 
         self.__create_map()
     
+    def lever_door_linking(self) -> None:
+        map_doors : list[list[Door]]
+        map_levers : list[list[Lever]]
+        with open(self.__current_map_name, "r") as file:
+            yaml_return : object = yaml.safe_load(file) 
+            if not isinstance(yaml_return, list[dict[str, Any]]) : # ATTENTION : Find correct instance of what it should be !!!
+                raise Exception("The configuration of the file isn't formated correctly.")
+            lever_list : list[dict[str, Any]]
+            print(lever_list) # ATTENTION : a enlever
+            for switch in lever_list:
+                activation_close : list[Door] = [] 
+                activation_open : list[Door] = []  
+                deactivation_close : list[Door] = [] 
+                deactivation_open : list[Door] = [] 
+                one_time_use : bool = False
+                for element in switch['switch_on']:
+                    x_position = element['x']
+                    y_position = element['y']
+                    match element['action']:
+                        case 'disable':
+                            one_time_use = True
+                        case 'open-gate':
+                            activation_open.append(map_doors[y_position][x_position])
+                        case 'close-gate':
+                            activation_close.append(map_doors[y_position][x_position])
+                for element in switch['switch_off']:
+                    x_position = element['x']
+                    y_position = element['y']
+                    match element['action']:
+                        case 'disable':
+                            one_time_use = True
+                        case 'open-gate':
+                            deactivation_open.append(map_doors[y_position][x_position])
+                        case 'close-gate':
+                            deactivation_close.append(map_doors[y_position][x_position])
+                
+                # map[switch['x']][switch['y']].get_door()
+            
+
+                    
+
+
+
+
+
+
     def __parse_config(self) -> None :
+
+        self.lever_door_linking()
+
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             self.__width = 0
             self.__height = 0
             self.__has_next_map = False
+
             for line in f :
+               
                 if line == "---\n" or line == "---" :
                     break
                 line.split()
@@ -63,7 +119,7 @@ class Map :
 
     def __file_to_matrix(self) -> None :
         """Turns map file into matrix"""
-        self.__map_matrix = [['' for i in range(self.__width)] for j in range(self.__height)]
+        self.__map_matrix = [[str for i in range(self.__width)] for j in range(self.__height)]
         # Matrice[Lines][Colonne]
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             while not f.readline() == "---\n" :

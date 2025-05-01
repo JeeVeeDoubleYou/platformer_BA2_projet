@@ -11,6 +11,8 @@ from sword import Sword
 from bow import Bow
 from bat import Bat
 from arrow import Arrow
+from lever import Lever
+from door import Door
 from map import Map
 
 CAMERA_X_MARGIN = 400
@@ -27,6 +29,9 @@ class GameView(arcade.View):
     __weapon_list: arcade.SpriteList[Weapon]
     __arrow_list: arcade.SpriteList[Arrow]
     __monster_list: arcade.SpriteList[Monster]
+    __lever_list: arcade.SpriteList[Lever]
+    __door_list: arcade.SpriteList[Door]
+    __solid_block_list: arcade.SpriteList[arcade.Sprite]
     __end_list: arcade.SpriteList[arcade.Sprite]
     physics_engine: arcade.PhysicsEnginePlatformer
     __camera: arcade.camera.Camera2D
@@ -63,13 +68,17 @@ class GameView(arcade.View):
         self.__wall_list = arcade.SpriteList(use_spatial_hash=True)
         self.__coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__door_list = arcade.SpriteList(use_spatial_hash=True)
         self.__monster_list = arcade.SpriteList()
         self.__weapon_list = arcade.SpriteList()
         self.__arrow_list = arcade.SpriteList()
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
 
         self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__coin_list, self.__lava_list,
-                            self.__monster_list, self.__weapon_list, self.__arrow_list, self.__end_list) 
+                            self.__monster_list, self.__lever_list ,self.__weapon_list, 
+                            self.__arrow_list, self.__end_list) 
        
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
                   self.__monster_list, self.__end_list)
@@ -83,13 +92,15 @@ class GameView(arcade.View):
         self. __fixed_camera.position = arcade.Vec2(0, 0)
 
         self.icon = arcade.Sprite()
-        self.text_score = arcade.Text("!", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+        self.text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
         self.ui_element = (self.icon,self.text_score)
         self.update_user_interface()
 
+        self.solid_block_update() 
+
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
-            walls=self.__wall_list,
+            walls=self.__solid_block_list, 
             gravity_constant = constants.PLAYER_GRAVITY
         )
 
@@ -155,6 +166,10 @@ class GameView(arcade.View):
 
         for weapon in self.__weapon_list:
             weapon.update_angle(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
+    
+    def solid_block_update(self) -> None:
+        self.__solid_block_list = self.__wall_list + [door for door in self.__door_list if door.is_closed]
+
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
@@ -163,6 +178,7 @@ class GameView(arcade.View):
         if self.player_y < -500 :
             self.__setup_from_initial()
 
+        self.solid_block_update() # ATTENTION : Should be put in new function : lever_activation
         self.physics_engine.update()
 
         for monster in self.__monster_list :
@@ -173,6 +189,10 @@ class GameView(arcade.View):
 
         for arrow in self.__arrow_list :
             arrow.move()
+            if (arrow.center_x < self.__camera.bottom_left.x):
+                arrow.remove_from_sprite_lists()
+
+                
 
         
         self.__update_camera()
