@@ -2,6 +2,7 @@ import os
 from typing import Optional
 import arcade
 import constants
+from plateforme import NonPlatformMovement, Direction
 from player import Player
 from player import WeaponType
 from blob import Blob
@@ -29,6 +30,7 @@ class GameView(arcade.View):
     __arrow_list: arcade.SpriteList[Arrow]
     __monster_list: arcade.SpriteList[Monster]
     __end_list: arcade.SpriteList[arcade.Sprite]
+    __non_platform_moving_sprites_list : list[NonPlatformMovement]
     physics_engine: arcade.PhysicsEnginePlatformer
     __camera: arcade.camera.Camera2D
     __fixed_camera: arcade.camera.Camera2D
@@ -69,12 +71,15 @@ class GameView(arcade.View):
         self.__weapon_list = arcade.SpriteList()
         self.__arrow_list = arcade.SpriteList()
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__non_platform_moving_sprites_list = []
 
         self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
                             self.__monster_list, self.__weapon_list, self.__arrow_list, self.__end_list) 
        
+
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
-                  self.__monster_list, self.__end_list, self.__platform_list)
+                  self.__monster_list, self.__end_list, self.__platform_list, self.__non_platform_moving_sprites_list)
+
         self.__player = Player(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         self.__next_map = map.get_next_map()
         
@@ -166,6 +171,9 @@ class GameView(arcade.View):
         if self.player_y < -500 :
             self.__setup_from_initial()
 
+        for non_platform in self.__non_platform_moving_sprites_list :
+            non_platform.move()
+
         self.physics_engine.update()
 
         for monster in self.__monster_list :
@@ -203,7 +211,8 @@ class GameView(arcade.View):
                 camera_y -= constants.PLATFORM_SPEED
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
-
+        
+        
     
     def __check_collisions(self) -> None :
         """
@@ -313,7 +322,7 @@ class GameView(arcade.View):
             return False
         return True
     
-    #needed for the tests
+    # Needed for the tests
 
     @property
     def get_wall_list(self) -> arcade.SpriteList[arcade.Sprite]:
