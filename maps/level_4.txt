@@ -1,4 +1,4 @@
-width: 24
+width: 50
 height: 8
 next-map: maps/level_2.txt
 switches:
@@ -39,11 +39,11 @@ gates:
   # the other gates start closed
 ---
 ^     x           x
---    x ^         x
+--    x ^  E      x
       x-----      |
-   ---x           =
-      x   -----   =
----   x   x   |  x=
- S    |  xx * x  x=  E
+   ---x           =    
+      x   -----   =  
+---   x   x   |  x= ---→→→→→→→→
+ S    |  xx * x  x=        
 ========================
 ---

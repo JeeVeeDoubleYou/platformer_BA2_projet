@@ -270,7 +270,7 @@ class GameView(arcade.View):
                 lever.on_action()
                 arrow.remove_from_sprite_lists()
                 self.solid_block_update()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.ogg")) 
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
             for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__wall_list, self.__platform_list)):
                 arrow.remove_from_sprite_lists()
                 arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
@@ -287,7 +287,7 @@ class GameView(arcade.View):
                 for lever in arcade.check_for_collision_with_list(current_weapon, self.__lever_list):
                     lever.on_action()
                     self.solid_block_update()
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.ogg"))
+                    arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
 
         if arcade.check_for_collision_with_list(self.__player, self.__lava_list) != [] :
             self.__setup_from_initial()

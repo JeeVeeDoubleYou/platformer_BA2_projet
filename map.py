@@ -25,7 +25,10 @@ class Map :
     
     def __init__(self, current_map_name : str, wall_list: arcade.SpriteList[arcade.Sprite], 
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
-                 monster_list: arcade.SpriteList[Monster], door_list: arcade.SpriteList[Door], lever_list: arcade.SpriteList[Lever], end_list: arcade.SpriteList[arcade.Sprite], platform_list: arcade.SpriteList[arcade.Sprite]) -> None:
+                 monster_list: arcade.SpriteList[Monster], door_list: arcade.SpriteList[Door], 
+                 lever_list: arcade.SpriteList[Lever], end_list: arcade.SpriteList[arcade.Sprite], 
+                 platform_list: arcade.SpriteList[arcade.Sprite]
+                 ) -> None:
     
         self.__current_map_name = current_map_name
         self.__wall_list = wall_list
