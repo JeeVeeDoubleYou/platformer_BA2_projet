@@ -4,19 +4,21 @@ import constants
 class Door(arcade.Sprite):
 
 
-    def __init__ (self, starts_closed: bool = True) -> None:
-        super().__init__("lockYellow.png", constants.SCALE)
-        self.__closed = starts_closed
-        if not self.__closed:
-            self.rgb = 255, 255, 255 # ATTENTION : sert a rien pour l'instant
+    def __init__ (self, position_x: float, position_y: float) -> None:
+        super().__init__(":resources:images/tiles/lockYellow.png", constants.SCALE)
+        self.__closed = True
+        self.center_x = position_x
+        self.center_y = position_y
+
+
 
     def close(self) -> None :
         self.__closed = True
-        # Do coloring
+        self.alpha =  255 
 
     def open(self) -> None :
         self.__closed = False
-        # Do coloring
+        self.alpha = 64 
 
     @property
     def is_closed(self) -> bool :
