@@ -26,6 +26,7 @@ class GameView(arcade.View):
 
     __player_sprite_list: arcade.SpriteList[arcade.Sprite]
     __wall_list: arcade.SpriteList[arcade.Sprite]
+    __platform_list : arcade.SpriteList[arcade.Sprite] # ATTENTION : Should add collisions with this
     __lava_list: arcade.SpriteList[arcade.Sprite]
     __coin_list: arcade.SpriteList[arcade.Sprite]
     __weapon_list: arcade.SpriteList[Weapon]
@@ -70,6 +71,7 @@ class GameView(arcade.View):
         # Initialisation of all lists
         self.__player_sprite_list = arcade.SpriteList()
         self.__wall_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__platform_list = arcade.SpriteList()
         self.__coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
         self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
@@ -80,15 +82,15 @@ class GameView(arcade.View):
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
         self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
 
-        self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__coin_list, self.__lava_list,
+        self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
                             self.__monster_list, self.__lever_list, self.__door_list ,self.__weapon_list, 
                             self.__arrow_list, self.__end_list) 
        
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
-                  self.__monster_list,self.__door_list ,self.__lever_list, self.__end_list)
+                  self.__monster_list,self.__door_list ,self.__lever_list, self.__end_list, self.__platform_list)
         self.__player = Player(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         self.__next_map = map.get_next_map()
-                
+        
         self.__player_sprite_list.append(self.__player)
         self.__camera = arcade.camera.Camera2D()
         self.__fixed_camera = arcade.camera.Camera2D()
@@ -106,6 +108,7 @@ class GameView(arcade.View):
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
+            platforms=self.__platform_list,
             walls=self.__solid_block_list, 
             gravity_constant = constants.PLAYER_GRAVITY
         )
@@ -230,12 +233,18 @@ class GameView(arcade.View):
         elif (self.__camera.center_left.x > self.__player.center_x - CAMERA_X_MARGIN):
             camera_x -= constants.PLAYER_MOVEMENT_SPEED
 
-        if ((self.__camera.top_center.y < self.__player.center_y + CAMERA_Y_MARGIN) or (self.__camera.bottom_center.y + CAMERA_Y_MARGIN > self.__player.center_y)):
-            camera_y += self.__player.change_y
+        if (self.__camera.top_center.y < self.__player.center_y + CAMERA_Y_MARGIN) :
+            if self.__player.change_y != 0 :
+                camera_y += self.__player.change_y
+            else :
+                camera_y += constants.PLATFORM_SPEED
+        elif (self.__camera.bottom_center.y + CAMERA_Y_MARGIN > self.__player.center_y) :
+            if self.__player.change_y != 0 :
+                camera_y += self.__player.change_y
+            else :
+                camera_y -= constants.PLATFORM_SPEED
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
-
-        # ATTENTION : not convinced by recentering of platform, check back later when player must climb platforms
 
     
     def __check_collisions(self) -> None :
@@ -262,9 +271,9 @@ class GameView(arcade.View):
                 arrow.remove_from_sprite_lists()
                 self.solid_block_update()
                 arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.ogg")) 
-            for wall_hit in arcade.check_for_collision_with_list(arrow, self.__wall_list) :
+            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__wall_list, self.__platform_list)):
                 arrow.remove_from_sprite_lists()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.ogg"))
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
             for lava_hit in arcade.check_for_collision_with_list(arrow, self.__lava_list) :
                 arrow.remove_from_sprite_lists()
 

@@ -1,0 +1,8 @@
+height: 3
+width: 30
+next-map: maps/moving_map1.txt
+---
+    ←←←←←←←←---→→→→→→→→
+ S                       E
+======£££££££££££££££=====
+---
