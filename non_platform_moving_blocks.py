@@ -3,7 +3,7 @@ from typing import Final
 import arcade
 
 import constants
-from plateforme import Direction
+from platforms import Direction
 
 
 class NonPlatformMovingBlocks :
