@@ -12,8 +12,8 @@ switches:
         x: 6
         y: 1
       - action: disable
-  - x: 8
-    y: 6
+  - x: 21
+    y: 3
     state: on # this switch is on by default
     # when we turn it off, we open access to the coin,
     # but we close access to the exit
@@ -39,11 +39,11 @@ gates:
   # the other gates start closed
 ---
 ^     x           x
---    x ^  E      x
+--    x   E      x
       x-----      |
-   ---x           =    
-      x   -----   =  
----   x   x   |  x= ---→→→→→→→→
- S    |  xx * x  x=        
+   ---x     o     =    
+      x   -----   =  ^£
+---   x   x   |  x= --£→→→
+      |  xx * x  x=  S      
 ========================
 ---

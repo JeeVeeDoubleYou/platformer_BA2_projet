@@ -11,12 +11,14 @@ import constants
 from constants import PIXELS_IN_BLOCK, PLATFORM_SPEED
 from monster import Monster
 
-from plateforme import Platform, PlatformArrows, Direction, NonPlatformMovement
+from platforms import Platform, Direction
+from non_platform_moving_blocks import NonPlatformMovingBlocks
+from platform_arrows import PlatformArrows
 
 class Map :
 
     player_coordinates : tuple[int, int]
-    __next_map : str
+    __next_map : str | None
     __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "v", "E", "=", "-", 
                                                               "x", "*", "£", "^", " ", "|", "^", "\n", 
                                                               "\r", "←", "→", "↑", "↓"})
@@ -30,10 +32,8 @@ class Map :
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
                  monster_list: arcade.SpriteList[Monster], door_list: arcade.SpriteList[Door], 
                  lever_list: arcade.SpriteList[Lever], end_list: arcade.SpriteList[arcade.Sprite], 
-                 
-                 platform_list: arcade.SpriteList[arcade.Sprite]
-                 ,
-                 non_platform_moving_sprites_list : list[NonPlatformMovement]
+                 platform_list: arcade.SpriteList[arcade.Sprite],
+                 non_platform_moving_sprites_list : list[NonPlatformMovingBlocks]
                  ) -> None:
 
         self.__current_map_name = current_map_name
@@ -44,7 +44,7 @@ class Map :
         self.__door_list = door_list
         self.__lever_list = lever_list
         self.__end_list = end_list
-        self.__next_map = ""
+        self.__next_map = None
         self.__list_of_platforms = []
         self.__platform_list = platform_list
         self.__non_platform_moving_sprites_list = non_platform_moving_sprites_list
@@ -116,7 +116,6 @@ class Map :
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             self.__width = 0
             self.__height = 0
-            self.__has_next_map = False
 
             for line in f :
                
@@ -124,10 +123,9 @@ class Map :
                     break
                 line.split()
                 if line.startswith("next-map") :
-                    if self.__has_next_map :
+                    if self.__next_map is not None :
                         raise Exception("You can't set the next map twice")
                     self.__next_map = line.split()[-1]
-                    self.__has_next_map = True
                     if not os.path.exists(self.__next_map) :
                         raise Exception("The next map path is incorrect")
                 try : 
@@ -183,7 +181,7 @@ class Map :
                 if self.__map_matrix[line][column] in self.__platform_characters and (line, column) not in visited :
                     platform = Platform()
                     self.grouping_platform(line, column, platform, visited, None)
-                    if platform.movement != (0,0) :
+                    if platform.moves :
                         self.__list_of_platforms.append(platform)
 
         
@@ -208,36 +206,24 @@ class Map :
         visited.add((line, column))
 
         if (value := self.__map_matrix[line][column]) in {a.value for a in PlatformArrows} :
-            arrow_type = self.get_arrow_enum(value)
+            arrow_type = PlatformArrows.get_arrow_enum(value)
             if arrow_type == valid_arrow :
                 arrows_counted = arrow_type.count_arrows(line, column, 1, visited, self.__map_matrix)
                 platform.add_arrow_info(arrow_type, arrows_counted)
-                platform.add_half_to_movement() # ATTENTION : Should not be called here !! (Encapsulation)
             else :
                 return
-        if self.__map_matrix[line][column] in self.__platform_characters :
-            platform.add_to_sprite_set((self.__height - (line + 1), column)) 
-            #ATTENTION : To modify!, weird expression is to match arcade coordinates, could be made into function?
-            
+        if self.__map_matrix[line][column] in self.__platform_characters : 
+            line = self.__matrix_line_num_to_arcade(line)
+            platform.add_sprite((line, column)) 
 
         for d_line, d_col, valid_arrow in [(0, -1, PlatformArrows.LEFT), (0, 1, PlatformArrows.RIGHT), (1, 0, PlatformArrows.DOWN), (-1, 0, PlatformArrows.UP)] :
             self.grouping_platform(line + d_line, column + d_col, platform, visited, valid_arrow)
 
-    def get_arrow_enum(self, arrow : str) -> PlatformArrows :
-        """Gets an arrow name from it's string representation : example Arrows.LEFT from "←". 
-        Should only ever get called with an argument that is an arrow. """
-        assert arrow in {a.value for a in PlatformArrows}
-        match arrow :
-            case "←" :
-                return PlatformArrows.LEFT
-            case "→" :
-                return PlatformArrows.RIGHT 
-            case "↑" :
-                return PlatformArrows.UP
-            case "↓" :
-                return PlatformArrows.DOWN
-            case _ :
-                raise Exception("Invalid arrow ", {arrow})
+    def __matrix_line_num_to_arcade(self, line : int) -> int :
+        """Tranforms a line number taken from looping through the map matrix to the line number considered by arcade.
+        Arcadem convention is top line is height - 1, last line is 0."""
+        assert (line < self.__height)
+        return self.__height - (line + 1)
 
     def get_sprite_boundaries(self, sprite : arcade.Sprite) -> tuple[Direction | None, tuple[int, int]] :
         """Returns the movement and direction a platform sprite should move, 
@@ -246,6 +232,7 @@ class Map :
         """
         for platform in self.__list_of_platforms :
             if platform.contains(sprite) :
+                assert platform.movement is not None
                 return (platform.direction, platform.movement)
         return (None, (0, 0))
 
@@ -258,7 +245,7 @@ class Map :
         direction, movement = self.get_sprite_boundaries(sprite)
         if direction is None :
             return False
-        self.__non_platform_moving_sprites_list.append(NonPlatformMovement(sprite, direction, movement, arcade.Vec2(sprite.center_x, sprite.center_y))) 
+        self.__non_platform_moving_sprites_list.append(NonPlatformMovingBlocks(sprite, direction, movement, arcade.Vec2(sprite.center_x, sprite.center_y))) 
         return True
 
     def give_movement_to_platform_sprites(self, sprite : arcade.Sprite) -> bool :
@@ -296,11 +283,10 @@ class Map :
         end_is_placed = False
 
         for line_num, line in enumerate(self.__map_matrix) :
-            line_number_arcade_coordinates = self.__height - (line_num + 1)
-            # To match line number with convention that first line is h-1, last line is 0
+            line_num_arcade = self.__matrix_line_num_to_arcade(line_num)
             for position_x, sprite_char in enumerate(line) :
                 x_coordinate = PIXELS_IN_BLOCK * position_x
-                y_coordinate =  PIXELS_IN_BLOCK * line_number_arcade_coordinates
+                y_coordinate =  PIXELS_IN_BLOCK * line_num_arcade
                 match sprite_char : 
                     case "S" :
                         if start_is_placed :
@@ -312,25 +298,21 @@ class Map :
                         self.__monster_list.append(blob)
                     case "v" :
                         bat = Bat(x_coordinate, y_coordinate)
-                        self.__monster_list.append(bat)
-                    case "^" :
-                        lever = Lever(x_coordinate, y_coordinate)
-                        self.__lever_list.append(lever)
-                        map_levers[line_number_arcade_coordinates][position_x] = lever
-                        
+                        self.__monster_list.append(bat)   
                     case "|" :
                         door = Door(x_coordinate, y_coordinate)
                         self.__door_list.append(door)
-                        map_doors[line_number_arcade_coordinates][position_x] = door
-
+                        map_doors[line_num_arcade][position_x] = door
+                    case "^" :
+                        lever = Lever(x_coordinate, y_coordinate)
+                        self.__lever_list.append(lever)
+                        map_levers[line_num_arcade][position_x] = lever
+                        self.give_movement_to_non_platform_sprites(lever) # ATTENTION : Cas spécial, mais devrait généraliser avec fonction peutetre
                     case char if char in self.__hidden_characters | self.__arrow_characters :
                         pass
                     case char if char in self.__allowed_characters :
                         match sprite_char :
                             case "E" :
-                                if not self.__has_next_map :
-                                    raise Exception("There is no next map, but there is an exit") 
-                                    # ATTENTION : Question : accepter end of map même sans prochain niveau?
                                 if end_is_placed :
                                     raise Exception("There can't be two ending points to a level")
                                 end_is_placed = True
@@ -355,13 +337,13 @@ class Map :
 
         if not start_is_placed :
             raise Exception("Player must have a starting point")
-        if self.__has_next_map and not end_is_placed :
+        if self.__next_map is not None and not end_is_placed :
             raise Exception("The file sets the next map but no end to the level")
         self.lever_door_linking(map_doors,map_levers) 
         
     def get_player_coordinates(self) -> tuple[int, int] :
         return self.player_coordinates
     
-    def get_next_map(self) -> str :
+    def get_next_map(self) -> str | None :
         return self.__next_map
     

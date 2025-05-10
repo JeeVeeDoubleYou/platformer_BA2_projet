@@ -2,7 +2,8 @@ import os
 from typing import Optional
 import arcade
 import constants
-from plateforme import NonPlatformMovement, Direction
+from platforms import Direction
+from non_platform_moving_blocks import NonPlatformMovingBlocks
 from player import Player
 from player import WeaponType
 from blob import Blob
@@ -27,7 +28,7 @@ class GameView(arcade.View):
 
     __player_sprite_list: arcade.SpriteList[arcade.Sprite]
     __wall_list: arcade.SpriteList[arcade.Sprite]
-    __platform_list : arcade.SpriteList[arcade.Sprite] # ATTENTION : Should add collisions with this
+    __platform_list : arcade.SpriteList[arcade.Sprite]
     __lava_list: arcade.SpriteList[arcade.Sprite]
     __coin_list: arcade.SpriteList[arcade.Sprite]
     __weapon_list: arcade.SpriteList[Weapon]
@@ -37,15 +38,15 @@ class GameView(arcade.View):
     __door_list: arcade.SpriteList[Door]
     __solid_block_list: arcade.SpriteList[arcade.Sprite]
     __end_list: arcade.SpriteList[arcade.Sprite]
-    __non_platform_moving_sprites_list : list[NonPlatformMovement]
-    physics_engine: arcade.PhysicsEnginePlatformer
+    __non_platform_moving_sprites_list : list[NonPlatformMovingBlocks]
+    physics_engine: arcade.PhysicsEnginePlatformer | None
     __camera: arcade.camera.Camera2D
 
     __icon_list: arcade.SpriteList[arcade.Sprite]
     __fixed_camera: arcade.camera.Camera2D
 
     __player : Player
-    __next_map : str
+    __next_map : str | None
 
 
 
@@ -60,8 +61,7 @@ class GameView(arcade.View):
 
         # Choose a nice comfy background color
         self.background_color = arcade.types.Color(223, 153, 153)
-        #arcade.color.LIGHT_CORAL
-    
+
         # Setup our game
         self.setup()
 
@@ -70,28 +70,29 @@ class GameView(arcade.View):
     def setup(self) -> None:
         """Set up the game here."""
 
-        # Initialisation of all lists
-        self.__player_sprite_list = arcade.SpriteList()
-        self.__wall_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__platform_list = arcade.SpriteList()
-        self.__coin_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__door_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__monster_list = arcade.SpriteList()
-        self.__weapon_list = arcade.SpriteList()
-        self.__arrow_list = arcade.SpriteList()
-        self.__end_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__non_platform_moving_sprites_list = []
+        self.__reset_sprite_lists()
+
+        self.__has_won = False
+        self.__win_text = arcade.Text(
+                        "Congratulations, you've won !",
+                        color = arcade.color.BLACK,
+                        font_size= 54,
+                        font_name="Impact",
+                        x = constants.WINDOW_WIDTH/2,
+                        y = constants.WINDOW_HEIGHT/2,
+                        anchor_x="center",
+                        anchor_y="center"
+                        )
+
 
         self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
                             self.__monster_list, self.__lever_list, self.__door_list ,self.__weapon_list, 
                             self.__arrow_list, self.__end_list) 
        
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
-                  self.__monster_list,self.__door_list ,self.__lever_list, self.__end_list, self.__platform_list, self.__non_platform_moving_sprites_list)
-
+                  self.__monster_list, self.__door_list, self.__lever_list, self.__end_list, 
+                  self.__platform_list, self.__non_platform_moving_sprites_list)
+        
         self.__player = Player(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         self.__next_map = map.get_next_map()
         
@@ -118,7 +119,23 @@ class GameView(arcade.View):
         )
         self.__player.physics_engine = self.physics_engine
         
+    def __reset_sprite_lists(self) -> None :
+        """Sets all sprite lists to their initial empty values"""
+        self.__player_sprite_list = arcade.SpriteList()
+        self.__wall_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__platform_list = arcade.SpriteList()
+        self.__coin_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__door_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__monster_list = arcade.SpriteList()
+        self.__weapon_list = arcade.SpriteList()
+        self.__arrow_list = arcade.SpriteList()
+        self.__end_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__non_platform_moving_sprites_list = []
 
+    
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
 
@@ -210,7 +227,8 @@ class GameView(arcade.View):
         for non_platform in self.__non_platform_moving_sprites_list :
             non_platform.move()
 
-        self.physics_engine.update()
+        if self.physics_engine is not None :
+            self.physics_engine.update()
 
         for monster in self.__monster_list :
             monster.move(self.__wall_list)
@@ -223,9 +241,6 @@ class GameView(arcade.View):
             if (arrow.center_x < self.__camera.bottom_left.x):
                 arrow.remove_from_sprite_lists()
 
-                
-
-        
         self.__update_camera()
         self.__check_collisions()
         
@@ -235,9 +250,9 @@ class GameView(arcade.View):
 
         camera_x, camera_y = self.__camera.position
         if (self.__camera.center_right.x < self.__player.center_x + CAMERA_X_MARGIN):
-            camera_x += constants.PLAYER_MOVEMENT_SPEED
+            camera_x += max(abs(self.player_speed_x), constants.PLATFORM_SPEED)
         elif (self.__camera.center_left.x > self.__player.center_x - CAMERA_X_MARGIN):
-            camera_x -= constants.PLAYER_MOVEMENT_SPEED
+            camera_x -= max(abs(self.player_speed_x), constants.PLATFORM_SPEED)
 
         if (self.__camera.top_center.y < self.__player.center_y + CAMERA_Y_MARGIN) :
             if self.__player.change_y != 0 :
@@ -307,10 +322,12 @@ class GameView(arcade.View):
     def __load_next_map(self) -> None :
         """Load next_map of file. Should only be called if the file has a valid next map."""
 
-        assert self.__next_map is not None
-        assert os.path.exists(self.__next_map)
-        self.__current_map_name = self.__next_map
-        self.setup()
+        if self.__next_map is None :
+            self.__has_won = True
+        else :
+            assert os.path.exists(self.__next_map)
+            self.__current_map_name = self.__next_map
+            self.setup()
 
     def __setup_from_initial(self) -> None :
         """Setup the game from the initial map."""
@@ -324,17 +341,28 @@ class GameView(arcade.View):
         string_score ="Coin score = " + str(self.__player.coin_score)
         self.text_score.text = string_score
 
+    def game_won(self) -> None :
+        self.__reset_sprite_lists()
+        self.physics_engine = None
+        self.__player.physics_engine = None
+
+
     def on_draw(self) -> None:
         """Render the screen."""
 
         self.clear() # always start with self.clear()
-        with self.__camera.activate():
-            for list in self.sprite_tuple :
-                list.draw()
 
-        with self.__fixed_camera.activate(): 
-                self.text_score.draw()
-                self.__icon_list.draw()
+        if self.__has_won :
+            self.game_won() # ATTENTION : Pas très efficace d'appeler ça 60 fois par seconde, si?
+            self.__win_text.draw()
+        else :
+            with self.__camera.activate():
+                for list in self.sprite_tuple :
+                    list.draw()
+
+            with self.__fixed_camera.activate(): 
+                    self.text_score.draw()
+                    self.__icon_list.draw()
             
     @property
     def player_x(self) -> float:

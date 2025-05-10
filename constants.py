@@ -17,3 +17,9 @@ PIXELS_IN_BLOCK = 64
 
 """Speed of platforms"""
 PLATFORM_SPEED = 2
+
+"""Height of the arcade window in pixels"""
+WINDOW_HEIGHT = 720
+
+"""Width of the arcade window in pixels"""
+WINDOW_WIDTH = 1280
