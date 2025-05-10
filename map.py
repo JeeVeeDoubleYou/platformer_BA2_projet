@@ -1,9 +1,12 @@
 import os
 from typing import Final
 import arcade
+import yaml
 
 from bat import Bat
 from blob import Blob
+from lever import Lever
+from door import Door
 import constants
 from constants import PIXELS_IN_BLOCK, PLATFORM_SPEED
 from monster import Monster
@@ -15,7 +18,7 @@ class Map :
     player_coordinates : tuple[int, int]
     __next_map : str
     __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "v", "E", "=", "-", 
-                                                              "x", "*", "£", "^", " ", "\n", 
+                                                              "x", "*", "£", "^", " ", "|", "^", "\n", 
                                                               "\r", "←", "→", "↑", "↓"})
     __hidden_characters : Final[frozenset[str]] = frozenset({" ",  "\n","\r"})
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
@@ -25,8 +28,11 @@ class Map :
     
     def __init__(self, current_map_name : str, wall_list: arcade.SpriteList[arcade.Sprite], 
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
-                 monster_list: arcade.SpriteList[Monster], end_list: arcade.SpriteList[arcade.Sprite], 
-                 platform_list: arcade.SpriteList[arcade.Sprite],
+                 monster_list: arcade.SpriteList[Monster], door_list: arcade.SpriteList[Door], 
+                 lever_list: arcade.SpriteList[Lever], end_list: arcade.SpriteList[arcade.Sprite], 
+                 
+                 platform_list: arcade.SpriteList[arcade.Sprite]
+                 ,
                  non_platform_moving_sprites_list : list[NonPlatformMovement]
                  ) -> None:
 
@@ -35,6 +41,8 @@ class Map :
         self.__lava_list = lava_list
         self.__coin_list = coin_list
         self.__monster_list = monster_list
+        self.__door_list = door_list
+        self.__lever_list = lever_list
         self.__end_list = end_list
         self.__next_map = ""
         self.__list_of_platforms = []
@@ -43,13 +51,75 @@ class Map :
 
         self.__create_map()
     
+    def lever_door_linking(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
+        """relie les portes au levier
+        ATTENTION cette fonction marche mais n'est pas securiser
+        """
+        
+        
+        with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
+            level = file.read()
+            partition = level.split('---\n',1)
+            yaml_return : object = yaml.safe_load(partition[0])
+            assert(isinstance(yaml_return,dict))
+            if not ('switches' in yaml_return):
+                return
+            if ('gates' in yaml_return):
+                for door in yaml_return['gates']:
+                    if 'state' and 'x' and 'y' in door:
+                        element = map_doors[door['y']][door['x']]
+                        if door['state'] =='open'  and isinstance(element,Door): 
+                            element.open()
+            lever_list = yaml_return['switches']
+            for switch in lever_list:
+                activation_close : list[Door] = [] 
+                activation_open : list[Door] = []  
+                deactivation_close : list[Door] = [] 
+                deactivation_open : list[Door] = [] 
+                start_on : bool = False
+                one_time_use : bool = False
+                if 'state' in switch:
+                    if isinstance(switch['state'],bool):
+                            start_on = switch['state']
+                if 'switch_on' in switch:
+                    for element in switch['switch_on']:
+                        #element : dict[str:str]
+                        #x_position : int = int(element['x'])
+                        #y_position : int = int(element['y'])
+                        if 'action' in element: 
+                            match element['action']:
+                                case 'disable':
+                                    one_time_use = True
+                                case 'open-gate':
+                                    if 'x' and 'y' in element:
+                                        activation_open.append(map_doors[element['y']][element['x']])
+                                case 'close-gate':
+                                    if 'x' and 'y' in element:
+                                        activation_close.append(map_doors[element['y']][element['x']])
+                if 'switch_off' in switch:
+                    for element in switch['switch_off']:
+                        if 'action' in element: 
+                            match element['action']:
+                                case 'disable':
+                                    one_time_use = True
+                                case 'open-gate':
+                                    deactivation_open.append(map_doors[element['y']][element['x']])
+                                case 'close-gate':
+                                    deactivation_close.append(map_doors[element['y']][element['x']])
+                if 'x' and 'y' in switch:
+                    lever : Lever = map_levers[switch['y']][switch['x']]
+                    lever.link_doors(activation_close ,activation_open, deactivation_close, deactivation_open, one_time_use,start_on)
+            
+
     def __parse_config(self) -> None :
         """Parses the configuration part of the map file."""
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             self.__width = 0
             self.__height = 0
             self.__has_next_map = False
+
             for line in f :
+               
                 if line == "---\n" or line == "---" :
                     break
                 line.split()
@@ -78,7 +148,7 @@ class Map :
 
     def __file_to_matrix(self) -> None :
         """Turns map file into a matrix"""
-        self.__map_matrix = [['' for i in range(self.__width)] for j in range(self.__height)]
+        self.__map_matrix = [["" for i in range(self.__width)] for j in range(self.__height)]
         # Matrice[Lines][Colonne]
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             while not f.readline() == "---\n" :
@@ -220,6 +290,8 @@ class Map :
         self.__file_to_matrix()
         self.find_platforms_in_map_matrix()
     
+        map_doors : list[list[Door | None]] = [[None for i in range(self.__width)] for j in range(self.__height)]
+        map_levers : list[list[Lever | None]] = [[None for i in range(self.__width)] for j in range(self.__height)]
         start_is_placed = False
         end_is_placed = False
 
@@ -241,6 +313,16 @@ class Map :
                     case "v" :
                         bat = Bat(x_coordinate, y_coordinate)
                         self.__monster_list.append(bat)
+                    case "^" :
+                        lever = Lever(x_coordinate, y_coordinate)
+                        self.__lever_list.append(lever)
+                        map_levers[line_number_arcade_coordinates][position_x] = lever
+                        
+                    case "|" :
+                        door = Door(x_coordinate, y_coordinate)
+                        self.__door_list.append(door)
+                        map_doors[line_number_arcade_coordinates][position_x] = door
+
                     case char if char in self.__hidden_characters | self.__arrow_characters :
                         pass
                     case char if char in self.__allowed_characters :
@@ -275,6 +357,7 @@ class Map :
             raise Exception("Player must have a starting point")
         if self.__has_next_map and not end_is_placed :
             raise Exception("The file sets the next map but no end to the level")
+        self.lever_door_linking(map_doors,map_levers) 
         
     def get_player_coordinates(self) -> tuple[int, int] :
         return self.player_coordinates

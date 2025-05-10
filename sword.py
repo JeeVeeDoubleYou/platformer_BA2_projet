@@ -12,7 +12,7 @@ class Sword(Weapon):
         self.is_active = True
         
     def in_hit_frame(self) -> None :
-        FRAMES_FOR_DAMAGES = 5
+        FRAMES_FOR_DAMAGES = 2
         if FRAMES_FOR_DAMAGES < self.frames_from_spawn:
             self.rgb = 255, 255, 255
             self.is_active = False
