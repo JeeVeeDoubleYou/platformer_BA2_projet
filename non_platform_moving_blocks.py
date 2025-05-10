@@ -28,7 +28,7 @@ class NonPlatformMovingBlocks :
                 else None
 
           
-    def move(self, recursion : int = 0) -> None : 
+    def move(self) -> None : 
         # ATTENTION : Ca marche pas du tout!
         match self.__direction :
             case Direction.VERTICAL :
@@ -49,12 +49,11 @@ class NonPlatformMovingBlocks :
                 assert self.__horizontal_bounds is not None
                 if self.__sprite.left <= self.__horizontal_bounds[0] :
                     self.__sprite.left = self.__horizontal_bounds[0]
-                    if self.__speed > 0:
+                    if self.__speed < 0:
                         self.__speed *= -1
 
                 if self.__sprite.right >= self.__horizontal_bounds[1] :
-                    self.__sprite.right = self.__horizontal_bounds[1]
-                    if self.__speed < 0:
+                    if self.__speed > 0:
                         self.__speed *= -1
 
                 self.__sprite.center_x += self.__speed

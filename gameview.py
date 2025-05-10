@@ -73,7 +73,6 @@ class GameView(arcade.View):
             self.__make_error_text(str(e))
             if self.__is_test : 
                 raise e
-            raise e
 
 
     def setup(self) -> None:

@@ -39,11 +39,11 @@ gates:
   # the other gates start closed
 ---
 ^     x           x
---    x   E      x
+--    x           x
       x-----      |
    ---x     o     =    
       x   -----   =  ^£
 ---   x   x   |  x= --£→→→
-      |  xx * x  x=  S      
-========================
+      |  xx * x  x=  S    E
+======================== ---→→
 ---
