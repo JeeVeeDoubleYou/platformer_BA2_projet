@@ -1,6 +1,6 @@
 import arcade
 from gameview import GameView, CAMERA_Y_MARGIN, CAMERA_X_MARGIN
-from main import WINDOW_HEIGHT, WINDOW_WIDTH
+from constants import WINDOW_HEIGHT, WINDOW_WIDTH
 
 
 def test_camera(window: arcade.Window) -> None: 
@@ -42,12 +42,12 @@ def test_camera_avec_platformes(window: arcade.Window) -> None:
 def x_is_in_range(view : GameView) -> bool :
     print(calculate_delta_x(view))
     print((WINDOW_WIDTH/2) - CAMERA_X_MARGIN)
-    return abs(calculate_delta_x(view)) <= (WINDOW_WIDTH/2) - CAMERA_X_MARGIN + 10 
+    return abs(calculate_delta_x(view)) <= (WINDOW_WIDTH/2) - CAMERA_X_MARGIN
     # The test conditions make the camera vibrate when the player colides with a box, 
     # which alters the position slightly. In order to account for that, we add a small buffer area
 
 def y_is_in_range(view : GameView) -> bool :
-    return abs(calculate_delta_y(view)) <= (WINDOW_HEIGHT/2) - CAMERA_Y_MARGIN + 10
+    return abs(calculate_delta_y(view)) <= (WINDOW_HEIGHT/2) - CAMERA_Y_MARGIN
 
 
 def calculate_delta_x(view : GameView) -> float :

@@ -460,6 +460,5 @@ class GameView(arcade.View):
     @property
     def get_arrow_list(self) -> arcade.SpriteList[Arrow]:
         return self.__arrow_list
-    
 
     
