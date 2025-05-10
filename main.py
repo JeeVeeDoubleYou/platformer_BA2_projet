@@ -1,9 +1,9 @@
 import arcade
 import sys
 from gameview import GameView
+from constants import WINDOW_HEIGHT, WINDOW_WIDTH
 # Constants
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+
 WINDOW_TITLE = "Platformer"
 
 def main() -> None:
