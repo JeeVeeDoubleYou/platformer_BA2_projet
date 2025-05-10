@@ -1,4 +1,5 @@
 import os
+import sys
 from typing import Optional
 import arcade
 import constants
@@ -58,6 +59,7 @@ class GameView(arcade.View):
 
         # Choose a nice comfy background color
         self.background_color = arcade.types.Color(223, 153, 153)
+        self.__is_test = 'pytest' in sys.argv[0]
 
         try :
             if not os.path.exists(map_name) :
@@ -69,7 +71,8 @@ class GameView(arcade.View):
             self.setup()
         except Exception as e :
             self.__make_error_text(str(e))
-            raise e
+            if self.__is_test : 
+                raise e
 
 
     def setup(self) -> None:
@@ -158,6 +161,9 @@ class GameView(arcade.View):
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
 
+        if not self.can_play :
+            return
+
         self.__player.on_key_press(key, modifiers)
 
         match key:   
@@ -172,12 +178,17 @@ class GameView(arcade.View):
     
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
+        if not self.can_play :
+            return
 
         self.__player.on_key_release(key, modifiers)
         
 
     def on_mouse_press(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         """Called when the user presses a mouse button."""
+
+        if not self.can_play :
+            return
 
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
@@ -206,8 +217,12 @@ class GameView(arcade.View):
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         """Called when the user a mouse button."""
 
+        if not self.can_play :
+            return
+
         # ATTENTION : Problème de polymorphisme, cette méthode ne devrait pas devoir choisir si c'est Bow ou pas. 
         # Relire tuto polymorphisme pour voir comment amméliorer.
+
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
                 if self.has_weapon_in_hand :
@@ -220,6 +235,9 @@ class GameView(arcade.View):
 
     def on_mouse_motion(self, mouse_x: int, mouse_y: int, buttons: int, modifiers: int) -> None:
         """Called when the mouse moves."""
+
+        if not self.can_play :
+            return
 
         # ATTENTION : Problem if player moves but not mouse for weapons.
 
