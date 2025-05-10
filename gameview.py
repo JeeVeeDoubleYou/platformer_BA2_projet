@@ -54,17 +54,22 @@ class GameView(arcade.View):
         # Magical incantion: initialize the Arcade view
         super().__init__()
 
-        if not os.path.exists(map_name) :
-            raise Exception("The file path for initial level is incorrect")
-        self.__initial_map_name = map_name
-        self.__current_map_name = self.__initial_map_name
+        self.__has_error = False
 
         # Choose a nice comfy background color
         self.background_color = arcade.types.Color(223, 153, 153)
 
-        # Setup our game
-        self.setup()
+        try :
+            if not os.path.exists(map_name) :
+                raise Exception("The file path for initial level is incorrect")
+            self.__initial_map_name = map_name
+            self.__current_map_name = self.__initial_map_name
 
+            # Setup our game
+            self.setup()
+        except Exception as e :
+            self.__make_error_text(str(e))
+            raise e
 
 
     def setup(self) -> None:
@@ -134,6 +139,20 @@ class GameView(arcade.View):
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
         self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
         self.__non_platform_moving_sprites_list = []
+
+    def __make_error_text(self, error : str) -> None :
+        self.__error_text = arcade.Text(
+                text=f"ERROR : {error}",
+                color = arcade.color.RED,
+                font_size= 30,
+                x = constants.WINDOW_WIDTH/2,
+                y = constants.WINDOW_HEIGHT/2,
+                anchor_x="center",
+                anchor_y="center"
+                )
+        self.background_color = arcade.color.WHITE
+        self.__has_error = True
+        self.__reset_sprite_lists()
 
     
     def on_key_press(self, key: int, modifiers: int) -> None:
@@ -220,6 +239,9 @@ class GameView(arcade.View):
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
         This is where in-world time "advances" or "ticks"."""
+
+        if not self.can_play: 
+            return
 
         if self.player_y < -500 :
             self.__setup_from_initial()
@@ -324,6 +346,7 @@ class GameView(arcade.View):
 
         if self.__next_map is None :
             self.__has_won = True
+            self.__reset_sprite_lists()
         else :
             assert os.path.exists(self.__next_map)
             self.__current_map_name = self.__next_map
@@ -341,11 +364,6 @@ class GameView(arcade.View):
         string_score ="Coin score = " + str(self.__player.coin_score)
         self.text_score.text = string_score
 
-    def game_won(self) -> None :
-        self.__reset_sprite_lists()
-        self.physics_engine = None
-        self.__player.physics_engine = None
-
 
     def on_draw(self) -> None:
         """Render the screen."""
@@ -353,8 +371,9 @@ class GameView(arcade.View):
         self.clear() # always start with self.clear()
 
         if self.__has_won :
-            self.game_won() # ATTENTION : Pas très efficace d'appeler ça 60 fois par seconde, si?
             self.__win_text.draw()
+        elif self.__has_error :
+            self.__error_text.draw()
         else :
             with self.__camera.activate():
                 for list in self.sprite_tuple :
@@ -401,6 +420,10 @@ class GameView(arcade.View):
         if len(self.__weapon_list) == 0 :
             return False
         return True
+    
+    @property
+    def can_play(self) -> bool :
+        return not (self.__has_error or self.__has_won)
     
     # Needed for the tests
 

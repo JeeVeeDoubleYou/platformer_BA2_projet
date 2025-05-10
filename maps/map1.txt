@@ -1,6 +1,5 @@
 width: 40
 height: 7
-next-map : maps/map2.txt
 ---
 *    -  -  E
 ---        -

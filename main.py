@@ -21,7 +21,6 @@ def main() -> None:
         arcade.run()
     except Exception as e :
         print(f"ERROR in {map_name} : {e}")
-        raise SystemExit(1)
 
 
 if __name__ == "__main__":
