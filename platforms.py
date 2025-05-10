@@ -34,6 +34,7 @@ class Platform :
         If called with only one horizontal/vertical argument, will keep the other as is, or set it to zero.
         If direction isn't already set, will set it.
         """
+    
         horizontal = left != 0 or right != 0
         vertical = up != 0 or down != 0
 
@@ -43,6 +44,7 @@ class Platform :
         if horizontal :
             if self.__horizontal_movement is None :
                 self.__horizontal_movement = (left, right)
+                self.direction = Direction.HORIZONTAL
             else :
                 l, r = self.__horizontal_movement
                 if l * left != 0 or r * right != 0 :
@@ -51,13 +53,12 @@ class Platform :
         if vertical :
             if self.__vertical_movement is None :
                 self.__vertical_movement = (up, down)
+                self.direction = Direction.VERTICAL
             else :
                 u, d = self.__vertical_movement
                 if u * up != 0 or d * down != 0 :
                     raise Exception("A platform can't have more that one line of arrows applying to it per direction")
                 self.__vertical_movement = (u if up == 0 else up, d if down == 0 else down)
-        
-        self.direction = Direction.HORIZONTAL if horizontal else Direction.VERTICAL
 
 
     def add_arrow_info(self, arrow : PlatformArrows, count : int) -> None :
@@ -75,7 +76,7 @@ class Platform :
     def add_sprite(self, coordinates : tuple[int, int]) -> None :
         """Adds sprite to the platform, using it's initial coordinates."""
         self.__sprite_set.add((coordinates[0] * constants.PIXELS_IN_BLOCK, coordinates[1] * constants.PIXELS_IN_BLOCK))
-    
+
     @property
     def sprite_set(self) -> set[tuple[int, int]] :
         return self.__sprite_set
@@ -102,7 +103,7 @@ class Platform :
     
     @direction.setter
     def direction(self, direction : Direction) -> None :
-        assert self.direction is None
+        assert self.direction is None, self.direction # ATTENTION : Enlever apres virgule apres
         match direction :
             case Direction.VERTICAL :
                 assert self.__horizontal_movement is None

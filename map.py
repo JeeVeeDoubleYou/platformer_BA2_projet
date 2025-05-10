@@ -213,8 +213,8 @@ class Map :
             else :
                 return
         if self.__map_matrix[line][column] in self.__platform_characters : 
-            line = self.__matrix_line_num_to_arcade(line)
-            platform.add_sprite((line, column)) 
+            arcade_line = self.__matrix_line_num_to_arcade(line)
+            platform.add_sprite((arcade_line, column))
 
         for d_line, d_col, valid_arrow in [(0, -1, PlatformArrows.LEFT), (0, 1, PlatformArrows.RIGHT), (1, 0, PlatformArrows.DOWN), (-1, 0, PlatformArrows.UP)] :
             self.grouping_platform(line + d_line, column + d_col, platform, visited, valid_arrow)
