@@ -49,13 +49,18 @@ class GameView(arcade.View):
     __player : Player
     __next_map : str | None
 
+    __has_won : bool # Internal variable for __won property
+    __has_error : bool # Internal variable for __error property
+
+
 
 
     def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
 
-        self.__has_error = False
+        self.__error = False
+        self.__won = False
 
         # Choose a nice comfy background color
         self.background_color = arcade.types.Color(223, 153, 153)
@@ -66,9 +71,9 @@ class GameView(arcade.View):
                 raise Exception("The file path for initial level is incorrect")
             self.__initial_map_name = map_name
             self.__current_map_name = self.__initial_map_name
-
             # Setup our game
             self.setup()
+
         except Exception as e :
             self.__make_error_text(str(e))
             if self.__is_test : 
@@ -80,7 +85,7 @@ class GameView(arcade.View):
 
         self.__reset_sprite_lists()
 
-        self.__has_won = False
+        self.__won = False
         self.__win_text = arcade.Text(
                         "Congratulations, you've won !",
                         color = arcade.color.BLACK,
@@ -126,6 +131,7 @@ class GameView(arcade.View):
             gravity_constant = constants.PLAYER_GRAVITY
         )
         self.__player.physics_engine = self.physics_engine
+
         
     def __reset_sprite_lists(self) -> None :
         """Sets all sprite lists to their initial empty values"""
@@ -146,15 +152,16 @@ class GameView(arcade.View):
     def __make_error_text(self, error : str) -> None :
         self.__error_text = arcade.Text(
                 text=f"ERROR : {error}",
-                color = arcade.color.RED,
-                font_size= 30,
+                color = arcade.color.RED_BROWN,
+                font_size= 40,
+                font_name="Impact",
                 x = constants.WINDOW_WIDTH/2,
                 y = constants.WINDOW_HEIGHT/2,
                 anchor_x="center",
                 anchor_y="center"
                 )
-        self.background_color = arcade.color.WHITE
-        self.__has_error = True
+        self.background_color = arcade.color.ALMOND
+        self.__error = True
         self.__reset_sprite_lists()
 
     
@@ -363,7 +370,7 @@ class GameView(arcade.View):
         """Load next_map of file. Should only be called if the file has a valid next map."""
 
         if self.__next_map is None :
-            self.__has_won = True
+            self.__won = True
             self.__reset_sprite_lists()
         else :
             assert os.path.exists(self.__next_map)
@@ -388,9 +395,9 @@ class GameView(arcade.View):
 
         self.clear() # always start with self.clear()
 
-        if self.__has_won :
+        if self.__won :
             self.__win_text.draw()
-        elif self.__has_error :
+        elif self.__error :
             self.__error_text.draw()
         else :
             with self.__camera.activate():
@@ -441,9 +448,27 @@ class GameView(arcade.View):
     
     @property
     def can_play(self) -> bool :
-        return not (self.__has_error or self.__has_won)
+        return not (self.__error or self.__won)
     
-    # Needed for the tests
+    @property
+    def __won(self) -> bool :
+        return self.__has_won
+
+    @__won.setter
+    def __won(self, value : bool) -> None :
+        if value == True :
+            self.__reset_sprite_lists()
+        self.__has_won = value
+
+    @property
+    def __error(self) -> bool :
+        return self.__has_error
+
+    @__error.setter
+    def __error(self, value : bool) -> None :
+        if value == True :
+            self.__reset_sprite_lists()
+        self.__has_error = value
 
     @property
     def get_wall_list(self) -> arcade.SpriteList[arcade.Sprite]:

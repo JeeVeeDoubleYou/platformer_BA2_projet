@@ -256,15 +256,16 @@ class Map :
         Should be called on sprites that *are not* in self.__non_wall_platform_characters.
         """
         direction, movement = self.get_sprite_boundaries(sprite)
+        
         match direction :
             case Direction.VERTICAL :
-                sprite.boundary_top = sprite.center_y + movement[0]
-                sprite.boundary_bottom = sprite.center_y - movement[1]
+                sprite.boundary_top = sprite.top + movement[0] 
+                sprite.boundary_bottom = sprite.bottom - movement[1] 
                 sprite.change_y = PLATFORM_SPEED
                 return True
             case Direction.HORIZONTAL :
-                sprite.boundary_left = sprite.center_x - movement[0]
-                sprite.boundary_right = sprite.center_x + movement[1]
+                sprite.boundary_left = sprite.left - movement[0] 
+                sprite.boundary_right = sprite.right + movement[1] 
                 sprite.change_x = PLATFORM_SPEED
                 return True
             case None :
@@ -276,6 +277,7 @@ class Map :
         self.__parse_config()
         self.__file_to_matrix()
         self.find_platforms_in_map_matrix()
+        
     
         map_doors : list[list[Door | None]] = [[None for i in range(self.__width)] for j in range(self.__height)]
         map_levers : list[list[Lever | None]] = [[None for i in range(self.__width)] for j in range(self.__height)]
@@ -320,7 +322,7 @@ class Map :
                             case "=" :
                                 name_and_list = (":resources:images/tiles/grassMid.png", self.__wall_list)
                             case "-" :
-                                name_and_list = (":resources:/images/tiles/grassHalf_mid.png", self.__wall_list)
+                                name_and_list = (":resources:/images/tiles/grassHalf_mid.png", self.__wall_list)                            
                             case "x" :
                                 name_and_list = (":resources:/images/tiles/boxCrate_double.png", self.__wall_list)
                             case "*" :

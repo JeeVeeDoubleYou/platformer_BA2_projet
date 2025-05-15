@@ -14,7 +14,7 @@ def main() -> None:
     if len(sys.argv) > 1 :
         map_name = sys.argv[1]
     else :
-        map_name = "maps/moving_map.txt"
+        map_name = "maps/level_1.txt"
     game_view = GameView(map_name)
     window.show_view(game_view)
     arcade.run()

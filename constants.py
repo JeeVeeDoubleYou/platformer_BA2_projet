@@ -15,8 +15,11 @@ SCALE = 0.5
 """Size in pixels of one block"""
 PIXELS_IN_BLOCK = 64
 
+"""Size in pixels of half a block"""
+HALF_BLOCK = PIXELS_IN_BLOCK / 2
+
 """Speed of platforms"""
-PLATFORM_SPEED = 2
+PLATFORM_SPEED = 1
 
 """Height of the arcade window in pixels"""
 WINDOW_HEIGHT = 720
