@@ -105,4 +105,4 @@ class Disk :
     def contains_point(self, position : tuple[float, float]) -> bool :
         """Returns True if the disk contains the point (position), False otherwise."""
         x, y = position
-        return math.sqrt((self.__center_x - x)**2 + (self.__center_y - y)**2) <= self.__radius
+        return (self.__center_x - x)**2 + (self.__center_y - y)**2 <= self.__radius**2      #C'est plus rapide de calculer un carre qu'une racine

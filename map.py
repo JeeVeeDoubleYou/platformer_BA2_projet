@@ -10,6 +10,7 @@ from door import Door
 import constants
 from constants import PIXELS_IN_BLOCK, PLATFORM_SPEED
 from monster import Monster
+from boss import Boss
 
 from plateforme import Platform, PlatformArrows, Direction
 
@@ -17,7 +18,7 @@ class Map :
 
     player_coordinates : tuple[int, int]
     __next_map : str
-    __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "v", "E", "=", "-", "x", "*", "£", "^", " ", "|", "^", "\n", "\r", "←", "→", "↑", "↓"})
+    __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "B", "v", "E", "=", "-", "x", "*", "£", "^", " ", "|", "^", "\n", "\r", "←", "→", "↑", "↓"})
     __hidden_characters : Final[frozenset[str]] = frozenset({" ", "\n", "\r"})
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
     __platform_sprites = frozenset({"=", "-", "x", "£", "E", "^"})
@@ -25,7 +26,7 @@ class Map :
     
     def __init__(self, current_map_name : str, wall_list: arcade.SpriteList[arcade.Sprite], 
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
-                 monster_list: arcade.SpriteList[Monster], door_list: arcade.SpriteList[Door], 
+                 monster_list: arcade.SpriteList[Monster], boss_list: arcade.SpriteList[Boss], door_list: arcade.SpriteList[Door], 
                  lever_list: arcade.SpriteList[Lever], end_list: arcade.SpriteList[arcade.Sprite], 
                  platform_list: arcade.SpriteList[arcade.Sprite]
                  ) -> None:
@@ -35,6 +36,7 @@ class Map :
         self.__lava_list = lava_list
         self.__coin_list = coin_list
         self.__monster_list = monster_list
+        self.__boss_list = boss_list
         self.__door_list = door_list
         self.__lever_list = lever_list
         self.__end_list = end_list
@@ -258,6 +260,11 @@ class Map :
                     case "o" :
                         blob = Blob(x_coordinate, y_coordinate)
                         self.__monster_list.append(blob)
+                    case "B" :
+                        boss = Boss(x_coordinate, y_coordinate)
+                        map_levers[line_number_arcade_coordinates][position_x] = boss
+                        self.__monster_list.append(boss)
+                        self.__boss_list.append(boss)
                     case "v" :
                         bat = Bat(x_coordinate, y_coordinate)
                         self.__monster_list.append(bat)

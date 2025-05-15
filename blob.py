@@ -8,14 +8,13 @@ BLUE_BLOB_SPEED = -2       # is negative to make the slime move in the direction
 class Blob(Monster):
     """Represents a blob, how it moves and checks for collistions"""
 
-    def __init__(self, x: float, y: float) -> None :
+    def __init__(self, x: float, y: float,) -> None :
         
         super().__init__(":resources:/images/enemies/slimeBlue.png")
-        
         self.speed = BLUE_BLOB_SPEED
-
         self.center_x = x
         self.center_y = y
+        self.alpha = 255
 
     def move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
         """Makes blob move without falling or hitting boxes, changes direction when necessary"""
@@ -30,9 +29,15 @@ class Blob(Monster):
 
         self.center_x -= 20*self.speed
         self.center_y += 10
+        
 
+
+        #if self.alpha >0:
+        #    self.alpha -= 1
         # Checks if blob is on the edge of the platform or if it is touching a wall other than the floor underneath it
         if arcade.check_for_collision_with_list(self, wall_list) != [] or is_on_edge:
             self.speed = -self.speed
             self.scale_x *= -1      #flip the slime horizontaly
             self.strafe(self.speed)
+            #self.alpha = max(30,self.alpha)
+
