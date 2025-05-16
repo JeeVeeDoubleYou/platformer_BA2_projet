@@ -84,10 +84,10 @@ class GameView(arcade.View):
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
         self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
 
-        self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
-                            self.__monster_list, self.__lever_list, self.__door_list ,self.__weapon_list, 
-                            self.__arrow_list, self.__end_list) 
-       
+        self.sprite_tuple = (self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
+                             self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
+                               self.__monster_list, self.__player_sprite_list, self.__weapon_list) 
+        self.__player_sprite_list, 
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
                   self.__monster_list, self.__boss_list, self.__door_list ,self.__lever_list, self.__end_list, self.__platform_list)
         self.__player = Player(map.get_player_coordinates()[0], map.get_player_coordinates()[1])

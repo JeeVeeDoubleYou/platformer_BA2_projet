@@ -23,6 +23,7 @@ class Map :
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
     __platform_sprites = frozenset({"=", "-", "x", "£", "E", "^"})
     __list_of_platforms : list[Platform]
+    __ymal_part : dict[str,object]
     
     def __init__(self, current_map_name : str, wall_list: arcade.SpriteList[arcade.Sprite], 
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
@@ -45,13 +46,53 @@ class Map :
         self.__platform_list = platform_list
 
         self.__create_map()
+
+    def get_ymal(self) -> None:
+        
+
+        try : 
+           with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
+            level = file.read()
+            partition = level.split('---\n',1)
+            yaml_return : object = yaml.safe_load(partition[0])
+            if (isinstance(yaml_return,dict)):
+                self.__ymal_part = yaml_return
+        except ValueError :
+            raise Exception("Configuration lines on file aren't formated correctly")
+
+    def parse_config_2(self) -> None:
+        #je met cette erreure car je suis pas sur qu'elle soit un probleme:
+        #  raise Exception("You can't set the width twice")
+        self.get_ymal()
+        self.__width = 0
+        self.height = 0
+        try : 
+            if 'width' in self.__ymal_part:
+                if isinstance(self.__ymal_part['width'],int):
+                    self.__width = self.__ymal_part['width']
+                else: Exception("The width must be a positive integer")
+            else: raise Exception("The width isn't provided correctly")    
+            if 'height' in self.__ymal_part:
+                if (isinstance(self.__ymal_part['height'],int)):
+                    self.__width = self.__ymal_part['height']
+                else: raise Exception("The height must be a positive integer")
+            else: raise Exception("The height isn't provided correctly")
+            if 'next-map' in self.__ymal_part:
+                if (isinstance(self.__ymal_part['next-map'],str)):
+                    self.__next_map = self.__ymal_part['next-map']
+                else: raise Exception("The height must a file adresse")
+        except ValueError :
+            raise Exception("Configuration lines on file aren't formated correctly")    #je check 2 fois pas sur que c'est necessaire
+        if (self.__width == 0 or self.__height == 0) :
+            raise Exception(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
+        if (self.__width < 0 or self.__height < 0) :
+            raise Exception("Width and height should be positive numbers")
     
+
     def lever_door_linking(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
         """relie les portes au levier
         ATTENTION cette fonction marche mais n'est pas securiser
         """
-        
-        
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
             level = file.read()
             partition = level.split('---\n',1)
@@ -59,52 +100,66 @@ class Map :
             assert(isinstance(yaml_return,dict))
             if not ('switches' in yaml_return):
                 return
-            if ('gates' in yaml_return):
+            if self.valid_dict(yaml_return,'gates',list):
                 for door in yaml_return['gates']:
-                    if 'state' and 'x' and 'y' in door:
-                        element = map_doors[door['y']][door['x']]
-                        if door['state'] =='open'  and isinstance(element,Door): 
-                            element.open()
-            lever_list = yaml_return['switches']
-            for switch in lever_list:
-                activation_close : list[Door] = [] 
-                activation_open : list[Door] = []  
-                deactivation_close : list[Door] = [] 
-                deactivation_open : list[Door] = [] 
-                start_on : bool = False
-                one_time_use : bool = False
-                if 'state' in switch:
-                    if isinstance(switch['state'],bool):
+                    if isinstance(door,dict):
+                        if (self.valid_dict(door,'state',str) and
+                            self.valid_dict(door,'x',int) and
+                            self.valid_dict(door,'y',int)):
+                            element = map_doors[door['y']][door['x']]
+                            if door['state'] =='open'  and isinstance(element,Door): 
+                                element.open()
+            if self.valid_dict(yaml_return,'gates',list):
+                lever_list = yaml_return['switches']
+                for switch in lever_list:
+                    if isinstance(switch,dict):
+                        activation_close : list[Door] = [] 
+                        activation_open : list[Door] = []  
+                        deactivation_close : list[Door] = [] 
+                        deactivation_open : list[Door] = [] 
+                        start_on : bool = False
+                        one_time_use : bool = False
+                        if self.valid_dict(switch,'state',bool):
                             start_on = switch['state']
-                if 'switch_on' in switch:
-                    for element in switch['switch_on']:
-                        #element : dict[str:str]
-                        #x_position : int = int(element['x'])
-                        #y_position : int = int(element['y'])
-                        if 'action' in element: 
-                            match element['action']:
-                                case 'disable':
-                                    one_time_use = True
-                                case 'open-gate':
-                                    if 'x' and 'y' in element:
-                                        activation_open.append(map_doors[element['y']][element['x']])
-                                case 'close-gate':
-                                    if 'x' and 'y' in element:
-                                        activation_close.append(map_doors[element['y']][element['x']])
-                if 'switch_off' in switch:
-                    for element in switch['switch_off']:
-                        if 'action' in element: 
-                            match element['action']:
-                                case 'disable':
-                                    one_time_use = True
-                                case 'open-gate':
-                                    deactivation_open.append(map_doors[element['y']][element['x']])
-                                case 'close-gate':
-                                    deactivation_close.append(map_doors[element['y']][element['x']])
-                if 'x' and 'y' in switch:
-                    lever : Lever = map_levers[switch['y']][switch['x']]
-                    lever.link_doors(activation_close ,activation_open, deactivation_close, deactivation_open, one_time_use,start_on)
-            
+                        if self.valid_dict(switch, 'switch_on', list):
+                            for element in switch['switch_on']:
+                                if isinstance(element,dict):
+                                    if self.valid_dict(element,'action',str):
+                                        match element['action']:
+                                            case 'disable':
+                                                one_time_use = True
+                                            case 'open-gate':
+                                                if (self.valid_dict(element,'x',int) and 
+                                                    self.valid_dict(element,'y',int)):
+                                                    activation_open.append(map_doors[element['y']][element['x']])
+                                            case 'close-gate':
+                                                if (self.valid_dict(element,'x',int) and 
+                                                    self.valid_dict(element,'y',int)):
+                                                    activation_close.append(map_doors[element['y']][element['x']])
+                        if self.valid_dict(switch, 'switch_off', list):
+                            for element in switch['switch_off']:
+                                if isinstance(element,dict):
+                                    if self.valid_dict(element,'action',str):
+                                        match element['action']:
+                                            case 'disable':
+                                                one_time_use = True
+                                            case 'open-gate':
+                                                if (self.valid_dict(element,'x',int) and 
+                                                    self.valid_dict(element,'y',int)):
+                                                    deactivation_open.append(map_doors[element['y']][element['x']])
+                                            case 'close-gate':
+                                                if (self.valid_dict(element,'x',int) and 
+                                                    self.valid_dict(element,'y',int)):
+                                                    deactivation_close.append(map_doors[element['y']][element['x']])
+                        if (self.valid_dict(switch,'x',int) and 
+                            self.valid_dict(switch,'y',int)):
+                            lever_in_map = map_levers[switch['y']][switch['x']]
+                            if isinstance(lever_in_map,Lever):
+                                lever : Lever = lever_in_map
+                                lever.link_doors(activation_close ,activation_open, deactivation_close, deactivation_open, one_time_use,start_on)
+    
+
+
 
     def __parse_config(self) -> None :
 
@@ -318,3 +373,10 @@ class Map :
     def get_next_map(self) -> str :
         return self.__next_map
     
+
+    def valid_dict (self,dict: dict[str,object], key: str, type_in_dict: type ) -> bool:
+        """Return true if the dict have the key and the correct value type associated with that key """
+        if key in dict:
+            if isinstance(dict[key],type_in_dict):
+                return True
+        return False

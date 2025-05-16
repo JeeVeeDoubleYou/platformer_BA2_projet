@@ -4,19 +4,29 @@ import random
 from typing import Final
 from monster import Monster
  
-from bat import Disk
+from helper import Disk
 import arcade
 import math
 
-"""Speed of b
-ats"""
+"""Speed of boss"""
 BOSS_SPEED = 3
 
-"""Radius in which bat can move around it's spawning point"""
-ACTION_RADIUS = 400
+"""Radius in which boss can move around it's spawning point"""
+ACTION_RADIUS = 500
 
 """Number of frames every which we change direction randomly"""
 FRAMES = 80
+
+
+from enum import IntEnum
+
+
+class Attack(IntEnum) : 
+        PAUSE = 0
+        RUSH = 1
+        WALK = 2
+        DASH = 3
+
 
 class Boss(Monster, Lever):
     """Represents a bat, defines how it moves"""
@@ -37,6 +47,8 @@ class Boss(Monster, Lever):
 
         self.__initial_x = x
         self.__initial_y = y
+
+        self.choice : Attack = Attack.WALK
 
         self.hit_points = 3
         self.texture = arcade.load_texture("assets/kenney-extended-enemies-png/spinner.png")
@@ -61,32 +73,46 @@ class Boss(Monster, Lever):
                 self.speed = 2*BOSS_SPEED
                 print("repositioning")
             elif self.action_area.contains_point((player_x,player_y)):
-                choice = random.randint(0,3)
-                match choice:
-                    case 0:
+                match self.choice:          #chooses a random move to do 
+                    case Attack.PAUSE:
                         self.speed = 0
-                        self.__frames_until_random = FRAMES//2
+                        self.__frames_until_random = random.randint(40,80)
+                        can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
+                        self.choice = random.choice(can_do)
                         print("pause")
 
-                    case 1:
+                    case Attack.RUSH:
                         self.angle_deplacement = math.pi + math.atan2(self.center_y - player_y ,self.center_x - player_x)
                         self.speed =2*BOSS_SPEED
-                        self.__frames_until_random = FRAMES
-                        print("attaque")
+                        self.__frames_until_random = random.randint(20,60)
+                        can_do = [Attack.PAUSE, Attack.RUSH, Attack.DASH]
+                        self.choice = random.choice(can_do)
+                        print("rush")
 
-                    case 2:
-                        self.__frames_until_random = FRAMES
+                    case Attack.WALK:         
+                        self.__frames_until_random = random.randint(60,100)
                         self.angle_deplacement = 45*random.randint(0,7)       #pour obtenire une mouvement mecanique de scie
-                        self.__frames_until_random = FRAMES
                         self.speed = BOSS_SPEED
+                        can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
+                        self.choice = random.choice(can_do)
                         print("move")
+                        
 
-                    case 3:
-                        self.__frames_until_random = FRAMES
-                        self.angle_deplacement =math.pi/2 + math.atan2(self.center_y - player_y ,self.center_x - player_x)
+                    case Attack.DASH:
+                        self.__frames_until_random = random.randint(20,40)
+                        if random.getrandbits(1):
+                            left_or_right = 2*math.pi/3
+                        else:
+                            left_or_right = -2*math.pi/3
+                        self.angle_deplacement =left_or_right + math.atan2(self.center_y - player_y ,self.center_x - player_x)
                         self.speed =3*BOSS_SPEED
-                        self.__frames_until_random = FRAMES//2
+                        can_do =[Attack.RUSH, Attack.DASH]
+                        self.choice = random.choice(can_do)
                         print("dash")
+            else :
+                self.speed=0
+                self.__frames_until_random = FRAMES
+                    
             self.__new_speed()
         
         
