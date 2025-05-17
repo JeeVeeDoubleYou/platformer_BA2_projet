@@ -1,4 +1,4 @@
-width: 1
+width: 15
 height: 3
 ---
     v
