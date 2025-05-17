@@ -18,6 +18,7 @@ class Map :
 
     player_coordinates : tuple[int, int]
     __next_map : str
+    __has_next_map: bool
     __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "B", "v", "E", "=", "-", "x", "*", "£", "^", " ", "|", "^", "\n", "\r", "←", "→", "↑", "↓"})
     __hidden_characters : Final[frozenset[str]] = frozenset({" ", "\n", "\r"})
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
@@ -42,6 +43,7 @@ class Map :
         self.__lever_list = lever_list
         self.__end_list = end_list
         self.__next_map = ""
+        self.__has_next_map = False
         self.__list_of_platforms = []
         self.__platform_list = platform_list
 
@@ -60,33 +62,34 @@ class Map :
         except ValueError :
             raise Exception("Configuration lines on file aren't formated correctly")
 
-    def parse_config_2(self) -> None:
+    def __parse_config_2(self) -> None:
         #je met cette erreure car je suis pas sur qu'elle soit un probleme:
         #  raise Exception("You can't set the width twice")
         self.get_ymal()
         self.__width = 0
-        self.height = 0
+        self.__height = 0
         try : 
-            if 'width' in self.__ymal_part:
-                if isinstance(self.__ymal_part['width'],int):
-                    self.__width = self.__ymal_part['width']
-                else: Exception("The width must be a positive integer")
-            else: raise Exception("The width isn't provided correctly")    
-            if 'height' in self.__ymal_part:
-                if (isinstance(self.__ymal_part['height'],int)):
-                    self.__width = self.__ymal_part['height']
-                else: raise Exception("The height must be a positive integer")
-            else: raise Exception("The height isn't provided correctly")
-            if 'next-map' in self.__ymal_part:
-                if (isinstance(self.__ymal_part['next-map'],str)):
-                    self.__next_map = self.__ymal_part['next-map']
-                else: raise Exception("The height must a file adresse")
+            match self.__ymal_part:
+                case {"width":width,"height":height}:
+                    if isinstance(width, int):
+                        self.__width = width
+                    else: Exception("The width must be a positive integer")
+                    if isinstance(height, int):
+                        self.__height = height
+                    else: Exception("The height must be a positive integer")
+            if "next-map" in self.__ymal_part:
+                if isinstance(self.__ymal_part["next-map"],str):
+                    self.__has_next_map = True
+                    self.__next_map = self.__ymal_part["next-map"]
+            else: raise Exception("The height must a file adresse")                                                                                                                                                                                                             
         except ValueError :
             raise Exception("Configuration lines on file aren't formated correctly")    #je check 2 fois pas sur que c'est necessaire
         if (self.__width == 0 or self.__height == 0) :
             raise Exception(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
         if (self.__width < 0 or self.__height < 0) :
             raise Exception("Width and height should be positive numbers")
+
+          
     
 
     def lever_door_linking(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
@@ -290,8 +293,8 @@ class Map :
 
     def __create_map(self) -> None : 
         """Creates map from file, raises exceptions in case of errors in map."""
-
-        self.__parse_config()
+        self.__parse_config_2()
+        #self.__parse_config()
         self.__file_to_matrix()
         self.mini_platform_matrices()
     

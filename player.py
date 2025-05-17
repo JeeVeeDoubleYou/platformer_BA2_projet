@@ -69,7 +69,7 @@ class Player(arcade.Sprite):
             case arcade.key.UP | arcade.key.W | arcade.key.SPACE:
                 # jump by giving an initial vertical speed
                 if self.physics_engine is not None :
-                    if self.physics_engine.can_jump(5) or True :
+                    if self.physics_engine.can_jump(5):
                         self.change_y = constants.PLAYER_JUMP_SPEED
                         arcade.play_sound(arcade.load_sound(":resources:sounds/jump3.wav"))
 

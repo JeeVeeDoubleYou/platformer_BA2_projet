@@ -5,6 +5,7 @@ import constants
 from player import Player
 from player import WeaponType
 from boss import Boss
+from boss import Attack
 from monster import Monster
 from weapon import Weapon
 from sword import Sword
@@ -13,6 +14,7 @@ from arrow import Arrow
 from lever import Lever
 from door import Door
 from map import Map
+
 
 
 from arcade import Rect
@@ -154,6 +156,8 @@ class GameView(arcade.View):
                         self.__weapon_list.append(Sword(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
                     case WeaponType.BOW:
                         self.__weapon_list.append(Bow(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
+                        for boss in self.__boss_list:       #to make the boss attack when drawing an arrow
+                            boss.choice = Attack.RUSH
             case arcade.MOUSE_BUTTON_RIGHT:
                 self.__weapon_list.clear()
                 self.__player.change_weapon()
@@ -175,6 +179,9 @@ class GameView(arcade.View):
                     current_weapon = self.__weapon_list[0]
                     if isinstance(current_weapon, Bow) and current_weapon.is_active :
                         self.__arrow_list.append(Arrow(current_weapon))
+                        for boss in self.__boss_list:       #to make the boss dodge arrows
+                            boss.frame_until_action = 1
+                            boss.choice = Attack.DASH
                 self.__weapon_list.clear()
 
             

@@ -50,14 +50,14 @@ class Boss(Monster, Lever):
 
         self.choice : Attack = Attack.WALK
 
-        self.hit_points = 3
+        self.hit_points = 7
         self.texture = arcade.load_texture("assets/kenney-extended-enemies-png/spinner.png")
         self.sync_hit_box_to_texture()
         self.scale = (1,1)
 
         self.angle_deplacement = 0.0
 
-        self.__frames_until_random = FRAMES
+        self.frame_until_action = FRAMES
 
         self.action_area = Disk(self.__initial_x, self.__initial_y, ACTION_RADIUS)
 
@@ -65,18 +65,18 @@ class Boss(Monster, Lever):
         self.__update_position()
 
     def ia(self,player_x : float, player_y: float) -> None:
-        self.__frames_until_random -= 1
-        if self.__frames_until_random == 0:
+        self.frame_until_action -= 1
+        if self.frame_until_action == 0:
             if not self.action_area.contains_point((self.center_x, self.center_y)):
                 self.angle_deplacement = math.pi + math.atan2(self.center_y - self.__initial_y ,self.center_x - self.__initial_x)
-                self.__frames_until_random = FRAMES
+                self.frame_until_action = FRAMES
                 self.speed = 2*BOSS_SPEED
                 print("repositioning")
             elif self.action_area.contains_point((player_x,player_y)):
                 match self.choice:          #chooses a random move to do 
                     case Attack.PAUSE:
                         self.speed = 0
-                        self.__frames_until_random = random.randint(40,80)
+                        self.frame_until_action = random.randint(40,80)
                         can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
                         self.choice = random.choice(can_do)
                         print("pause")
@@ -84,13 +84,13 @@ class Boss(Monster, Lever):
                     case Attack.RUSH:
                         self.angle_deplacement = math.pi + math.atan2(self.center_y - player_y ,self.center_x - player_x)
                         self.speed =2*BOSS_SPEED
-                        self.__frames_until_random = random.randint(20,60)
+                        self.frame_until_action = random.randint(20,60)
                         can_do = [Attack.PAUSE, Attack.RUSH, Attack.DASH]
                         self.choice = random.choice(can_do)
                         print("rush")
 
                     case Attack.WALK:         
-                        self.__frames_until_random = random.randint(60,100)
+                        self.frame_until_action = random.randint(60,100)
                         self.angle_deplacement = 45*random.randint(0,7)       #pour obtenire une mouvement mecanique de scie
                         self.speed = BOSS_SPEED
                         can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
@@ -99,7 +99,7 @@ class Boss(Monster, Lever):
                         
 
                     case Attack.DASH:
-                        self.__frames_until_random = random.randint(20,40)
+                        self.frame_until_action = random.randint(20,40)
                         if random.getrandbits(1):
                             left_or_right = 2*math.pi/3
                         else:
@@ -111,7 +111,7 @@ class Boss(Monster, Lever):
                         print("dash")
             else :
                 self.speed=0
-                self.__frames_until_random = FRAMES
+                self.frame_until_action = FRAMES
                     
             self.__new_speed()
         
@@ -133,7 +133,12 @@ class Boss(Monster, Lever):
     
     def die(self) -> None:
         self.hit_points -=1
-        self.speed *= -1
+
+        self.choice = Attack.DASH       #Make the boss back off 
+        self.speed = 2*BOSS_SPEED
+        self.frame_until_action = 30
+        self.choice = Attack.DASH
+
         self.__new_speed()
         if self.hit_points == 0 :
             self.on_action()
