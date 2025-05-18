@@ -1,6 +1,6 @@
 import arcade
 from gameview import GameView, CAMERA_Y_MARGIN, CAMERA_X_MARGIN
-from main import WINDOW_HEIGHT, WINDOW_WIDTH
+from constants import WINDOW_HEIGHT, WINDOW_WIDTH
 
 
 def test_camera(window: arcade.Window) -> None: 

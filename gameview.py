@@ -1,7 +1,10 @@
 import os
+import sys
 from typing import Optional
 import arcade
 import constants
+from platforms import Direction
+from non_platform_moving_blocks import NonPlatformMovingBlocks
 from player import Player
 from player import WeaponType
 from boss import Boss
@@ -28,7 +31,7 @@ class GameView(arcade.View):
 
     __player_sprite_list: arcade.SpriteList[arcade.Sprite]
     __wall_list: arcade.SpriteList[arcade.Sprite]
-    __platform_list : arcade.SpriteList[arcade.Sprite] # ATTENTION : Should add collisions with this
+    __platform_list : arcade.SpriteList[arcade.Sprite]
     __lava_list: arcade.SpriteList[arcade.Sprite]
     __coin_list: arcade.SpriteList[arcade.Sprite]
     __weapon_list: arcade.SpriteList[Weapon]
@@ -39,14 +42,19 @@ class GameView(arcade.View):
     __door_list: arcade.SpriteList[Door]
     __solid_block_list: arcade.SpriteList[arcade.Sprite]
     __end_list: arcade.SpriteList[arcade.Sprite]
-    physics_engine: arcade.PhysicsEnginePlatformer
+    __non_platform_moving_sprites_list : list[NonPlatformMovingBlocks]
+    physics_engine: arcade.PhysicsEnginePlatformer | None
     __camera: arcade.camera.Camera2D
 
     __icon_list: arcade.SpriteList[arcade.Sprite]
     __fixed_camera: arcade.camera.Camera2D
 
     __player : Player
-    __next_map : str
+    __next_map : str | None
+
+    __has_won : bool # Internal variable for __won property
+    __has_error : bool # Internal variable for __error property
+
 
 
 
@@ -54,44 +62,53 @@ class GameView(arcade.View):
         # Magical incantion: initialize the Arcade view
         super().__init__()
 
-        if not os.path.exists(map_name) :
-            raise Exception("The file path for initial level is incorrect")
-        self.__initial_map_name = map_name
-        self.__current_map_name = self.__initial_map_name
+        self.__error = False
+        self.__won = False
 
         # Choose a nice comfy background color
         self.background_color = arcade.types.Color(223, 153, 153)
-        #arcade.color.LIGHT_CORAL
-    
-        # Setup our game
-        self.setup()
+        self.__is_test = 'pytest' in sys.argv[0]
 
+        try :
+            if not os.path.exists(map_name) :
+                raise Exception("The file path for initial level is incorrect")
+            self.__initial_map_name = map_name
+            self.__current_map_name = self.__initial_map_name
+            # Setup our game
+            self.setup()
+
+        except Exception as e :
+            self.__make_error_text(str(e))
+            if self.__is_test : 
+                raise e
 
 
     def setup(self) -> None:
         """Set up the game here."""
 
-        # Initialisation of all lists
-        self.__player_sprite_list = arcade.SpriteList()
-        self.__wall_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__platform_list = arcade.SpriteList()
-        self.__coin_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__door_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__monster_list = arcade.SpriteList()
-        self.__boss_list = arcade.SpriteList()
-        self.__weapon_list = arcade.SpriteList()
-        self.__arrow_list = arcade.SpriteList()
-        self.__end_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__reset_sprite_lists()
+
+        self.__won = False
+        self.__win_text = arcade.Text(
+                        "Congratulations, you've won !",
+                        color = arcade.color.BLACK,
+                        font_size= 54,
+                        font_name="Impact",
+                        x = constants.WINDOW_WIDTH/2,
+                        y = constants.WINDOW_HEIGHT/2,
+                        anchor_x="center",
+                        anchor_y="center"
+                        )
+
 
         self.sprite_tuple = (self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
                              self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
                                self.__monster_list, self.__player_sprite_list, self.__weapon_list) 
         self.__player_sprite_list, 
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
-                  self.__monster_list, self.__boss_list, self.__door_list ,self.__lever_list, self.__end_list, self.__platform_list)
+                  self.__monster_list,  self.__boss_list, self.__door_list, self.__lever_list, self.__end_list, 
+                  self.__platform_list, self.__non_platform_moving_sprites_list)
+        
         self.__player = Player(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         self.__next_map = map.get_next_map()
         
@@ -122,10 +139,46 @@ class GameView(arcade.View):
             gravity_constant = constants.PLAYER_GRAVITY
         )
         self.__player.physics_engine = self.physics_engine
-        
 
+        
+    def __reset_sprite_lists(self) -> None :
+        """Sets all sprite lists to their initial empty values"""
+        self.__player_sprite_list = arcade.SpriteList()
+        self.__wall_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__platform_list = arcade.SpriteList()
+        self.__coin_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__door_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__monster_list = arcade.SpriteList()
+        self.__boss_list = arcade.SpriteList()
+        self.__weapon_list = arcade.SpriteList()
+        self.__arrow_list = arcade.SpriteList()
+        self.__end_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
+        self.__non_platform_moving_sprites_list = []
+
+    def __make_error_text(self, error : str) -> None :
+        self.__error_text = arcade.Text(
+                text=f"ERROR : {error}",
+                color = arcade.color.RED_BROWN,
+                font_size= 40,
+                font_name="Impact",
+                x = constants.WINDOW_WIDTH/2,
+                y = constants.WINDOW_HEIGHT/2,
+                anchor_x="center",
+                anchor_y="center"
+                )
+        self.background_color = arcade.color.ALMOND
+        self.__error = True
+        self.__reset_sprite_lists()
+
+    
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
+
+        if not self.can_play :
+            return
 
         self.__player.on_key_press(key, modifiers)
 
@@ -141,12 +194,17 @@ class GameView(arcade.View):
     
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
+        if not self.can_play :
+            return
 
         self.__player.on_key_release(key, modifiers)
         
 
     def on_mouse_press(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         """Called when the user presses a mouse button."""
+
+        if not self.can_play :
+            return
 
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
@@ -171,8 +229,12 @@ class GameView(arcade.View):
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         """Called when the user a mouse button."""
 
+        if not self.can_play :
+            return
+
         # ATTENTION : Problème de polymorphisme, cette méthode ne devrait pas devoir choisir si c'est Bow ou pas. 
         # Relire tuto polymorphisme pour voir comment amméliorer.
+
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
                 if self.has_weapon_in_hand :
@@ -188,6 +250,9 @@ class GameView(arcade.View):
 
     def on_mouse_motion(self, mouse_x: int, mouse_y: int, buttons: int, modifiers: int) -> None:
         """Called when the mouse moves."""
+
+        if not self.can_play :
+            return
 
         # ATTENTION : Problem if player moves but not mouse for weapons.
 
@@ -208,10 +273,17 @@ class GameView(arcade.View):
         """Called once per frame, before drawing.
         This is where in-world time "advances" or "ticks"."""
 
+        if not self.can_play: 
+            return
+
         if self.player_y < -500 :
             self.__setup_from_initial()
 
-        self.physics_engine.update()
+        for non_platform in self.__non_platform_moving_sprites_list :
+            non_platform.move()
+
+        if self.physics_engine is not None :
+            self.physics_engine.update()
 
         for boss in self.__boss_list :
             boss.ia(self.player_x,self.player_y)
@@ -227,9 +299,6 @@ class GameView(arcade.View):
             if (arrow.center_x < self.__camera.bottom_left.x):
                 arrow.remove_from_sprite_lists()
 
-                
-
-        
         self.__update_camera()
         self.__check_collisions()
         
@@ -239,9 +308,9 @@ class GameView(arcade.View):
 
         camera_x, camera_y = self.__camera.position
         if (self.__camera.center_right.x < self.__player.center_x + CAMERA_X_MARGIN):
-            camera_x += constants.PLAYER_MOVEMENT_SPEED
+            camera_x += max(abs(self.player_speed_x), constants.PLATFORM_SPEED)
         elif (self.__camera.center_left.x > self.__player.center_x - CAMERA_X_MARGIN):
-            camera_x -= constants.PLAYER_MOVEMENT_SPEED
+            camera_x -= max(abs(self.player_speed_x), constants.PLATFORM_SPEED)
 
         if (self.__camera.top_center.y < self.__player.center_y + CAMERA_Y_MARGIN) :
             if self.__player.change_y != 0 :
@@ -255,7 +324,8 @@ class GameView(arcade.View):
                 camera_y -= constants.PLATFORM_SPEED
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
-
+        
+        
     
     def __check_collisions(self) -> None :
         """
@@ -324,7 +394,10 @@ class GameView(arcade.View):
             self.__text_win.text = "you won "
             self.__text_win.draw()
 
-        else:
+        if self.__next_map is None :
+            self.__won = True
+            self.__reset_sprite_lists()
+        else :
             assert os.path.exists(self.__next_map)
             self.__current_map_name = self.__next_map
             self.setup()
@@ -339,27 +412,27 @@ class GameView(arcade.View):
     def update_user_interface(self) -> None :
         """"geres les compteur et icones sur l'ecran"""
         string_score ="Coin score = " + str(self.__player.coin_score)
-        self.__text_score.text = string_score
+        self.text_score.text = string_score
+
+
 
     def on_draw(self) -> None:
         """Render the screen."""
 
         self.clear() # always start with self.clear()
-        with self.__camera.activate():
-            for list in self.sprite_tuple :
-                list.draw()
-                list.draw_hit_boxes()
 
-        with self.__fixed_camera.activate(): 
-                if 'rect' in self.__weapon_icon and 'texture' in self.__weapon_icon:           
-                    rect = self.__weapon_icon['rect']
-                    texture = self.__weapon_icon['texture']
-                    assert(isinstance(rect, Rect) and isinstance(texture, str))
-                    arcade.draw_texture_rect(arcade.load_texture(texture), rect)
-                self.__text_score.draw()
-                self.__text_win.draw()
+        if self.__won :
+            self.__win_text.draw()
+        elif self.__error :
+            self.__error_text.draw()
+        else :
+            with self.__camera.activate():
+                for list in self.sprite_tuple :
+                    list.draw()
 
-    
+            with self.__fixed_camera.activate(): 
+                    self.text_score.draw()
+                    self.__icon_list.draw()
             
     @property
     def player_x(self) -> float:
@@ -399,7 +472,29 @@ class GameView(arcade.View):
             return False
         return True
     
-    #needed for the tests
+    @property
+    def can_play(self) -> bool :
+        return not (self.__error or self.__won)
+    
+    @property
+    def __won(self) -> bool :
+        return self.__has_won
+
+    @__won.setter
+    def __won(self, value : bool) -> None :
+        if value == True :
+            self.__reset_sprite_lists()
+        self.__has_won = value
+
+    @property
+    def __error(self) -> bool :
+        return self.__has_error
+
+    @__error.setter
+    def __error(self, value : bool) -> None :
+        if value == True :
+            self.__reset_sprite_lists()
+        self.__has_error = value
 
     @property
     def get_wall_list(self) -> arcade.SpriteList[arcade.Sprite]:
@@ -416,4 +511,5 @@ class GameView(arcade.View):
     @property
     def get_arrow_list(self) -> arcade.SpriteList[Arrow]:
         return self.__arrow_list
+
     

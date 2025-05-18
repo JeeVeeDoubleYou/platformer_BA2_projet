@@ -70,10 +70,6 @@ def test_chaining_levels(window: arcade.Window) -> None :
         view = GameView("maps/bad_maps/bad_next-map_name.txt")
         window.show_view(view)
 
-    with pytest.raises(Exception, match="There is no next map, but there is an exit") :
-        view = GameView("maps/bad_maps/exit_without_next_level.txt")
-        window.show_view(view)
-
     with pytest.raises(Exception, match="There can't be two ending points to a level") :
         view = GameView("maps/bad_maps/two_exits.txt")
         window.show_view(view)

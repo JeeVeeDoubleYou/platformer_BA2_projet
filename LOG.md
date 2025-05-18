@@ -13,9 +13,9 @@ Format :
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 
 ### Gaëlle : 
-* [] Test that makes sure that player doesnt stay on screen when it dies
 * [] ANSWERS.MD (2,4 questions, semaine 5)
 * [] Print errors on map standard si mauvaise map
+* [] Lave & exits on platforms
 * [] Test plateformes
 * [] ANSWERS.MD (1, 2 questions, semaine 8)
 
@@ -110,7 +110,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 
 * [x] Crée class map                                                 120
 * [x] Tranformer fichier map en matrice                               60
-* [x] Fonctionnement platformes                                      360
+* [x] Fonctionnement platformes                                      600
 
 ### Semaine 10
 

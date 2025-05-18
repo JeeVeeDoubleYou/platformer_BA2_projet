@@ -12,17 +12,21 @@ from constants import PIXELS_IN_BLOCK, PLATFORM_SPEED
 from monster import Monster
 from boss import Boss
 
-from plateforme import Platform, PlatformArrows, Direction
+from platforms import Platform, Direction
+from non_platform_moving_blocks import NonPlatformMovingBlocks
+from platform_arrows import PlatformArrows
 
 class Map :
 
     player_coordinates : tuple[int, int]
-    __next_map : str
-    __has_next_map: bool
-    __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "B", "v", "E", "=", "-", "x", "*", "£", "^", " ", "|", "^", "\n", "\r", "←", "→", "↑", "↓"})
-    __hidden_characters : Final[frozenset[str]] = frozenset({" ", "\n", "\r"})
+    __next_map : str | None
+    __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "v", "E", "=", "-", 
+                                                              "x", "*", "£", "^", " ", "|", "^", "\n", 
+                                                              "\r", "←", "→", "↑", "↓"})
+    __hidden_characters : Final[frozenset[str]] = frozenset({" ",  "\n","\r"})
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
-    __platform_sprites = frozenset({"=", "-", "x", "£", "E", "^"})
+    __platform_characters = frozenset({"=", "-", "x", "£", "E", "^"})
+    __non_wall_platform_characters = frozenset({"£", "E", "^"})
     __list_of_platforms : list[Platform]
     __ymal_part : dict[str,object]
     
@@ -30,9 +34,10 @@ class Map :
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
                  monster_list: arcade.SpriteList[Monster], boss_list: arcade.SpriteList[Boss], door_list: arcade.SpriteList[Door], 
                  lever_list: arcade.SpriteList[Lever], end_list: arcade.SpriteList[arcade.Sprite], 
-                 platform_list: arcade.SpriteList[arcade.Sprite]
+                 platform_list: arcade.SpriteList[arcade.Sprite],
+                 non_platform_moving_sprites_list : list[NonPlatformMovingBlocks]
                  ) -> None:
-    
+
         self.__current_map_name = current_map_name
         self.__wall_list = wall_list
         self.__lava_list = lava_list
@@ -42,10 +47,10 @@ class Map :
         self.__door_list = door_list
         self.__lever_list = lever_list
         self.__end_list = end_list
-        self.__next_map = ""
-        self.__has_next_map = False
+        self.__next_map = None
         self.__list_of_platforms = []
         self.__platform_list = platform_list
+        self.__non_platform_moving_sprites_list = non_platform_moving_sprites_list
 
         self.__create_map()
 
@@ -165,11 +170,10 @@ class Map :
 
 
     def __parse_config(self) -> None :
-
+        """Parses the configuration part of the map file."""
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             self.__width = 0
             self.__height = 0
-            self.__has_next_map = False
 
             for line in f :
                
@@ -177,10 +181,9 @@ class Map :
                     break
                 line.split()
                 if line.startswith("next-map") :
-                    if self.__has_next_map :
+                    if self.__next_map is not None :
                         raise Exception("You can't set the next map twice")
                     self.__next_map = line.split()[-1]
-                    self.__has_next_map = True
                     if not os.path.exists(self.__next_map) :
                         raise Exception("The next map path is incorrect")
                 try : 
@@ -200,11 +203,12 @@ class Map :
                 raise Exception("Width and height should be positive numbers")
 
     def __file_to_matrix(self) -> None :
-        """Turns map file into matrix"""
+        """Turns map file into a matrix"""
         self.__map_matrix = [["" for i in range(self.__width)] for j in range(self.__height)]
         # Matrice[Lines][Colonne]
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             while not f.readline() == "---\n" :
+                # Skips the configuration for of the file, taken care of by function self.__parse_config
                 continue
             for j in range(self.__height) :
                 line = f.readline().rstrip("\n").ljust(self.__width)
@@ -214,89 +218,124 @@ class Map :
                     char = line[i]
                     if char not in self.__allowed_characters :
                         raise Exception("The map contains an unknown character")
-                    if char not in self.__hidden_characters :
-                        self.__map_matrix[j][i] = char
+                    if char  in self.__hidden_characters :
+                        continue
+                    self.__map_matrix[j][i] = char
             if not f.readline().rstrip("\n") == "---" :
                 raise Exception(f"The map isn't exactly {self.__height} lines long")
 
     
 
-    def mini_platform_matrices(self) -> None :
-
+    def find_platforms_in_map_matrix(self) -> None :
+        """Goes to each position in self.__map_matrix and checks if the sprite there could be part of
+        a moving platform. If so, it calls function self.grouping_platform(), passing an empty platform instance, 
+        which becomes a full platform. 
+        This platform gets added to self.__list_of_platforms if it's movement is not zero.
+        """
         visited : set[tuple[int, int]] = set()
 
         for line in range(len(self.__map_matrix)) :
             for column in range(len(self.__map_matrix[line])):
-                if self.__map_matrix[line][column] in self.__platform_sprites and (line, column) not in visited :
+                if self.__map_matrix[line][column] in self.__platform_characters and (line, column) not in visited :
                     platform = Platform()
                     self.grouping_platform(line, column, platform, visited, None)
-                    if platform.movement != (0,0) :
+                    if platform.moves :
                         self.__list_of_platforms.append(platform)
 
-
+        
     def grouping_platform(self, line : int, column : int, platform : Platform, visited : set[tuple[int, int]], valid_arrow : PlatformArrows | None) -> None :
+        """Recursive function taking as arguments :
+            - line, column
+                The lines and column numbers of possible platform sprites       
+            - platform
+                The platform it is creating                                     
+            - visited
+                A set of already visited positions, which are positions of sprites that can't be currently added to the platform. 
+                They could either belong to another platform, not be the correct type of sprite or already belong to this platform.       
+            - valid_arrow
+                The only arrow type that could affect the platform, if the current sprite is an arrow.
+        """
 
         if line < 0 or column < 0 or line >= len(self.__map_matrix) or column >= len(self.__map_matrix[0]) or (line, column) in visited :
             return
-        if self.__map_matrix[line][column] not in self.__platform_sprites | {a.value for a in PlatformArrows} :
+        if self.__map_matrix[line][column] not in self.__platform_characters | {a.value for a in PlatformArrows} :
             return
         
         visited.add((line, column))
 
         if (value := self.__map_matrix[line][column]) in {a.value for a in PlatformArrows} :
-            arrow_type = self.get_arrow_enum(value)
+            arrow_type = PlatformArrows.get_arrow_enum(value)
             if arrow_type == valid_arrow :
                 arrows_counted = arrow_type.count_arrows(line, column, 1, visited, self.__map_matrix)
                 platform.add_arrow_info(arrow_type, arrows_counted)
             else :
                 return
-        if self.__map_matrix[line][column] in self.__platform_sprites :
-            platform.add_to_sprite_set((self.__height - (line + 1), column)) 
-            #ATTENTION : To modify!, weird expression is to match arcade coordinates, could be made into function?
-            
+        if self.__map_matrix[line][column] in self.__platform_characters : 
+            arcade_line = self.__matrix_line_num_to_arcade(line)
+            platform.add_sprite((arcade_line, column))
 
         for d_line, d_col, valid_arrow in [(0, -1, PlatformArrows.LEFT), (0, 1, PlatformArrows.RIGHT), (1, 0, PlatformArrows.DOWN), (-1, 0, PlatformArrows.UP)] :
             self.grouping_platform(line + d_line, column + d_col, platform, visited, valid_arrow)
 
-    def get_arrow_enum(self, arrow : str) -> PlatformArrows :
-        """Gets an arrow name from it's string representation : example Arrows.LEFT from "←". 
-        Should only ever get called with an argument that is an arrow. """
-        assert arrow in {a.value for a in PlatformArrows}
-        match arrow :
-            case "←" :
-                return PlatformArrows.LEFT
-            case "→" :
-                return PlatformArrows.RIGHT 
-            case "↑" :
-                return PlatformArrows.UP
-            case "↓" :
-                return PlatformArrows.DOWN
-            case _ :
-                raise Exception("Invalid arrow ", {arrow})
+    def __matrix_line_num_to_arcade(self, line : int) -> int :
+        """Tranforms a line number taken from looping through the map matrix to the line number considered by arcade.
+        Arcadem convention is top line is height - 1, last line is 0."""
+        assert (line < self.__height)
+        return self.__height - (line + 1)
 
-    def give_movement_to_sprites(self, sprite : arcade.Sprite) -> bool :
+    def get_sprite_boundaries(self, sprite : arcade.Sprite) -> tuple[Direction | None, tuple[int, int]] :
+        """Returns the movement and direction a platform sprite should move, 
+        with direction being None if and only if the sprite doesn't move.
+        Should *only* be called to sprites that haven't started moved yet.
+        """
         for platform in self.__list_of_platforms :
-            if (sprite.center_y, sprite.center_x) in platform.sprite_set :
-                assert platform.direction is not None
-                match platform.direction :
-                    case Direction.VERTICAL :
-                        sprite.boundary_top = sprite.center_y + platform.movement[0] * PIXELS_IN_BLOCK
-                        sprite.boundary_bottom = sprite.center_y - platform.movement[1] * PIXELS_IN_BLOCK
-                        sprite.change_y = PLATFORM_SPEED
-                        return True
-                    case Direction.HORIZONTAL :
-                        sprite.boundary_left = sprite.center_x - platform.movement[0] * PIXELS_IN_BLOCK
-                        sprite.boundary_right = sprite.center_x + platform.movement[1] * PIXELS_IN_BLOCK
-                        sprite.change_x = PLATFORM_SPEED
-                        return True
-        return False
+            if platform.contains(sprite) :
+                assert platform.movement is not None
+                return (platform.direction, platform.movement)
+        return (None, (0, 0))
+
+    def give_movement_to_non_platform_sprites(self, sprite : arcade.Sprite) -> bool :
+        """Takes an arcade.Sprite as argument. Checks if it belongs to some platform. 
+        If it does, gives the platform movement to the individual sprite and returns True. 
+        Otherwise, return False.
+        Should *only* be called to sprites that haven't started moved yet.
+        Should be called on sprites that *are* in self.__non_wall_platform_characters."""
+        direction, movement = self.get_sprite_boundaries(sprite)
+        if direction is None :
+            return False
+        self.__non_platform_moving_sprites_list.append(NonPlatformMovingBlocks(sprite, direction, movement, arcade.Vec2(sprite.center_x, sprite.center_y))) 
+        return True
+
+    def give_movement_to_platform_sprites(self, sprite : arcade.Sprite) -> bool :
+        """Takes an arcade.Sprite as argument. Checks if it belongs to some platform. 
+        If it does, gives the platform movement to the individual sprite and returns True. 
+        Otherwise, return False.
+        Should *only* be called to sprites that haven't started moved yet.
+        Should be called on sprites that *are not* in self.__non_wall_platform_characters.
+        """
+        direction, movement = self.get_sprite_boundaries(sprite)
+        
+        match direction :
+            case Direction.VERTICAL :
+                sprite.boundary_top = sprite.top + movement[0] 
+                sprite.boundary_bottom = sprite.bottom - movement[1] 
+                sprite.change_y = PLATFORM_SPEED
+                return True
+            case Direction.HORIZONTAL :
+                sprite.boundary_left = sprite.left - movement[0] 
+                sprite.boundary_right = sprite.right + movement[1] 
+                sprite.change_x = PLATFORM_SPEED
+                return True
+            case None :
+                return False
 
     def __create_map(self) -> None : 
         """Creates map from file, raises exceptions in case of errors in map."""
         self.__parse_config_2()
         #self.__parse_config()
         self.__file_to_matrix()
-        self.mini_platform_matrices()
+        self.find_platforms_in_map_matrix()
+        
     
         map_doors : list[list[Door | None]] = [[None for i in range(self.__width)] for j in range(self.__height)]
         map_levers : list[list[Lever | None]] = [[None for i in range(self.__width)] for j in range(self.__height)]
@@ -304,11 +343,10 @@ class Map :
         end_is_placed = False
 
         for line_num, line in enumerate(self.__map_matrix) :
-            line_number_arcade_coordinates = self.__height - (line_num + 1)
-            # To match line number with convention that first line is h-1, last line is 0
+            line_num_arcade = self.__matrix_line_num_to_arcade(line_num)
             for position_x, sprite_char in enumerate(line) :
                 x_coordinate = PIXELS_IN_BLOCK * position_x
-                y_coordinate =  PIXELS_IN_BLOCK * line_number_arcade_coordinates
+                y_coordinate =  PIXELS_IN_BLOCK * line_num_arcade
                 match sprite_char : 
                     case "S" :
                         if start_is_placed :
@@ -325,25 +363,21 @@ class Map :
                         self.__boss_list.append(boss)
                     case "v" :
                         bat = Bat(x_coordinate, y_coordinate)
-                        self.__monster_list.append(bat)
-                    case "^" :
-                        lever = Lever(x_coordinate, y_coordinate)
-                        self.__lever_list.append(lever)
-                        map_levers[line_number_arcade_coordinates][position_x] = lever
-                        
+                        self.__monster_list.append(bat)   
                     case "|" :
                         door = Door(x_coordinate, y_coordinate)
                         self.__door_list.append(door)
-                        map_doors[line_number_arcade_coordinates][position_x] = door
-
+                        map_doors[line_num_arcade][position_x] = door
+                    case "^" :
+                        lever = Lever(x_coordinate, y_coordinate)
+                        self.__lever_list.append(lever)
+                        map_levers[line_num_arcade][position_x] = lever
+                        self.give_movement_to_non_platform_sprites(lever) # ATTENTION : Cas spécial, mais devrait généraliser avec fonction peutetre
                     case char if char in self.__hidden_characters | self.__arrow_characters :
                         pass
                     case char if char in self.__allowed_characters :
                         match sprite_char :
                             case "E" :
-                                if not self.__has_next_map :
-                                    raise Exception("There is no next map, but there is an exit") 
-                                    # ATTENTION : Question : accepter end of map même sans prochain niveau?
                                 if end_is_placed :
                                     raise Exception("There can't be two ending points to a level")
                                 end_is_placed = True
@@ -351,7 +385,7 @@ class Map :
                             case "=" :
                                 name_and_list = (":resources:images/tiles/grassMid.png", self.__wall_list)
                             case "-" :
-                                name_and_list = (":resources:/images/tiles/grassHalf_mid.png", self.__wall_list)
+                                name_and_list = (":resources:/images/tiles/grassHalf_mid.png", self.__wall_list)                            
                             case "x" :
                                 name_and_list = (":resources:/images/tiles/boxCrate_double.png", self.__wall_list)
                             case "*" :
@@ -359,21 +393,23 @@ class Map :
                             case "£" :
                                 name_and_list = (":resources:/images/tiles/lava.png", self.__lava_list)
                         sprite = arcade.Sprite(name_and_list[0], center_x= x_coordinate, center_y= y_coordinate, scale=constants.SCALE)
-                        if self.give_movement_to_sprites(sprite) :
+                        if char in self.__non_wall_platform_characters :
+                            self.give_movement_to_non_platform_sprites(sprite)
+                        if (char in self.__platform_characters - self.__non_wall_platform_characters) and (self.give_movement_to_platform_sprites(sprite)) :
                             self.__platform_list.append(sprite)
-                        else :
+                        else : # This else only applies to the last if. This condition is met as long as the sprite didn't go into the platform list.
                             name_and_list[1].append(sprite)  
 
         if not start_is_placed :
             raise Exception("Player must have a starting point")
-        if self.__has_next_map and not end_is_placed :
+        if self.__next_map is not None and not end_is_placed :
             raise Exception("The file sets the next map but no end to the level")
         self.lever_door_linking(map_doors,map_levers) 
         
     def get_player_coordinates(self) -> tuple[int, int] :
         return self.player_coordinates
     
-    def get_next_map(self) -> str :
+    def get_next_map(self) -> str | None :
         return self.__next_map
     
 
