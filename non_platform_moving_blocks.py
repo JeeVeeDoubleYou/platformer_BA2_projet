@@ -22,9 +22,9 @@ class NonPlatformMovingBlocks :
         self.__initial_position = initial_position
         self.__speed = constants.PLATFORM_SPEED 
 
-        actual_half_width = (sprite.right - sprite.left) / 2
+        # actual_half_width = (sprite.right - sprite.left) / 2
 
-        actual_half_height = (sprite.top - sprite.bottom) / 2
+        # actual_half_height = (sprite.top - sprite.bottom) / 2
 
         # self.__vertical_bounds = (int(self.__initial_position.y + movement[0] + actual_half_height), int(self.__initial_position.y - movement[1] - actual_half_height)) \
         #     if general_direction == Direction.VERTICAL \
@@ -36,6 +36,8 @@ class NonPlatformMovingBlocks :
         self.__vertical_bounds = (int(self.__initial_position.y + movement[0]), int(self.__initial_position.y - movement[1]))
     
         self.__horizontal_bounds = (int(self.__initial_position.x - movement[0]), int(self.__initial_position.x + movement[1]))
+
+        print(movement[0] / 64, movement[1] / 64)
         
         # ATTENTION : Il faudrait changer tous les mouvement pour associer top à droite, comme ca on a pas besoin du match direction car movement[0] sera la direction initiale
         # Mettre la vitesse initiale à droite ou vers le haut, sauf s'il n'y a pas de movement dans ces directions
