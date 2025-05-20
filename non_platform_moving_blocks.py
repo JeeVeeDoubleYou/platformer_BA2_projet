@@ -23,14 +23,19 @@ class NonPlatformMovingBlocks :
         self.__speed = constants.PLATFORM_SPEED 
 
         actual_half_width = (sprite.right - sprite.left) / 2
+
         actual_half_height = (sprite.top - sprite.bottom) / 2
 
-        self.__vertical_bounds = (int(self.__initial_position.y + movement[0] + actual_half_height), int(self.__initial_position.y - movement[1] - actual_half_height)) \
-            if general_direction == Direction.VERTICAL \
-                else None
-        self.__horizontal_bounds = (int(self.__initial_position.x - movement[0] - actual_half_width), int(self.__initial_position.x + movement[1] + actual_half_width)) \
-            if general_direction == Direction.HORIZONTAL \
-                else None
+        # self.__vertical_bounds = (int(self.__initial_position.y + movement[0] + actual_half_height), int(self.__initial_position.y - movement[1] - actual_half_height)) \
+        #     if general_direction == Direction.VERTICAL \
+        #         else None
+        # self.__horizontal_bounds = (int(self.__initial_position.x - movement[0] - actual_half_width), int(self.__initial_position.x + movement[1] + actual_half_width)) \
+        #     if general_direction == Direction.HORIZONTAL \
+        #         else None
+        
+        self.__vertical_bounds = (int(self.__initial_position.y + movement[0]), int(self.__initial_position.y - movement[1]))
+    
+        self.__horizontal_bounds = (int(self.__initial_position.x - movement[0]), int(self.__initial_position.x + movement[1]))
         
         # ATTENTION : Il faudrait changer tous les mouvement pour associer top à droite, comme ca on a pas besoin du match direction car movement[0] sera la direction initiale
         # Mettre la vitesse initiale à droite ou vers le haut, sauf s'il n'y a pas de movement dans ces directions
@@ -47,38 +52,6 @@ class NonPlatformMovingBlocks :
                     self.__speed = constants.PLATFORM_SPEED 
 
           
-    def move(self) -> None : 
-        match self.__direction :
-            case Direction.VERTICAL :
-                assert self.__vertical_bounds is not None
-
-                self.__sprite.center_y += self.__speed
-
-                if self.__sprite.top >= self.__vertical_bounds[0] :
-                    self.__sprite.top = self.__vertical_bounds[0]
-                    if self.__speed > 0:
-                        self.__speed *= -1
-
-                if self.__sprite.bottom <= self.__vertical_bounds[1] :
-                    self.__sprite.bottom = self.__vertical_bounds[1]
-                    if self.__speed < 0 :
-                        self.__speed *= -1
-
-            case Direction.HORIZONTAL :
-                assert self.__horizontal_bounds is not None
-
-                self.__sprite.center_x += self.__speed
-
-                if self.__sprite.left <= self.__horizontal_bounds[0] :
-                    self.__sprite.left = self.__horizontal_bounds[0]
-                    if self.__speed < 0:
-                        self.__speed *= -1
-
-                if self.__sprite.right >= self.__horizontal_bounds[1] :
-                    self.__sprite.right = self.__horizontal_bounds[1]
-                    if self.__speed > 0 :
-                        self.__speed *= -1
-
     # def move(self) -> None : 
     #     match self.__direction :
     #         case Direction.VERTICAL :
@@ -86,13 +59,13 @@ class NonPlatformMovingBlocks :
 
     #             self.__sprite.center_y += self.__speed
 
-    #             if self.__sprite.center_y + HALF_BLOCK >= self.__vertical_bounds[0] :
-    #                 self.__sprite.center_y = self.__vertical_bounds[0] - HALF_BLOCK
+    #             if self.__sprite.top >= self.__vertical_bounds[0] :
+    #                 self.__sprite.top = self.__vertical_bounds[0]
     #                 if self.__speed > 0:
     #                     self.__speed *= -1
 
-    #             if self.__sprite.center_y - HALF_BLOCK <= self.__vertical_bounds[1] :
-    #                 self.__sprite.center_y = self.__vertical_bounds[1] + HALF_BLOCK
+    #             if self.__sprite.bottom <= self.__vertical_bounds[1] :
+    #                 self.__sprite.bottom = self.__vertical_bounds[1]
     #                 if self.__speed < 0 :
     #                     self.__speed *= -1
 
@@ -101,13 +74,36 @@ class NonPlatformMovingBlocks :
 
     #             self.__sprite.center_x += self.__speed
 
-    #             if self.__sprite.center_x - HALF_BLOCK <= self.__horizontal_bounds[0] :
-    #                 self.__sprite.center_x = self.__horizontal_bounds[0] + HALF_BLOCK
+    #             if self.__sprite.left <= self.__horizontal_bounds[0] :
+    #                 self.__sprite.left = self.__horizontal_bounds[0]
     #                 if self.__speed < 0:
     #                     self.__speed *= -1
 
-    #             if self.__sprite.center_x + HALF_BLOCK >= self.__horizontal_bounds[1] :
-    #                 self.__sprite.center_x = self.__horizontal_bounds[1] - HALF_BLOCK
+    #             if self.__sprite.right >= self.__horizontal_bounds[1] :
+    #                 self.__sprite.right = self.__horizontal_bounds[1]
     #                 if self.__speed > 0 :
     #                     self.__speed *= -1
+
+    def move(self) -> None : 
+        match self.__direction :
+            case Direction.VERTICAL :
+                assert self.__vertical_bounds is not None
+                self.__sprite.center_y += self.__speed
+
+                if self.__sprite.center_y >= self.__vertical_bounds[0] :
+                    self.__speed *= -1
+
+                if self.__sprite.center_y <= self.__vertical_bounds[1] :
+                    self.__speed *= -1
+
+
+            case Direction.HORIZONTAL :
+                assert self.__horizontal_bounds is not None
+                self.__sprite.center_x += self.__speed
+
+                if self.__sprite.center_x <= self.__horizontal_bounds[0] :
+                    self.__speed *= -1
+
+                if self.__sprite.center_x >= self.__horizontal_bounds[1] :
+                    self.__speed *= -1
         

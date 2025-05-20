@@ -8,3 +8,17 @@ Certaines exceptions ne sont pas affichées sur l'écran mais que dans le termin
 
 How do i keep from modifying has_won instead of won?
 Full size grass doesnt move vertically with only one arrow
+
+Problème 
+---
+  ^
+  -£→→    ←←£-
+              ↑
+       S       ↑ ^
+       -     £-===
+              ↓
+    -   ^  -  ↓
+   ←←£-=---→→           
+---
+Deux problèmes sur dernière ligne, le - en haut à droite bouge avec, et la platforme bouge pas vers la droite
+-> diagnostique pour les deux problèmes : souci de diagonale dans fction récursive
