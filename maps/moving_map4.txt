@@ -8,7 +8,7 @@ next-map: maps/level_1.txt
                        ↑
                        ↑
                        ↑
-             £=      xxx
+              £=      xxx
           -  =-=      x x
             *  =      xxx
          ←←←x→→=→→→→→→  ↓
