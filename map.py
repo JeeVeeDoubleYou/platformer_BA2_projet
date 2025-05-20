@@ -214,14 +214,15 @@ class Map :
                 print(f"Arrow type : {arrow_type}, Arrows_counted : {arrows_counted}")
             else :
                 return
-        visited.add((line, column))
-        if self.__map_matrix[line][column] in self.__platform_characters : 
-            arcade_line = self.__matrix_line_num_to_arcade(line)
-            platform.add_sprite((arcade_line, column))
-        
-        for d_line, d_col, direction_arrow in [(0, -1, PlatformArrows.LEFT), (0, 1, PlatformArrows.RIGHT), (1, 0, PlatformArrows.DOWN), (-1, 0, PlatformArrows.UP)] :
-            print(f"Recursing from ({line}, {column}) to ({line + d_line}, {column + d_col}) with arrow {direction_arrow}")
-            self.grouping_platform(line + d_line, column + d_col, platform, visited, direction_arrow)
+        else :
+            visited.add((line, column))
+            if self.__map_matrix[line][column] in self.__platform_characters : 
+                arcade_line = self.__matrix_line_num_to_arcade(line)
+                platform.add_sprite((arcade_line, column))
+            
+            for d_line, d_col, direction_arrow in [(0, -1, PlatformArrows.LEFT), (0, 1, PlatformArrows.RIGHT), (1, 0, PlatformArrows.DOWN), (-1, 0, PlatformArrows.UP)] :
+                print(f"Recursing from ({line}, {column}) to ({line + d_line}, {column + d_col}) with arrow {direction_arrow}")
+                self.grouping_platform(line + d_line, column + d_col, platform, visited, direction_arrow)
 
     def __matrix_line_num_to_arcade(self, line : int) -> int :
         """Tranforms a line number taken from looping through the map matrix to the line number considered by arcade.
