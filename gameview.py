@@ -46,7 +46,6 @@ class GameView(arcade.View):
     physics_engine: arcade.PhysicsEnginePlatformer | None
     __camera: arcade.camera.Camera2D
 
-    __icon_list: arcade.SpriteList[arcade.Sprite]
     __fixed_camera: arcade.camera.Camera2D
 
     __player : Player
@@ -127,7 +126,6 @@ class GameView(arcade.View):
         self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
         self.__text_win = arcade.Text("", 200 ,200, arcade.color.BLACK, 30)
         self.text_list = [self.__text_score,]
-        #self.icon_list = [self.__weapon_icon]
         self.update_user_interface()
 
         self.solid_block_update() 
@@ -412,7 +410,7 @@ class GameView(arcade.View):
     def update_user_interface(self) -> None :
         """"geres les compteur et icones sur l'ecran"""
         string_score ="Coin score = " + str(self.__player.coin_score)
-        self.text_score.text = string_score
+        self.__text_score.text = string_score
 
 
 
@@ -431,8 +429,13 @@ class GameView(arcade.View):
                     list.draw()
 
             with self.__fixed_camera.activate(): 
-                    self.text_score.draw()
-                    self.__icon_list.draw()
+                if 'rect' in self.__weapon_icon and 'texture' in self.__weapon_icon:           
+                    rect = self.__weapon_icon['rect']
+                    texture = self.__weapon_icon['texture']
+                    assert(isinstance(rect, Rect) and isinstance(texture, str))
+                    arcade.draw_texture_rect(arcade.load_texture(texture), rect)
+                self.__text_score.draw()
+                self.__text_win.draw()
             
     @property
     def player_x(self) -> float:

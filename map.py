@@ -11,6 +11,10 @@ import constants
 from constants import PIXELS_IN_BLOCK, PLATFORM_SPEED
 from monster import Monster
 from boss import Boss
+from ghost import Ghost
+from frog import Frog
+
+
 
 from platforms import Platform, Direction
 from non_platform_moving_blocks import NonPlatformMovingBlocks
@@ -21,7 +25,7 @@ class Map :
     player_coordinates : tuple[int, int]
     __next_map : str | None
     __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "v", "E", "=", "-", 
-                                                              "x", "*", "£", "^", " ", "|", "^", "\n", 
+                                                              "x", "*", "£", "^", "B", "f", "g", " ", "|", "^", "\n", 
                                                               "\r", "←", "→", "↑", "↓"})
     __hidden_characters : Final[frozenset[str]] = frozenset({" ",  "\n","\r"})
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
@@ -84,9 +88,8 @@ class Map :
                     else: Exception("The height must be a positive integer")
             if "next-map" in self.__ymal_part:
                 if isinstance(self.__ymal_part["next-map"],str):
-                    self.__has_next_map = True
                     self.__next_map = self.__ymal_part["next-map"]
-            else: raise Exception("The height must a file adresse")                                                                                                                                                                                                             
+                else: raise Exception("The map must a file adresse")                                                                                                                                                                                                             
         except ValueError :
             raise Exception("Configuration lines on file aren't formated correctly")    #je check 2 fois pas sur que c'est necessaire
         if (self.__width == 0 or self.__height == 0) :
@@ -356,9 +359,15 @@ class Map :
                     case "o" :
                         blob = Blob(x_coordinate, y_coordinate)
                         self.__monster_list.append(blob)
+                    case "g" :
+                        ghost = Ghost(x_coordinate, y_coordinate)
+                        self.__monster_list.append(ghost)
+                    case "f" :
+                        frog = Frog(x_coordinate, y_coordinate)
+                        self.__monster_list.append(frog)
                     case "B" :
                         boss = Boss(x_coordinate, y_coordinate)
-                        map_levers[line_number_arcade_coordinates][position_x] = boss
+                        map_levers[line_num_arcade][position_x] = boss
                         self.__monster_list.append(boss)
                         self.__boss_list.append(boss)
                     case "v" :

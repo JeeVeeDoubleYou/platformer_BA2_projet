@@ -3,7 +3,7 @@ height: 9
 next-map: maps/level_2.txt
 ---
      ---
-* o       E
+* f       E
 ---       -
        *
      - -

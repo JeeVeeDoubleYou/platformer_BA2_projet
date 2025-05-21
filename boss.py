@@ -66,12 +66,26 @@ class Boss(Monster, Lever):
 
     def ia(self,player_x : float, player_y: float) -> None:
         self.frame_until_action -= 1
+        if self.frame_until_action == 15:             #indicate the next move #couleurs temporaire
+                match self.choice:
+                    case Attack.PAUSE:  #bleu
+                        self.rgb = 0, 0, 255
+
+                    case Attack.RUSH:   #rouge
+                        self.rgb = 255, 0, 0
+                        
+                    case Attack.WALK:   #cyan   
+                        self.rgb = 0, 255, 255   
+                       
+                    case Attack.DASH:   #magenta
+                        self.rgb = 255, 0, 255
+
         if self.frame_until_action == 0:
+            self.rgb = 255, 255, 255
             if not self.action_area.contains_point((self.center_x, self.center_y)):
                 self.angle_deplacement = math.pi + math.atan2(self.center_y - self.__initial_y ,self.center_x - self.__initial_x)
                 self.frame_until_action = FRAMES
                 self.speed = 2*BOSS_SPEED
-                print("repositioning")
             elif self.action_area.contains_point((player_x,player_y)):
                 match self.choice:          #chooses a random move to do 
                     case Attack.PAUSE:
@@ -79,7 +93,6 @@ class Boss(Monster, Lever):
                         self.frame_until_action = random.randint(40,80)
                         can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
                         self.choice = random.choice(can_do)
-                        print("pause")
 
                     case Attack.RUSH:
                         self.angle_deplacement = math.pi + math.atan2(self.center_y - player_y ,self.center_x - player_x)
@@ -87,7 +100,6 @@ class Boss(Monster, Lever):
                         self.frame_until_action = random.randint(20,60)
                         can_do = [Attack.PAUSE, Attack.RUSH, Attack.DASH]
                         self.choice = random.choice(can_do)
-                        print("rush")
 
                     case Attack.WALK:         
                         self.frame_until_action = random.randint(60,100)
@@ -95,7 +107,6 @@ class Boss(Monster, Lever):
                         self.speed = BOSS_SPEED
                         can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
                         self.choice = random.choice(can_do)
-                        print("move")
                         
 
                     case Attack.DASH:
@@ -108,7 +119,9 @@ class Boss(Monster, Lever):
                         self.speed =3*BOSS_SPEED
                         can_do =[Attack.RUSH, Attack.DASH]
                         self.choice = random.choice(can_do)
-                        print("dash")
+
+                        
+                        
             else :
                 self.speed=0
                 self.frame_until_action = FRAMES
@@ -134,10 +147,9 @@ class Boss(Monster, Lever):
     def die(self) -> None:
         self.hit_points -=1
 
-        self.choice = Attack.DASH       #Make the boss back off 
-        self.speed = 2*BOSS_SPEED
+        self.choice = Attack.WALK       #Make the boss back off 
+        self.speed = -2*BOSS_SPEED
         self.frame_until_action = 30
-        self.choice = Attack.DASH
 
         self.__new_speed()
         if self.hit_points == 0 :

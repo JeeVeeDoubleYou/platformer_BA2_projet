@@ -1,6 +1,7 @@
 import arcade
 from gameview import GameView
 from constants import WINDOW_HEIGHT, WINDOW_WIDTH
+import sys
 # Constants
 
 WINDOW_TITLE = "Platformer"
