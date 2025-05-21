@@ -263,22 +263,23 @@ class Map :
             return
         if self.__map_matrix[line][column] not in self.__platform_characters | {a.value for a in PlatformArrows} :
             return
-        
-        visited.add((line, column))
 
         if (value := self.__map_matrix[line][column]) in {a.value for a in PlatformArrows} :
             arrow_type = PlatformArrows.get_arrow_enum(value)
             if arrow_type == valid_arrow :
+                visited.add((line, column))
                 arrows_counted = arrow_type.count_arrows(line, column, 1, visited, self.__map_matrix)
                 platform.add_arrow_info(arrow_type, arrows_counted)
             else :
                 return
-        if self.__map_matrix[line][column] in self.__platform_characters : 
-            arcade_line = self.__matrix_line_num_to_arcade(line)
-            platform.add_sprite((arcade_line, column))
-
-        for d_line, d_col, valid_arrow in [(0, -1, PlatformArrows.LEFT), (0, 1, PlatformArrows.RIGHT), (1, 0, PlatformArrows.DOWN), (-1, 0, PlatformArrows.UP)] :
-            self.grouping_platform(line + d_line, column + d_col, platform, visited, valid_arrow)
+        else :
+            visited.add((line, column))
+            if self.__map_matrix[line][column] in self.__platform_characters : 
+                arcade_line = self.__matrix_line_num_to_arcade(line)
+                platform.add_sprite((arcade_line, column))
+            
+            for d_line, d_col, direction_arrow in [(0, -1, PlatformArrows.LEFT), (0, 1, PlatformArrows.RIGHT), (1, 0, PlatformArrows.DOWN), (-1, 0, PlatformArrows.UP)] :
+                self.grouping_platform(line + d_line, column + d_col, platform, visited, direction_arrow)
 
     def __matrix_line_num_to_arcade(self, line : int) -> int :
         """Tranforms a line number taken from looping through the map matrix to the line number considered by arcade.
