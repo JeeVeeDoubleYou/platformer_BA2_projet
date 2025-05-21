@@ -10,6 +10,11 @@ from door import Door
 import constants
 from constants import PIXELS_IN_BLOCK, PLATFORM_SPEED
 from monster import Monster
+from boss import Boss
+from ghost import Ghost
+from frog import Frog
+
+
 
 from platforms import Platform, Direction
 from non_platform_moving_blocks import NonPlatformMovingBlocks
@@ -20,17 +25,18 @@ class Map :
     player_coordinates : tuple[int, int]
     __next_map : str | None
     __allowed_characters : Final[frozenset[str]] = frozenset({"S", "o", "v", "E", "=", "-", 
-                                                              "x", "*", "£", "^", " ", "|", "^", "\n", 
+                                                              "x", "*", "£", "^", "B", "f", "g", " ", "|", "^", "\n", 
                                                               "\r", "←", "→", "↑", "↓"})
     __hidden_characters : Final[frozenset[str]] = frozenset({" ",  "\n","\r"})
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
     __platform_characters = frozenset({"=", "-", "x", "£", "E", "^"})
     __non_wall_platform_characters = frozenset({"£", "E", "^"})
     __list_of_platforms : list[Platform]
+    __ymal_part : dict[str,object]
     
     def __init__(self, current_map_name : str, wall_list: arcade.SpriteList[arcade.Sprite], 
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
-                 monster_list: arcade.SpriteList[Monster], door_list: arcade.SpriteList[Door], 
+                 monster_list: arcade.SpriteList[Monster], boss_list: arcade.SpriteList[Boss], door_list: arcade.SpriteList[Door], 
                  lever_list: arcade.SpriteList[Lever], end_list: arcade.SpriteList[arcade.Sprite], 
                  platform_list: arcade.SpriteList[arcade.Sprite],
                  non_platform_moving_sprites_list : list[NonPlatformMovingBlocks]
@@ -41,6 +47,7 @@ class Map :
         self.__lava_list = lava_list
         self.__coin_list = coin_list
         self.__monster_list = monster_list
+        self.__boss_list = boss_list
         self.__door_list = door_list
         self.__lever_list = lever_list
         self.__end_list = end_list
@@ -50,13 +57,53 @@ class Map :
         self.__non_platform_moving_sprites_list = non_platform_moving_sprites_list
 
         self.__create_map()
+
+    def get_ymal(self) -> None:
+        
+
+        try : 
+           with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
+            level = file.read()
+            partition = level.split('---\n',1)
+            yaml_return : object = yaml.safe_load(partition[0])
+            if (isinstance(yaml_return,dict)):
+                self.__ymal_part = yaml_return
+        except ValueError :
+            raise Exception("Configuration lines on file aren't formated correctly")
+
+    def __parse_config_2(self) -> None:
+        #je met cette erreure car je suis pas sur qu'elle soit un probleme:
+        #  raise Exception("You can't set the width twice")
+        self.get_ymal()
+        self.__width = 0
+        self.__height = 0
+        try : 
+            match self.__ymal_part:
+                case {"width":width,"height":height}:
+                    if isinstance(width, int):
+                        self.__width = width
+                    else: Exception("The width must be a positive integer")
+                    if isinstance(height, int):
+                        self.__height = height
+                    else: Exception("The height must be a positive integer")
+            if "next-map" in self.__ymal_part:
+                if isinstance(self.__ymal_part["next-map"],str):
+                    self.__next_map = self.__ymal_part["next-map"]
+                else: raise Exception("The map must a file adresse")                                                                                                                                                                                                             
+        except ValueError :
+            raise Exception("Configuration lines on file aren't formated correctly")    #je check 2 fois pas sur que c'est necessaire
+        if (self.__width == 0 or self.__height == 0) :
+            raise Exception(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
+        if (self.__width < 0 or self.__height < 0) :
+            raise Exception("Width and height should be positive numbers")
+
+          
     
+
     def lever_door_linking(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
         """relie les portes au levier
         ATTENTION cette fonction marche mais n'est pas securiser
         """
-        
-        
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
             level = file.read()
             partition = level.split('---\n',1)
@@ -64,52 +111,66 @@ class Map :
             assert(isinstance(yaml_return,dict))
             if not ('switches' in yaml_return):
                 return
-            if ('gates' in yaml_return):
+            if self.valid_dict(yaml_return,'gates',list):
                 for door in yaml_return['gates']:
-                    if 'state' and 'x' and 'y' in door:
-                        element = map_doors[door['y']][door['x']]
-                        if door['state'] =='open'  and isinstance(element,Door): 
-                            element.open()
-            lever_list = yaml_return['switches']
-            for switch in lever_list:
-                activation_close : list[Door] = [] 
-                activation_open : list[Door] = []  
-                deactivation_close : list[Door] = [] 
-                deactivation_open : list[Door] = [] 
-                start_on : bool = False
-                one_time_use : bool = False
-                if 'state' in switch:
-                    if isinstance(switch['state'],bool):
+                    if isinstance(door,dict):
+                        if (self.valid_dict(door,'state',str) and
+                            self.valid_dict(door,'x',int) and
+                            self.valid_dict(door,'y',int)):
+                            element = map_doors[door['y']][door['x']]
+                            if door['state'] =='open'  and isinstance(element,Door): 
+                                element.open()
+            if self.valid_dict(yaml_return,'gates',list):
+                lever_list = yaml_return['switches']
+                for switch in lever_list:
+                    if isinstance(switch,dict):
+                        activation_close : list[Door] = [] 
+                        activation_open : list[Door] = []  
+                        deactivation_close : list[Door] = [] 
+                        deactivation_open : list[Door] = [] 
+                        start_on : bool = False
+                        one_time_use : bool = False
+                        if self.valid_dict(switch,'state',bool):
                             start_on = switch['state']
-                if 'switch_on' in switch:
-                    for element in switch['switch_on']:
-                        #element : dict[str:str]
-                        #x_position : int = int(element['x'])
-                        #y_position : int = int(element['y'])
-                        if 'action' in element: 
-                            match element['action']:
-                                case 'disable':
-                                    one_time_use = True
-                                case 'open-gate':
-                                    if 'x' and 'y' in element:
-                                        activation_open.append(map_doors[element['y']][element['x']])
-                                case 'close-gate':
-                                    if 'x' and 'y' in element:
-                                        activation_close.append(map_doors[element['y']][element['x']])
-                if 'switch_off' in switch:
-                    for element in switch['switch_off']:
-                        if 'action' in element: 
-                            match element['action']:
-                                case 'disable':
-                                    one_time_use = True
-                                case 'open-gate':
-                                    deactivation_open.append(map_doors[element['y']][element['x']])
-                                case 'close-gate':
-                                    deactivation_close.append(map_doors[element['y']][element['x']])
-                if 'x' and 'y' in switch:
-                    lever : Lever = map_levers[switch['y']][switch['x']]
-                    lever.link_doors(activation_close ,activation_open, deactivation_close, deactivation_open, one_time_use,start_on)
-            
+                        if self.valid_dict(switch, 'switch_on', list):
+                            for element in switch['switch_on']:
+                                if isinstance(element,dict):
+                                    if self.valid_dict(element,'action',str):
+                                        match element['action']:
+                                            case 'disable':
+                                                one_time_use = True
+                                            case 'open-gate':
+                                                if (self.valid_dict(element,'x',int) and 
+                                                    self.valid_dict(element,'y',int)):
+                                                    activation_open.append(map_doors[element['y']][element['x']])
+                                            case 'close-gate':
+                                                if (self.valid_dict(element,'x',int) and 
+                                                    self.valid_dict(element,'y',int)):
+                                                    activation_close.append(map_doors[element['y']][element['x']])
+                        if self.valid_dict(switch, 'switch_off', list):
+                            for element in switch['switch_off']:
+                                if isinstance(element,dict):
+                                    if self.valid_dict(element,'action',str):
+                                        match element['action']:
+                                            case 'disable':
+                                                one_time_use = True
+                                            case 'open-gate':
+                                                if (self.valid_dict(element,'x',int) and 
+                                                    self.valid_dict(element,'y',int)):
+                                                    deactivation_open.append(map_doors[element['y']][element['x']])
+                                            case 'close-gate':
+                                                if (self.valid_dict(element,'x',int) and 
+                                                    self.valid_dict(element,'y',int)):
+                                                    deactivation_close.append(map_doors[element['y']][element['x']])
+                        if (self.valid_dict(switch,'x',int) and 
+                            self.valid_dict(switch,'y',int)):
+                            lever_in_map = map_levers[switch['y']][switch['x']]
+                            if isinstance(lever_in_map,Lever):
+                                lever : Lever = lever_in_map
+                                lever.link_doors(activation_close ,activation_open, deactivation_close, deactivation_open, one_time_use,start_on)
+    
+
+
 
     def __parse_config(self) -> None :
         """Parses the configuration part of the map file."""
@@ -274,8 +335,8 @@ class Map :
 
     def __create_map(self) -> None : 
         """Creates map from file, raises exceptions in case of errors in map."""
-
-        self.__parse_config()
+        self.__parse_config_2()
+        #self.__parse_config()
         self.__file_to_matrix()
         self.find_platforms_in_map_matrix()
         
@@ -299,6 +360,17 @@ class Map :
                     case "o" :
                         blob = Blob(x_coordinate, y_coordinate)
                         self.__monster_list.append(blob)
+                    case "g" :
+                        ghost = Ghost(x_coordinate, y_coordinate)
+                        self.__monster_list.append(ghost)
+                    case "f" :
+                        frog = Frog(x_coordinate, y_coordinate)
+                        self.__monster_list.append(frog)
+                    case "B" :
+                        boss = Boss(x_coordinate, y_coordinate)
+                        map_levers[line_num_arcade][position_x] = boss
+                        self.__monster_list.append(boss)
+                        self.__boss_list.append(boss)
                     case "v" :
                         bat = Bat(x_coordinate, y_coordinate)
                         self.__monster_list.append(bat)   
@@ -350,3 +422,10 @@ class Map :
     def get_next_map(self) -> str | None :
         return self.__next_map
     
+
+    def valid_dict (self,dict: dict[str,object], key: str, type_in_dict: type ) -> bool:
+        """Return true if the dict have the key and the correct value type associated with that key """
+        if key in dict:
+            if isinstance(dict[key],type_in_dict):
+                return True
+        return False

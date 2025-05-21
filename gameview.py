@@ -7,18 +7,20 @@ from platforms import Direction
 from non_platform_moving_blocks import NonPlatformMovingBlocks
 from player import Player
 from player import WeaponType
-from blob import Blob
+from boss import Boss
+from boss import Attack
 from monster import Monster
 from weapon import Weapon
 from sword import Sword
 from bow import Bow
-from bat import Bat
 from arrow import Arrow
 from lever import Lever
 from door import Door
 from map import Map
 
-from copy import copy
+
+
+from arcade import Rect
 
 CAMERA_X_MARGIN = 400
 CAMERA_Y_MARGIN = 200
@@ -35,6 +37,7 @@ class GameView(arcade.View):
     __weapon_list: arcade.SpriteList[Weapon]
     __arrow_list: arcade.SpriteList[Arrow]
     __monster_list: arcade.SpriteList[Monster]
+    __boss_list: arcade.SpriteList[Boss]
     __lever_list: arcade.SpriteList[Lever]
     __door_list: arcade.SpriteList[Door]
     __solid_block_list: arcade.SpriteList[arcade.Sprite]
@@ -43,7 +46,6 @@ class GameView(arcade.View):
     physics_engine: arcade.PhysicsEnginePlatformer | None
     __camera: arcade.camera.Camera2D
 
-    __icon_list: arcade.SpriteList[arcade.Sprite]
     __fixed_camera: arcade.camera.Camera2D
 
     __player : Player
@@ -98,12 +100,12 @@ class GameView(arcade.View):
                         )
 
 
-        self.sprite_tuple = (self.__player_sprite_list, self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
-                            self.__monster_list, self.__lever_list, self.__door_list ,self.__weapon_list, 
-                            self.__arrow_list, self.__end_list) 
-       
+        self.sprite_tuple = (self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
+                             self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
+                               self.__monster_list, self.__player_sprite_list, self.__weapon_list) 
+        self.__player_sprite_list, 
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
-                  self.__monster_list, self.__door_list, self.__lever_list, self.__end_list, 
+                  self.__monster_list,  self.__boss_list, self.__door_list, self.__lever_list, self.__end_list, 
                   self.__platform_list, self.__non_platform_moving_sprites_list)
         
         self.__player = Player(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
@@ -113,13 +115,17 @@ class GameView(arcade.View):
         self.__camera = arcade.camera.Camera2D()
         self.__fixed_camera = arcade.camera.Camera2D()
         self.__camera.position = self.__player.position #type: ignore
-
-        self.__icon_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__icon_list.append(arcade.Sprite("assets/kenney-voxel-items-png/sword_silver.png", constants.SCALE*0.5 , self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.top_left.y-20))
         self. __fixed_camera.position = arcade.Vec2(0, 0)
 
-        self.text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
-        self.ui_element = (self.__icon_list,self.text_score)
+        
+        weapon_rect = Rect(0, 0, 0, 0, 50, 50, 
+                            self.__fixed_camera.top_left.x+30,
+                            self.__fixed_camera.top_left.y-30,)
+        self.__weapon_icon : dict[str, Rect | str] = {'rect' : weapon_rect, 
+                                               'texture' : 'assets/kenney-voxel-items-png/sword_silver.png' }
+        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+        self.__text_win = arcade.Text("", 200 ,200, arcade.color.BLACK, 30)
+        self.text_list = [self.__text_score,]
         self.update_user_interface()
 
         self.solid_block_update() 
@@ -143,6 +149,7 @@ class GameView(arcade.View):
         self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
         self.__door_list = arcade.SpriteList(use_spatial_hash=True)
         self.__monster_list = arcade.SpriteList()
+        self.__boss_list = arcade.SpriteList()
         self.__weapon_list = arcade.SpriteList()
         self.__arrow_list = arcade.SpriteList()
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
@@ -203,22 +210,18 @@ class GameView(arcade.View):
                 match self.__player.selected_weapon_type:
                     case WeaponType.SWORD:
                         self.__weapon_list.append(Sword(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
-                        for icon in self.__icon_list:
-                                icon.texture = arcade.load_texture("assets/kenney-voxel-items-png/sword_silver.png") 
                     case WeaponType.BOW:
                         self.__weapon_list.append(Bow(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left))
-                        for icon in self.__icon_list:
-                                icon.texture = arcade.load_texture("assets/kenney-voxel-items-png/bow.png")
+                        for boss in self.__boss_list:       #to make the boss attack when drawing an arrow
+                            boss.choice = Attack.RUSH
             case arcade.MOUSE_BUTTON_RIGHT:
                 self.__weapon_list.clear()
                 self.__player.change_weapon()
                 match self.__player.selected_weapon_type:
                     case WeaponType.SWORD:
-                        for icon in self.__icon_list:
-                                icon.texture = arcade.load_texture("assets/kenney-voxel-items-png/sword_silver.png") 
+                        self.__weapon_icon['texture'] = "assets/kenney-voxel-items-png/sword_silver.png" 
                     case WeaponType.BOW:
-                        for icon in self.__icon_list:
-                                icon.texture = arcade.load_texture("assets/kenney-voxel-items-png/bow.png")
+                        self.__weapon_icon['texture'] = "assets/kenney-voxel-items-png/bow.png"
                 
                                   
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
@@ -236,6 +239,9 @@ class GameView(arcade.View):
                     current_weapon = self.__weapon_list[0]
                     if isinstance(current_weapon, Bow) and current_weapon.is_active :
                         self.__arrow_list.append(Arrow(current_weapon))
+                        for boss in self.__boss_list:       #to make the boss dodge arrows
+                            boss.frame_until_action = 1
+                            boss.choice = Attack.DASH
                 self.__weapon_list.clear()
 
             
@@ -276,6 +282,9 @@ class GameView(arcade.View):
 
         if self.physics_engine is not None :
             self.physics_engine.update()
+
+        for boss in self.__boss_list :
+            boss.ia(self.player_x,self.player_y)
 
         for monster in self.__monster_list :
             monster.move(self.__wall_list)
@@ -330,33 +339,44 @@ class GameView(arcade.View):
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))            
                                                                             
         for arrow in self.__arrow_list :
+            for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):
+                arrow.remove_from_sprite_lists()
+                lever.on_action()
+                self.solid_block_update()
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
             for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                 for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                     monster.die()
+                    self.solid_block_update()
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
-            for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):
-                lever.on_action()
-                arrow.remove_from_sprite_lists()
-                self.solid_block_update()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
-            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__wall_list, self.__platform_list)):
+            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__platform_list)):
                 arrow.remove_from_sprite_lists()
                 arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
             for lava_hit in arcade.check_for_collision_with_list(arrow, self.__lava_list) :
                 arrow.remove_from_sprite_lists()
 
+               
+
            
         if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.SWORD :
             current_weapon = self.__weapon_list[0]
             if current_weapon.is_active :
+                deactivate = False
                 for monster in arcade.check_for_collision_with_list(current_weapon, self.__monster_list) :
                     monster.die()
+                    self.solid_block_update()
+                    deactivate = True
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
                 for lever in arcade.check_for_collision_with_list(current_weapon, self.__lever_list):
                     lever.on_action()
                     self.solid_block_update()
+                    deactivate = True
                     arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
+                if deactivate :
+                    for weapon in self.__weapon_list:
+                        assert(isinstance(weapon,Sword))
+                        weapon.deactivate()
 
         if arcade.check_for_collision_with_list(self.__player, self.__lava_list) != [] :
             self.__setup_from_initial()
@@ -368,6 +388,9 @@ class GameView(arcade.View):
 
     def __load_next_map(self) -> None :
         """Load next_map of file. Should only be called if the file has a valid next map."""
+        if self.__next_map is None:
+            self.__text_win.text = "you won "
+            self.__text_win.draw()
 
         if self.__next_map is None :
             self.__won = True
@@ -387,7 +410,8 @@ class GameView(arcade.View):
     def update_user_interface(self) -> None :
         """"geres les compteur et icones sur l'ecran"""
         string_score ="Coin score = " + str(self.__player.coin_score)
-        self.text_score.text = string_score
+        self.__text_score.text = string_score
+
 
 
     def on_draw(self) -> None:
@@ -405,8 +429,13 @@ class GameView(arcade.View):
                     list.draw()
 
             with self.__fixed_camera.activate(): 
-                    self.text_score.draw()
-                    self.__icon_list.draw()
+                if 'rect' in self.__weapon_icon and 'texture' in self.__weapon_icon:           
+                    rect = self.__weapon_icon['rect']
+                    texture = self.__weapon_icon['texture']
+                    assert(isinstance(rect, Rect) and isinstance(texture, str))
+                    arcade.draw_texture_rect(arcade.load_texture(texture), rect)
+                self.__text_score.draw()
+                self.__text_win.draw()
             
     @property
     def player_x(self) -> float:
