@@ -21,7 +21,7 @@ from platforms import Platform, Direction
 from non_platform_moving_blocks import NonPlatformMovingBlocks
 from platform_arrows import PlatformArrows
 
-section_split = re.compile(r'---\r?\n?')
+section_split = re.compile(r'---\s*\r?\n?')
 
 class Map :
 
@@ -123,7 +123,7 @@ class Map :
                             element = map_doors[door['y']][door['x']]
                             if door['state'] =='open'  and isinstance(element,Door): 
                                 element.open()
-            if self.valid_dict(yaml_return,'gates',list):
+            if self.valid_dict(yaml_return,'switches',list):
                 lever_list = yaml_return['switches']
                 for switch in lever_list:
                     if isinstance(switch,dict):
