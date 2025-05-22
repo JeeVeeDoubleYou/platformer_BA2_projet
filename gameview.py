@@ -124,6 +124,15 @@ class GameView(arcade.View):
         self.__weapon_icon : dict[str, Rect | str] = {'rect' : weapon_rect, 
                                                'texture' : 'assets/kenney-voxel-items-png/sword_silver.png' }
         self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+        self.__text_boss_life = arcade.Text("zzeibvbi", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
+        for boss in self.__monster_list:
+            if isinstance(boss,Boss):
+                print("t")
+                string_score ="malenia blade of miquela:  " + str(boss.hit_points)
+                self.__text_boss_life.text = string_score
+                print(string_score)
+
+
         self.__text_win = arcade.Text("", 200 ,200, arcade.color.BLACK, 30)
         self.text_list = [self.__text_score,]
         self.update_user_interface()
@@ -347,6 +356,9 @@ class GameView(arcade.View):
             for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                 for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                     monster.die()
+                    if isinstance(monster,Boss):
+                        string_score ="malenia blade of miquela:  " + str(monster.hit_points)
+                        self.__text_boss_life.text = string_score
                     self.solid_block_update()
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
@@ -365,6 +377,9 @@ class GameView(arcade.View):
                 deactivate = False
                 for monster in arcade.check_for_collision_with_list(current_weapon, self.__monster_list) :
                     monster.die()
+                    if isinstance(monster,Boss):
+                        string_score ="malenia blade of miquela:  " + str(monster.hit_points)
+                        self.__text_boss_life.text = string_score
                     self.solid_block_update()
                     deactivate = True
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
@@ -435,6 +450,7 @@ class GameView(arcade.View):
                     assert(isinstance(rect, Rect) and isinstance(texture, str))
                     arcade.draw_texture_rect(arcade.load_texture(texture), rect)
                 self.__text_score.draw()
+                self.__text_boss_life.draw()
                 self.__text_win.draw()
             
     @property

@@ -98,7 +98,19 @@ class Map :
             raise Exception("Width and height should be positive numbers")
 
           
-    
+    def lever_door_linking_2(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
+        try:
+            match self.__ymal_part:
+                case {'switches': list() as switch}:
+                    match switch:
+                        case _:
+                            pass
+                    pass
+                case {'gates': list() as doors}:
+                    pass
+            
+        except ValueError :
+            pass
 
     def lever_door_linking(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
         """relie les portes au levier
