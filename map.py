@@ -2,6 +2,7 @@ import os
 from typing import Final
 import arcade
 import yaml
+import re
 
 from bat import Bat
 from blob import Blob
@@ -19,6 +20,8 @@ from frog import Frog
 from platforms import Platform, Direction
 from non_platform_moving_blocks import NonPlatformMovingBlocks
 from platform_arrows import PlatformArrows
+
+section_split = re.compile(r'---\s*\r?\n?')
 
 class Map :
 
@@ -64,7 +67,7 @@ class Map :
         try : 
            with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
             level = file.read()
-            partition = level.split('---\n',1)
+            partition = section_split.split(level, 1)
             yaml_return : object = yaml.safe_load(partition[0])
             if (isinstance(yaml_return,dict)):
                 self.__ymal_part = yaml_return
@@ -118,7 +121,7 @@ class Map :
         """
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
             level = file.read()
-            partition = level.split('---\n',1)
+            partition = section_split.split(level, 1)
             yaml_return : object = yaml.safe_load(partition[0])
             assert(isinstance(yaml_return,dict))
             if not ('switches' in yaml_return):
@@ -132,7 +135,7 @@ class Map :
                             element = map_doors[door['y']][door['x']]
                             if door['state'] =='open'  and isinstance(element,Door): 
                                 element.open()
-            if self.valid_dict(yaml_return,'gates',list):
+            if self.valid_dict(yaml_return,'switches',list):
                 lever_list = yaml_return['switches']
                 for switch in lever_list:
                     if isinstance(switch,dict):
@@ -222,7 +225,7 @@ class Map :
         self.__map_matrix = [["" for i in range(self.__width)] for j in range(self.__height)]
         # Matrice[Lines][Colonne]
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
-            while not f.readline() == "---\n" :
+            while not section_split.fullmatch(f.readline()):
                 # Skips the configuration for of the file, taken care of by function self.__parse_config
                 continue
             for j in range(self.__height) :

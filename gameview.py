@@ -417,7 +417,6 @@ class GameView(arcade.View):
 
     def __setup_from_initial(self) -> None :
         """Setup the game from the initial map."""
-
         assert os.path.exists(self.__initial_map_name)
         self.__current_map_name = self.__initial_map_name
         self.setup()
