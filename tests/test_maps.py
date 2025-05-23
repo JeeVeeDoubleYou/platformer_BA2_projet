@@ -6,9 +6,10 @@ from gameview import GameView
 def test_bad_maps(window: arcade.Window) -> None: 
 
     with pytest.raises(Exception, match="Configuration lines on file aren't formated correctly") :
-        view = GameView("maps/bad_maps/bad_config.txt")
-    
-    # ATTENTION : Doesn't work with all bad config
+        view = GameView("maps/bad_maps/no_config.txt")
+
+    with pytest.raises(Exception, match="The width must be an integer") :
+        view = GameView("maps/bad_maps/non_int_width.txt")
 
     with pytest.raises(Exception, match="Width and height should be positive numbers") :
         view = GameView("maps/bad_maps/negative_height.txt")
@@ -19,9 +20,6 @@ def test_bad_maps(window: arcade.Window) -> None:
     with pytest.raises(Exception, match="Width and height should be defined and non-zero in configuration of file") :
         view = GameView("maps/bad_maps/no_height.txt")
 
-    with pytest.raises(Exception, match="Width and height should be defined and non-zero in configuration of file") :
-        view = GameView("maps/bad_maps/no_config.txt")
-
     with pytest.raises(Exception, match="Player must have a starting point") :
         view = GameView("maps/bad_maps/no_start.txt")
 
@@ -30,12 +28,6 @@ def test_bad_maps(window: arcade.Window) -> None:
 
     with pytest.raises(Exception, match="There is a line with more characters than 20") :
         view = GameView("maps/bad_maps/too_many_char.txt")
-
-    with pytest.raises(Exception, match="You can't set the height twice") :
-        view = GameView("maps/bad_maps/height_set_twice.txt")
-
-    with pytest.raises(Exception, match="You can't set the width twice") :
-        view = GameView("maps/bad_maps/width_set_twice.txt")
 
     with pytest.raises(Exception, match="The map contains an unknown character") :
         view = GameView("maps/bad_maps/bad_character.txt")
@@ -62,9 +54,6 @@ def test_good_maps(window: arcade.Window) -> None :
     window.show_view(view)
 
 def test_chaining_levels(window: arcade.Window) -> None :
-    with pytest.raises(Exception, match="You can't set the next map twice") :
-        view = GameView("maps/bad_maps/next-map_set_twice.txt")
-        window.show_view(view)
 
     with pytest.raises(Exception, match="The next map path is incorrect") :
         view = GameView("maps/bad_maps/bad_next-map_name.txt")

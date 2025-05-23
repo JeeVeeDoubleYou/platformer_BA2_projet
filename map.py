@@ -76,12 +76,11 @@ class Map :
                 yaml_return : object = yaml.safe_load(partition[0])
                 if (isinstance(yaml_return,dict)):
                     self.__ymal_part = yaml_return
+                else : raise Exception("Configuration lines on file aren't formated correctly")
         except ValueError :
             raise Exception("Configuration lines on file aren't formated correctly")
 
     def __parse_config_2(self) -> None:
-        #je met cette erreure car je suis pas sur qu'elle soit un probleme:
-        #  raise Exception("You can't set the width twice")
         self.get_ymal()
         self.__width = 0
         self.__height = 0
@@ -90,14 +89,14 @@ class Map :
                 case {"width":width,"height":height}:
                     if isinstance(width, int):
                         self.__width = width
-                    else: Exception("The width must be a positive integer")
+                    else: raise Exception("The width must be an integer")
                     if isinstance(height, int):
                         self.__height = height
-                    else: Exception("The height must be a positive integer")
+                    else: raise Exception("The height must be an integer")
             if "next-map" in self.__ymal_part:
-                if isinstance(self.__ymal_part["next-map"],str):
+                if isinstance(self.__ymal_part["next-map"],str) and os.path.exists(self.__ymal_part["next-map"]) :
                     self.__next_map = self.__ymal_part["next-map"]
-                else: raise Exception("The map must a file adresse")                                                                                                                                                                                                             
+                else: raise Exception("The next map path is incorrect")                                                                                                                                                                                                           
         except ValueError :
             raise Exception("Configuration lines on file aren't formated correctly")    #je check 2 fois pas sur que c'est necessaire
         if (self.__width == 0 or self.__height == 0) :
@@ -160,6 +159,10 @@ class Map :
                         off_deactivate : bool = False
                         match switch:
                             case {'switch_on': list() as switch_on}:
+                                # tuple = self.action_linking(switch_on, map_doors)
+                                # activation_open = tuple[0] 
+                                # activation_close = tuple[1] 
+                                # on_deactivate = tuple[2]
                                 for element in switch_on:
                                     if not isinstance(element,dict):
                                         raise Exception("A switch_on action is incorect")
@@ -173,6 +176,12 @@ class Map :
                                             self.add_door_to_list(map_doors, x, y, activation_close)
                         match switch:
                             case {'switch_off': list() as switch_off}:
+                                #         tuple = self.action_linking(switch_off, map_doors)
+                                #         deactivation_open = tuple[0] 
+                                #         deactivation_close = tuple[1] 
+                                #         off_deactivate = tuple[2]
+                                # if switch.get('state') == True:
+                                #     start_on = True
                                 for element in switch_off:
                                     if not isinstance(element,dict):
                                         raise Exception("A switch_off action is incorect")
@@ -191,7 +200,7 @@ class Map :
                                     lever : Lever = lever_in_map
                                     lever.link_doors(activation_close ,activation_open, deactivation_close,
                                                       deactivation_open, on_deactivate, off_deactivate, start_on)
-                                else: Exception("There is no lever at x= ",x," y= ",y)
+                                else: Exception(f"There is no lever at (x, y) = {(x, y)}")
                             case _ :
                                 raise Exception("Please precise where the lever is suposed to be with integer coordinate")
             match self.__ymal_part:
