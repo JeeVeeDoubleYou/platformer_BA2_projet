@@ -100,31 +100,35 @@ class Map :
         if (self.__width < 0 or self.__height < 0) :
             raise Exception("Width and height should be positive numbers")
 
-    """def action_linking(self, mode:str, switch_on_or_off: list[dict[str,object]], list_close: list[Door], list_open: list[Door], map_doors: list[list[Door|None]]) ->tuple[list[Door],list[Door]]:
-        match 
-        case {mode: list() as switch_on_or_off}:
-            for element in switch_on:
-                if not isinstance(element,dict):
-                    raise Exception("A switch_on action is incorect")
-                assert(isinstance(switch,dict))
-                match element:
-                    case {'action':'disable'}:
-                        one_time_use = True
-                    case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                        if not isinstance(map_doors[y][x],Door):
-                            raise Exception("There is no door at x= ",x," y= ",y)
-                        assert(isinstance(map_doors[y][x],Door))
-                        list_open.append(map_doors[y][x])
-                    case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                        if not isinstance(map_doors[y][x],Door):
-                            raise Exception("There is no door at x= ",x," y= ",y)
-                        assert(isinstance(map_doors[y][x],Door))
-                        list_close.append(map_doors[y][x])
-                return([],[])
-    """ 
+    def action_linking(self, switch_on_or_off: list[dict[str,object]],
+                        map_doors: list[list[Door|None]]) ->tuple[list[Door],list[Door],bool]:
+        one_time_use : bool = False
+        list_close: list[Door] = []
+        list_open: list[Door] = []
+        for element in switch_on_or_off:
+            if not isinstance(element,dict):
+                raise Exception("A switch_on action is incorect")
+            assert(isinstance(element,dict))
+            match element:
+                case {'action':'disable'}:
+                    one_time_use = True
+                case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
+                    if not isinstance(map_doors[y][x],Door):
+                        raise Exception("There is no door at x= ",x," y= ",y)
+                    assert(isinstance(map_doors[y][x],Door))
+                    list_open.append(map_doors[y][x])
+                case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
+                    if not isinstance(map_doors[y][x],Door):
+                        raise Exception("There is no door at x= ",x," y= ",y)
+                    assert(isinstance(map_doors[y][x],Door))
+                    list_close.append(map_doors[y][x])
+        return (list_open, list_close, one_time_use)
+            
+     
 
 
     def lever_door_linking_2(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
+        """"""
         try:
             match self.__ymal_part:
                 case {'switches': list() as switches}:
@@ -137,53 +141,29 @@ class Map :
                         deactivation_close : list[Door] = [] 
                         deactivation_open : list[Door] = [] 
                         start_on : bool = False
-                        one_time_use : bool = False
+                        on_deactivate : bool = False
+                        off_deactivate : bool = False
                         match switch:
                             case {'switch_on': list() as switch_on}:
-                                for element in switch_on:
-                                    if not isinstance(element,dict):
-                                        raise Exception("A switch_on action is incorect")
-                                    assert(isinstance(switch,dict))
-                                    match element:
-                                        case {'action':'disable'}:
-                                            one_time_use = True
-                                        case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                                            if not isinstance(map_doors[y][x],Door):
-                                                raise Exception("There is no door at x= ",x," y= ",y)
-                                            assert(isinstance(map_doors[y][x],Door))
-                                            activation_open.append(map_doors[y][x])
-                                        case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                                            if not isinstance(map_doors[y][x],Door):
-                                                raise Exception("There is no door at x= ",x," y= ",y)
-                                            assert(isinstance(map_doors[y][x],Door))
-                                            activation_close.append(map_doors[y][x])
+                                tuple = self.action_linking(switch_on, map_doors)
+                                activation_open = tuple[0] 
+                                activation_close = tuple[1] 
+                                on_deactivate = tuple[2]
                         match switch:
                             case {'switch_off': list() as switch_off}:
-                                for element in switch_off:
-                                    if not isinstance(element,dict):
-                                        raise Exception("A switch_off action is incorect")
-                                    assert(isinstance(switch,dict))
-                                    match element:
-                                        case {'action':'disable'}:
-                                            one_time_use = True
-                                        case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                                            if not isinstance(map_doors[y][x],Door):
-                                                raise Exception("There is no door at x= ",x," y= ",y)
-                                            assert(isinstance(map_doors[y][x],Door))
-                                            deactivation_open.append(map_doors[y][x])
-                                            
-                                        case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                                            if not isinstance(map_doors[y][x],Door):
-                                                raise Exception("There is no door at x= ",x," y= ",y)
-                                            assert(isinstance(map_doors[y][x],Door))
-                                            deactivation_close.append(map_doors[y][x])        
+                                tuple = self.action_linking(switch_off, map_doors)
+                                deactivation_open = tuple[0] 
+                                deactivation_close = tuple[1] 
+                                off_deactivate = tuple[2]
+                        if switch.get('state') == True:
+                            start_on = True     
                         match switch:
                             case {'x': int() as x, 'y': int() as y}:
                                 lever_in_map = map_levers[y][x]
                                 if isinstance(lever_in_map,Lever):
                                     lever : Lever = lever_in_map
                                     lever.link_doors(activation_close ,activation_open, deactivation_close,
-                                                      deactivation_open, one_time_use,start_on)
+                                                      deactivation_open, on_deactivate, off_deactivate, start_on)
                                 else: Exception("There is no lever at x= ",x," y= ",y)
                             case _ :
                                 raise Exception("Please precise where the lever is suposed to be with integer coordinate")
@@ -199,10 +179,10 @@ class Map :
                                 if isinstance(door_in_map,Door):
                                     door_in_map.open()
                                 else: raise Exception("There is no door at x= ",x," y= ",y)
-                                
-        except ValueError :
+        finally:
             pass
-
+        
+                                
     def __file_to_matrix(self) -> None :
         """Turns map file into a matrix"""
         self.__map_matrix = [["" for i in range(self.__width)] for j in range(self.__height)]
