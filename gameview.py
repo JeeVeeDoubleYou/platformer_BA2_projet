@@ -78,7 +78,6 @@ class GameView(arcade.View):
             self.__make_error_text(str(e))
             if self.__is_test : 
                 raise e
-            raise e
 
 
     def setup(self) -> None:
@@ -128,12 +127,8 @@ class GameView(arcade.View):
         self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
         self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
 
-        for boss in self.__monster_list:
-            if isinstance(boss,Boss):
-                string_score ="malenia blade of miquela:  "
-                for i in range (boss.hit_points):
-                    string_score += " ♡ "
-                self.__text_boss_life.text = string_score
+        for monster in self.__monster_list:
+            self.update_boss_life_ui(monster)
 
         self.__win_text = arcade.Text(
                         "Congratulations, you've won !",
@@ -145,6 +140,17 @@ class GameView(arcade.View):
                         anchor_x="center",
                         anchor_y="center"
                         )
+        
+    def update_boss_life_ui(self, monster : Monster) -> None :
+            if isinstance(monster, Boss):
+                        string_score : str
+                        if monster.hit_points == 0:
+                            string_score = "The boss has been defeated"
+                        else : 
+                            string_score ="malenia blade of miquela:  "
+                            for i in range (monster.hit_points):
+                                string_score += " ♡ "
+                        self.__text_boss_life.text = string_score
         
     def __reset_sprite_lists(self) -> None :
         """Sets all sprite lists to their initial empty values"""
@@ -356,16 +362,8 @@ class GameView(arcade.View):
             for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                 for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                     monster.die()
-                    if isinstance(monster,Boss):
-                        string_score : str
-                        if monster.hit_points == 0:
-                            string_score =""
-                        else : 
-                            string_score ="malenia blade of miquela:  "
-                            for i in range (monster.hit_points):
-                                string_score += " <3 "
-                        self.__text_boss_life.text = string_score
-                    self.solid_block_update()
+                    self.update_boss_life_ui(monster)
+                    self.solid_block_update() # ATTENTION 1 : Duplicate
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
             for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__platform_list)):
@@ -383,15 +381,8 @@ class GameView(arcade.View):
                 deactivate = False
                 for monster in arcade.check_for_collision_with_list(current_weapon, self.__monster_list) :
                     monster.die()
-                    if isinstance(monster,Boss):
-                        if monster.hit_points == 0:
-                            string_score =""
-                        else : 
-                            string_score ="malenia blade of miquela:  "
-                            for i in range (monster.hit_points):
-                                string_score += " <3 "
-                        self.__text_boss_life.text = string_score
-                    self.solid_block_update()
+                    self.update_boss_life_ui(monster)
+                    self.solid_block_update() # ATTENTION 1 : Duplicate
                     deactivate = True
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
                 for lever in arcade.check_for_collision_with_list(current_weapon, self.__lever_list):
