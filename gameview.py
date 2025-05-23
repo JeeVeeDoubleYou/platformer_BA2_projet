@@ -123,13 +123,14 @@ class GameView(arcade.View):
         self.__weapon_icon : dict[str, Rect | str] = {'rect' : weapon_rect, 
                                                'texture' : 'assets/kenney-voxel-items-png/sword_silver.png' }
         self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
-        self.__text_boss_life = arcade.Text("zzeibvbi", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
+        self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
+
         for boss in self.__monster_list:
             if isinstance(boss,Boss):
-                string_score ="malenia blade of miquela:  " + str(boss.hit_points)
+                string_score ="malenia blade of miquela:  "
+                for i in range (boss.hit_points):
+                    string_score += " <3 "
                 self.__text_boss_life.text = string_score
-                print(string_score)
-
 
         self.__text_win = arcade.Text("", 200 ,200, arcade.color.BLACK, 30)
         self.text_list = [self.__text_score,]
@@ -348,15 +349,22 @@ class GameView(arcade.View):
                                                                             
         for arrow in self.__arrow_list :
             for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):
-                arrow.remove_from_sprite_lists()
-                lever.on_action()
-                self.solid_block_update()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
+                if not lever.broken:
+                    arrow.remove_from_sprite_lists()
+                    lever.on_action()
+                    self.solid_block_update()
+                    arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
             for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                 for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                     monster.die()
                     if isinstance(monster,Boss):
-                        string_score ="malenia blade of miquela:  " + str(monster.hit_points)
+                        string_score : str
+                        if monster.hit_points == 0:
+                            string_score =""
+                        else : 
+                            string_score ="malenia blade of miquela:  "
+                            for i in range (monster.hit_points):
+                                string_score += " <3 "
                         self.__text_boss_life.text = string_score
                     self.solid_block_update()
                     arrow.remove_from_sprite_lists()
@@ -377,16 +385,22 @@ class GameView(arcade.View):
                 for monster in arcade.check_for_collision_with_list(current_weapon, self.__monster_list) :
                     monster.die()
                     if isinstance(monster,Boss):
-                        string_score ="malenia blade of miquela:  " + str(monster.hit_points)
+                        if monster.hit_points == 0:
+                            string_score =""
+                        else : 
+                            string_score ="malenia blade of miquela:  "
+                            for i in range (monster.hit_points):
+                                string_score += " <3 "
                         self.__text_boss_life.text = string_score
                     self.solid_block_update()
                     deactivate = True
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
                 for lever in arcade.check_for_collision_with_list(current_weapon, self.__lever_list):
-                    lever.on_action()
-                    self.solid_block_update()
-                    deactivate = True
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
+                    if not lever.broken:
+                        deactivate = True
+                        lever.on_action()
+                        self.solid_block_update()
+                        arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
                 if deactivate :
                     for weapon in self.__weapon_list:
                         assert(isinstance(weapon,Sword))
