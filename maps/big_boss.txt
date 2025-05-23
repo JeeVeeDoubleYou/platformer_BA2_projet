@@ -1,5 +1,5 @@
 height: 9
-width: 16
+width: 20
 ---
     ££    ££ Eg v
    * ↓   * ↓==↑

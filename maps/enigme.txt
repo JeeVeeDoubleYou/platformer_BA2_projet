@@ -1,5 +1,5 @@
 height: 14
-width: 19
+width: 25
 ---
    ==            *
    =^|        £
