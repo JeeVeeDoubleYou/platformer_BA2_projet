@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 import pytest
 from gameview import GameView
@@ -30,6 +31,13 @@ def test_all_bad_maps(window: arcade.Window) -> None :
 
     for file_path in Path("maps/bad_maps").iterdir():
         if file_path.is_file():
-            with pytest.raises(Exception) :
+            try:
                 view = GameView(str(file_path))
                 window.show_view(view)
+                # If no exception is raised, the test should fail
+                pytest.fail(f"Expected exception not raised for file: {file_path}")
+            except Exception:
+                pass  # Expected path
+            # with pytest.raises(Exception) :
+            #     view = GameView(str(file_path))
+            #     window.show_view(view)
