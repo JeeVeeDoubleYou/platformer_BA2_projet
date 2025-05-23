@@ -1,0 +1,9 @@
+height: 5
+width: 24
+---
+      v  v  v  v     v
+                   v
+       v  v  v  v     v
+S   g  g  g  g  g  f  E
+==  =  = v= v= v= v=££=
+---

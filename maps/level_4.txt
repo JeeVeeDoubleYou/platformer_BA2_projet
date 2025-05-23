@@ -38,12 +38,12 @@ gates:
     state: open # this gate is open when the game starts
   # the other gates start closed
 ---
-^     x           x
---    x           x
+B     x           x
+--    x  f  g     x
       x-----      |
    ---x     o     =    
       x   -----   =  ^£
 ---   x   x   |  x= --£→→→
-      |  xx * x  x=  S    E
+    |  xx * x  x=       E
 ======================== ---→→
 ---
