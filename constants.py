@@ -26,3 +26,9 @@ WINDOW_HEIGHT = 720
 
 """Width of the arcade window in pixels"""
 WINDOW_WIDTH = 1280
+
+"""Speed of the ghost"""
+GHOST_SPEED = -1       # is negative to make the slime move in the direction it is facing (technicality)
+
+"""Makes the ghost spawn at correct distance from floor"""
+GHOST_SPAWN_HEIGHT = 10 

@@ -78,6 +78,7 @@ class GameView(arcade.View):
             self.__make_error_text(str(e))
             if self.__is_test : 
                 raise e
+            raise e
 
 
     def setup(self) -> None:
@@ -85,18 +86,7 @@ class GameView(arcade.View):
 
         self.__reset_sprite_lists()
 
-        # ATTENTION : Should be a function ?
         self.__won = False
-        self.__win_text = arcade.Text(
-                        "Congratulations, you've won !",
-                        color = arcade.color.BLACK,
-                        font_size= 54,
-                        font_name="Impact",
-                        x = constants.WINDOW_WIDTH/2,
-                        y = constants.WINDOW_HEIGHT/2,
-                        anchor_x="center",
-                        anchor_y="center"
-                        )
 
 
         self.sprite_tuple = (self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
@@ -115,25 +105,7 @@ class GameView(arcade.View):
         self.__camera.position = self.__player.position #type: ignore
         self. __fixed_camera.position = arcade.Vec2(0, 0)
 
-        
-        # ATTENTION : Should be a function, no?
-        weapon_rect = Rect(0, 0, 0, 0, 50, 50, 
-                            self.__fixed_camera.top_left.x+30,
-                            self.__fixed_camera.top_left.y-30,)
-        self.__weapon_icon : dict[str, Rect | str] = {'rect' : weapon_rect, 
-                                               'texture' : 'assets/kenney-voxel-items-png/sword_silver.png' }
-        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
-        self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
-
-        for boss in self.__monster_list:
-            if isinstance(boss,Boss):
-                string_score ="malenia blade of miquela:  "
-                for i in range (boss.hit_points):
-                    string_score += " <3 "
-                self.__text_boss_life.text = string_score
-
-        self.__text_win = arcade.Text("", 200 ,200, arcade.color.BLACK, 30)
-        self.text_list = [self.__text_score,]
+        self.create_ui()
         self.update_user_interface()
 
         self.solid_block_update() 
@@ -146,6 +118,33 @@ class GameView(arcade.View):
         )
         self.__player.physics_engine = self.physics_engine
 
+    def create_ui(self) -> None :
+        # ATTENTION : Séparer par sections et commenter
+        weapon_rect = Rect(0, 0, 0, 0, 50, 50, 
+                            self.__fixed_camera.top_left.x+30,
+                            self.__fixed_camera.top_left.y-30,)
+        self.__weapon_icon : dict[str, Rect | str] = {'rect' : weapon_rect, 
+                                               'texture' : 'assets/kenney-voxel-items-png/sword_silver.png' }
+        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+        self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
+
+        for boss in self.__monster_list:
+            if isinstance(boss,Boss):
+                string_score ="malenia blade of miquela:  "
+                for i in range (boss.hit_points):
+                    string_score += " ♡ "
+                self.__text_boss_life.text = string_score
+
+        self.__win_text = arcade.Text(
+                        "Congratulations, you've won !",
+                        color = arcade.color.BLACK,
+                        font_size= 54,
+                        font_name="Impact",
+                        x = constants.WINDOW_WIDTH/2,
+                        y = constants.WINDOW_HEIGHT/2,
+                        anchor_x="center",
+                        anchor_y="center"
+                        )
         
     def __reset_sprite_lists(self) -> None :
         """Sets all sprite lists to their initial empty values"""
@@ -416,9 +415,6 @@ class GameView(arcade.View):
 
     def __load_next_map(self) -> None :
         """Load next_map of file. Should only be called if the file has a valid next map."""
-        if self.__next_map is None:
-            self.__text_win.text = "you won "
-            self.__text_win.draw()
 
         if self.__next_map is None :
             self.__won = True
@@ -456,7 +452,7 @@ class GameView(arcade.View):
             with self.__camera.activate():
                 for list in self.sprite_tuple :
                     list.draw()
-            # ATTENTION : Reécrire ça
+            # ATTENTION : Relire ça
             with self.__fixed_camera.activate(): 
                 if 'rect' in self.__weapon_icon and 'texture' in self.__weapon_icon:           
                     rect = self.__weapon_icon['rect']
@@ -465,7 +461,6 @@ class GameView(arcade.View):
                     arcade.draw_texture_rect(arcade.load_texture(texture), rect)
                 self.__text_score.draw()
                 self.__text_boss_life.draw()
-                self.__text_win.draw()
             
     @property
     def player_x(self) -> float:

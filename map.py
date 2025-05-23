@@ -219,42 +219,6 @@ class Map :
         except ValueError :
             pass
 
-    # ATTENTION : Not used, must be deleted but check all exceptions first
-
-
-    # def __parse_config(self) -> None :
-    #     """Parses the configuration part of the map file."""
-    #     with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
-    #         self.__width = 0
-    #         self.__height = 0
-
-    #         for line in f :
-               
-    #             if line == "---\n" or line == "---" :
-    #                 break
-    #             line.split()
-    #             if line.startswith("next-map") :
-    #                 if self.__next_map is not None :
-    #                     raise Exception("You can't set the next map twice")
-    #                 self.__next_map = line.split()[-1]
-    #                 if not os.path.exists(self.__next_map) :
-    #                     raise Exception("The next map path is incorrect")
-    #             try : 
-    #                 if line.startswith("width") :
-    #                     if not self.__width == 0 :
-    #                         raise Exception("You can't set the width twice")
-    #                     self.__width = int(line.split()[-1])
-    #                 if line.startswith("height") :
-    #                     if not self.__height == 0 :
-    #                         raise Exception("You can't set the height twice")
-    #                     self.__height = int(line.split()[-1])
-    #             except ValueError :
-    #                 raise Exception("Configuration lines on file aren't formated correctly")
-    #         if (self.__width == 0 or self.__height == 0) :
-    #             raise Exception(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
-    #         if (self.__width < 0 or self.__height < 0) :
-    #             raise Exception("Width and height should be positive numbers")
-
     def __file_to_matrix(self) -> None :
         """Turns map file into a matrix"""
         self.__map_matrix = [["" for i in range(self.__width)] for j in range(self.__height)]
@@ -484,7 +448,7 @@ class Map :
     def get_next_map(self) -> str | None :
         return self.__next_map
     
-    def valid_dict (self,dict: dict[str,object], key: str, type_in_dict: type ) -> bool:
+    def valid_dict(self,dict: dict[str,object], key: str, type_in_dict: type ) -> bool:
         """Return true if the dict have the key and the correct value type associated with that key """
         if key in dict:
             if isinstance(dict[key],type_in_dict):
