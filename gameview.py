@@ -55,8 +55,6 @@ class GameView(arcade.View):
     __has_error : bool # Internal variable for __error property
 
 
-
-
     def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
@@ -87,6 +85,7 @@ class GameView(arcade.View):
 
         self.__reset_sprite_lists()
 
+        # ATTENTION : Should be a function ?
         self.__won = False
         self.__win_text = arcade.Text(
                         "Congratulations, you've won !",
@@ -103,7 +102,7 @@ class GameView(arcade.View):
         self.sprite_tuple = (self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
                              self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
                                self.__monster_list, self.__player_sprite_list, self.__weapon_list) 
-        self.__player_sprite_list, 
+        self.__player_sprite_list, # ATTENTION : What?
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
                   self.__monster_list,  self.__boss_list, self.__door_list, self.__lever_list, self.__end_list, 
                   self.__platform_list, self.__non_platform_moving_sprites_list)
@@ -118,6 +117,7 @@ class GameView(arcade.View):
         self. __fixed_camera.position = arcade.Vec2(0, 0)
 
         
+        # ATTENTION : Should be a function, no?
         weapon_rect = Rect(0, 0, 0, 0, 50, 50, 
                             self.__fixed_camera.top_left.x+30,
                             self.__fixed_camera.top_left.y-30,)
@@ -224,6 +224,7 @@ class GameView(arcade.View):
                         self.__weapon_icon['texture'] = "assets/kenney-voxel-items-png/bow.png"
                 
                                   
+    # ATTENTION : Enlever les arguments si on ne les utilise pas?
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         """Called when the user a mouse button."""
 
@@ -257,6 +258,7 @@ class GameView(arcade.View):
         for weapon in self.__weapon_list:
             weapon.update_angle(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
     
+    # ATTENTION : Doctype ?
     def solid_block_update(self) -> None:
         self.__solid_block_list.clear()
         for wall in self.__wall_list:
@@ -300,7 +302,7 @@ class GameView(arcade.View):
         self.__update_camera()
         self.__check_collisions()
         
-            
+    # ATTENTION : Write a note about which camera (non static one) or not necessary?
     def __update_camera(self) -> None :
         """Updates camera position when player moves/dies"""
 
@@ -400,6 +402,7 @@ class GameView(arcade.View):
             self.__current_map_name = self.__next_map
             self.setup()
 
+    # ATTENTION : Add death sound
     def __setup_from_initial(self) -> None :
         """Setup the game from the initial map."""
         assert os.path.exists(self.__initial_map_name)
@@ -426,7 +429,7 @@ class GameView(arcade.View):
             with self.__camera.activate():
                 for list in self.sprite_tuple :
                     list.draw()
-
+            # ATTENTION : Reécrire ça
             with self.__fixed_camera.activate(): 
                 if 'rect' in self.__weapon_icon and 'texture' in self.__weapon_icon:           
                     rect = self.__weapon_icon['rect']

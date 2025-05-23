@@ -50,7 +50,7 @@ class Boss(Monster, Lever):
 
         self.choice : Attack = Attack.WALK
 
-        self.hit_points = 7
+        self.hit_points = 3
         self.texture = arcade.load_texture("assets/kenney-extended-enemies-png/spinner.png")
         self.sync_hit_box_to_texture()
         self.scale = (1,1)

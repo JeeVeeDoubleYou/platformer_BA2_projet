@@ -61,16 +61,15 @@ class Map :
 
         self.__create_map()
 
-    def get_ymal(self) -> None:
-        
+    def get_ymal(self) -> None: 
 
         try : 
-           with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
-            level = file.read()
-            partition = section_split.split(level, 1)
-            yaml_return : object = yaml.safe_load(partition[0])
-            if (isinstance(yaml_return,dict)):
-                self.__ymal_part = yaml_return
+            with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
+                level = file.read()
+                partition = section_split.split(level, 1)
+                yaml_return : object = yaml.safe_load(partition[0])
+                if (isinstance(yaml_return,dict)):
+                    self.__ymal_part = yaml_return
         except ValueError :
             raise Exception("Configuration lines on file aren't formated correctly")
 
@@ -173,40 +172,41 @@ class Map :
                                 lever.link_doors(activation_close ,activation_open, deactivation_close, deactivation_open, one_time_use,start_on)
     
 
+    # ATTENTION : Not used, must be deleted but check all exceptions first
 
 
-    def __parse_config(self) -> None :
-        """Parses the configuration part of the map file."""
-        with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
-            self.__width = 0
-            self.__height = 0
+    # def __parse_config(self) -> None :
+    #     """Parses the configuration part of the map file."""
+    #     with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
+    #         self.__width = 0
+    #         self.__height = 0
 
-            for line in f :
+    #         for line in f :
                
-                if line == "---\n" or line == "---" :
-                    break
-                line.split()
-                if line.startswith("next-map") :
-                    if self.__next_map is not None :
-                        raise Exception("You can't set the next map twice")
-                    self.__next_map = line.split()[-1]
-                    if not os.path.exists(self.__next_map) :
-                        raise Exception("The next map path is incorrect")
-                try : 
-                    if line.startswith("width") :
-                        if not self.__width == 0 :
-                            raise Exception("You can't set the width twice")
-                        self.__width = int(line.split()[-1])
-                    if line.startswith("height") :
-                        if not self.__height == 0 :
-                            raise Exception("You can't set the height twice")
-                        self.__height = int(line.split()[-1])
-                except ValueError :
-                    raise Exception("Configuration lines on file aren't formated correctly")
-            if (self.__width == 0 or self.__height == 0) :
-                raise Exception(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
-            if (self.__width < 0 or self.__height < 0) :
-                raise Exception("Width and height should be positive numbers")
+    #             if line == "---\n" or line == "---" :
+    #                 break
+    #             line.split()
+    #             if line.startswith("next-map") :
+    #                 if self.__next_map is not None :
+    #                     raise Exception("You can't set the next map twice")
+    #                 self.__next_map = line.split()[-1]
+    #                 if not os.path.exists(self.__next_map) :
+    #                     raise Exception("The next map path is incorrect")
+    #             try : 
+    #                 if line.startswith("width") :
+    #                     if not self.__width == 0 :
+    #                         raise Exception("You can't set the width twice")
+    #                     self.__width = int(line.split()[-1])
+    #                 if line.startswith("height") :
+    #                     if not self.__height == 0 :
+    #                         raise Exception("You can't set the height twice")
+    #                     self.__height = int(line.split()[-1])
+    #             except ValueError :
+    #                 raise Exception("Configuration lines on file aren't formated correctly")
+    #         if (self.__width == 0 or self.__height == 0) :
+    #             raise Exception(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
+    #         if (self.__width < 0 or self.__height < 0) :
+    #             raise Exception("Width and height should be positive numbers")
 
     def __file_to_matrix(self) -> None :
         """Turns map file into a matrix"""
@@ -214,6 +214,7 @@ class Map :
         # Matrice[Lines][Colonne]
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             while not section_split.fullmatch(f.readline()):
+                # ATTENTION : Function should probably only take second half of broken up file, so we can skip this
                 # Skips the configuration for of the file, taken care of by function self.__parse_config
                 continue
             for j in range(self.__height) :
@@ -227,6 +228,7 @@ class Map :
                     if char  in self.__hidden_characters :
                         continue
                     self.__map_matrix[j][i] = char
+            # ATTENTION : Should prob check with the regex
             if not f.readline().rstrip("\n") == "---" :
                 raise Exception(f"The map isn't exactly {self.__height} lines long")
 
@@ -286,7 +288,7 @@ class Map :
 
     def __matrix_line_num_to_arcade(self, line : int) -> int :
         """Tranforms a line number taken from looping through the map matrix to the line number considered by arcade.
-        Arcadem convention is top line is height - 1, last line is 0."""
+        Arcade convention is top line is height - 1, last line is 0."""
         assert (line < self.__height)
         return self.__height - (line + 1)
 
@@ -419,13 +421,14 @@ class Map :
             raise Exception("The file sets the next map but no end to the level")
         self.lever_door_linking(map_doors,map_levers) 
         
+    # ATTENTION : Should be a property?
     def get_player_coordinates(self) -> tuple[int, int] :
         return self.player_coordinates
     
+    # ATTENTION : Should be a property?
     def get_next_map(self) -> str | None :
         return self.__next_map
     
-
     def valid_dict (self,dict: dict[str,object], key: str, type_in_dict: type ) -> bool:
         """Return true if the dict have the key and the correct value type associated with that key """
         if key in dict:
