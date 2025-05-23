@@ -113,15 +113,15 @@ class Map :
                 case {'action':'disable'}:
                     one_time_use = True
                 case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                    if not isinstance(map_doors[y][x],Door):
+                    door_in_map = map_doors[y][x]
+                    if not isinstance(door_in_map,Door):
                         raise Exception("There is no door at x= ",x," y= ",y)
-                    assert(isinstance(map_doors[y][x],Door))
-                    list_open.append(map_doors[y][x])
+                    list_open.append(door_in_map)
                 case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                    if not isinstance(map_doors[y][x],Door):
+                    door_in_map = map_doors[y][x]
+                    if not isinstance(door_in_map,Door):
                         raise Exception("There is no door at x= ",x," y= ",y)
-                    assert(isinstance(map_doors[y][x],Door))
-                    list_close.append(map_doors[y][x])
+                    list_close.append(door_in_map)
         return (list_open, list_close, one_time_use)
             
      

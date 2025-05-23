@@ -165,20 +165,20 @@ class GameView(arcade.View):
         self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
         self.__non_platform_moving_sprites_list = []
 
-    #def __make_error_text(self, error : str) -> None :
-    #    self.__error_text = arcade.Text(
-    #            text=f"ERROR : {error}",
-    #            color = arcade.color.RED_BROWN,
-    #            font_size= 40,
-    #            font_name="Impact",
-    #            x = constants.WINDOW_WIDTH/2,
-    #            y = constants.WINDOW_HEIGHT/2,
-    #            anchor_x="center",
-    #            anchor_y="center"
-    #            )
-    #    self.background_color = arcade.color.ALMOND
-    #    self.__error = True
-    #    self.__reset_sprite_lists()
+    def __make_error_text(self, error : str) -> None :
+        self.__error_text = arcade.Text(
+                text=f"ERROR : {error}",
+                color = arcade.color.RED_BROWN,
+                font_size= 40,
+                font_name="Impact",
+                x = constants.WINDOW_WIDTH/2,
+                y = constants.WINDOW_HEIGHT/2,
+                anchor_x="center",
+                anchor_y="center"
+                )
+        self.background_color = arcade.color.ALMOND
+        self.__error = True
+        self.__reset_sprite_lists()
 
     
     def on_key_press(self, key: int, modifiers: int) -> None:
