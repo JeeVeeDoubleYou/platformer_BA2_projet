@@ -60,6 +60,12 @@ class Map :
         self.__non_platform_moving_sprites_list = non_platform_moving_sprites_list
 
         self.__create_map()
+    
+    # def partition_file(self) -> list[str] :
+    #     with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
+    #         level = file.read()
+    #         partition = section_split.split(level, 1)
+    #     return partition
 
     def get_ymal(self) -> None: 
 
@@ -122,6 +128,16 @@ class Map :
                 return([],[])
     """ 
 
+    def add_door_to_list(self, map_doors : list[list[Door|None]], x : int, y : int, list : list[Door]) -> None :
+        """Takes the [y][x] element in map_doors, checks that it's a door and adds it to the list."""
+        door = map_doors[y][x]
+        if not isinstance(door, Door):
+            raise Exception(f"There is no door at (x, y) = {(x, y)}")
+        assert(isinstance(door, Door))
+        list.append(door)
+
+    # ATTENTION : Wanted to refactor the switch underneath but i have problems with dict type anotation in function 
+    # def set_lever_action(self, dict_key : str, open_list : list[Door], close_list : list[Door], map_doors : list[list[Door|None]]):
 
     def lever_door_linking_2(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
         try:
@@ -147,42 +163,29 @@ class Map :
                                         case {'action':'disable'}:
                                             one_time_use = True
                                         case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                                            if not isinstance(map_doors[y][x],Door):
-                                                raise Exception("There is no door at x= ",x," y= ",y)
-                                            assert(isinstance(map_doors[y][x],Door))
-                                            activation_open.append(map_doors[y][x])
+                                            self.add_door_to_list(map_doors, x, y, activation_open)
                                         case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                                            if not isinstance(map_doors[y][x],Door):
-                                                raise Exception("There is no door at x= ",x," y= ",y)
-                                            assert(isinstance(map_doors[y][x],Door))
-                                            activation_close.append(map_doors[y][x])
+                                            self.add_door_to_list(map_doors, x, y, activation_close)
                         match switch:
                             case {'switch_off': list() as switch_off}:
                                 for element in switch_off:
                                     if not isinstance(element,dict):
                                         raise Exception("A switch_off action is incorect")
-                                    assert(isinstance(switch,dict))
+                                    assert(isinstance(switch, dict))
                                     match element:
                                         case {'action':'disable'}:
                                             one_time_use = True
                                         case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                                            if not isinstance(map_doors[y][x],Door):
-                                                raise Exception("There is no door at x= ",x," y= ",y)
-                                            assert(isinstance(map_doors[y][x],Door))
-                                            deactivation_open.append(map_doors[y][x])
-                                            
+                                            self.add_door_to_list(map_doors, x, y, deactivation_open)    
                                         case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                                            if not isinstance(map_doors[y][x],Door):
-                                                raise Exception("There is no door at x= ",x," y= ",y)
-                                            assert(isinstance(map_doors[y][x],Door))
-                                            deactivation_close.append(map_doors[y][x])        
+                                            self.add_door_to_list(map_doors, x, y, deactivation_close)        
                         match switch:
                             case {'x': int() as x, 'y': int() as y}:
                                 lever_in_map = map_levers[y][x]
-                                if isinstance(lever_in_map,Lever):
+                                if isinstance(lever_in_map, Lever):
                                     lever : Lever = lever_in_map
-                                    lever.link_doors(activation_close ,activation_open, deactivation_close,
-                                                      deactivation_open, one_time_use,start_on)
+                                    lever.link_doors(activation_close, activation_open, deactivation_close,
+                                                      deactivation_open, one_time_use, start_on)
                                 else: Exception("There is no lever at x= ",x," y= ",y)
                             case _ :
                                 raise Exception("Please precise where the lever is suposed to be with integer coordinate")
@@ -197,10 +200,46 @@ class Map :
                                 door_in_map = map_doors[y][x]
                                 if isinstance(door_in_map,Door):
                                     door_in_map.open()
-                                else: raise Exception("There is no door at x= ",x," y= ",y)
+                                else: raise Exception(f"There is no door at (x, y) = {(x, y)}")
                                 
         except ValueError :
             pass
+
+    # ATTENTION : Not used, must be deleted but check all exceptions first
+
+
+    # def __parse_config(self) -> None :
+    #     """Parses the configuration part of the map file."""
+    #     with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
+    #         self.__width = 0
+    #         self.__height = 0
+
+    #         for line in f :
+               
+    #             if line == "---\n" or line == "---" :
+    #                 break
+    #             line.split()
+    #             if line.startswith("next-map") :
+    #                 if self.__next_map is not None :
+    #                     raise Exception("You can't set the next map twice")
+    #                 self.__next_map = line.split()[-1]
+    #                 if not os.path.exists(self.__next_map) :
+    #                     raise Exception("The next map path is incorrect")
+    #             try : 
+    #                 if line.startswith("width") :
+    #                     if not self.__width == 0 :
+    #                         raise Exception("You can't set the width twice")
+    #                     self.__width = int(line.split()[-1])
+    #                 if line.startswith("height") :
+    #                     if not self.__height == 0 :
+    #                         raise Exception("You can't set the height twice")
+    #                     self.__height = int(line.split()[-1])
+    #             except ValueError :
+    #                 raise Exception("Configuration lines on file aren't formated correctly")
+    #         if (self.__width == 0 or self.__height == 0) :
+    #             raise Exception(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
+    #         if (self.__width < 0 or self.__height < 0) :
+    #             raise Exception("Width and height should be positive numbers")
 
     def __file_to_matrix(self) -> None :
         """Turns map file into a matrix"""
@@ -222,8 +261,7 @@ class Map :
                     if char  in self.__hidden_characters :
                         continue
                     self.__map_matrix[j][i] = char
-            # ATTENTION : Should prob check with the regex
-            if not f.readline().rstrip("\n") == "---" :
+            if not section_split.fullmatch(f.readline()) :
                 raise Exception(f"The map isn't exactly {self.__height} lines long")
 
     
@@ -297,25 +335,34 @@ class Map :
                 return (platform.direction, platform.movement)
         return (None, (0, 0))
 
-    def give_movement_to_non_platform_sprites(self, sprite : arcade.Sprite) -> bool :
-        """Takes an arcade.Sprite as argument. Checks if it belongs to some platform. 
+    def give_movement_to_non_platform_sprites(self, sprite : arcade.Sprite | None, sprite_char : str) -> bool :
+        """Takes an arcade.Sprite as argument, as well as it's character. Checks if it is a non-platform moving sprite.
+        If it is, checks if it belongs to some platform. 
         If it does, gives the platform movement to the individual sprite and returns True. 
         Otherwise, return False.
         Should *only* be called to sprites that haven't started moved yet.
-        Should be called on sprites that *are* in self.__non_wall_platform_characters."""
+        """
+        if sprite is None : 
+            return False
+        assert(sprite is not None)
+        if not sprite_char in self.__non_wall_platform_characters :
+            return False
         direction, movement = self.get_sprite_boundaries(sprite)
         if direction is None :
             return False
         self.__non_platform_moving_sprites_list.append(NonPlatformMovingBlocks(sprite, direction, movement, arcade.Vec2(sprite.center_x, sprite.center_y))) 
         return True
 
-    def give_movement_to_platform_sprites(self, sprite : arcade.Sprite) -> bool :
-        """Takes an arcade.Sprite as argument. Checks if it belongs to some platform. 
+    def give_movement_to_platform_sprites(self, sprite : arcade.Sprite, sprite_char : str) -> bool :
+        """Takes an arcade.Sprite as argument. Checks that it is a platform character.
+        Checks if it belongs to some platform. 
         If it does, gives the platform movement to the individual sprite and returns True. 
         Otherwise, return False.
         Should *only* be called to sprites that haven't started moved yet.
-        Should be called on sprites that *are not* in self.__non_wall_platform_characters.
         """
+        if not (sprite_char in self.__platform_characters - self.__non_wall_platform_characters) :
+            return False
+        
         direction, movement = self.get_sprite_boundaries(sprite)
         
         match direction :
@@ -350,6 +397,7 @@ class Map :
             for position_x, sprite_char in enumerate(line) :
                 x_coordinate = PIXELS_IN_BLOCK * position_x
                 y_coordinate =  PIXELS_IN_BLOCK * line_num_arcade
+                sprite : arcade.Sprite | None = None
                 match sprite_char : 
                     case "S" :
                         if start_is_placed :
@@ -381,7 +429,7 @@ class Map :
                         lever = Lever(x_coordinate, y_coordinate)
                         self.__lever_list.append(lever)
                         map_levers[line_num_arcade][position_x] = lever
-                        self.give_movement_to_non_platform_sprites(lever) # ATTENTION : Cas spécial, mais devrait généraliser avec fonction peutetre
+                        sprite = lever
                     case char if char in self.__hidden_characters | self.__arrow_characters :
                         pass
                     case char if char in self.__allowed_characters :
@@ -402,12 +450,11 @@ class Map :
                             case "£" :
                                 name_and_list = (":resources:/images/tiles/lava.png", self.__lava_list)
                         sprite = arcade.Sprite(name_and_list[0], center_x= x_coordinate, center_y= y_coordinate, scale=constants.SCALE)
-                        if char in self.__non_wall_platform_characters :
-                            self.give_movement_to_non_platform_sprites(sprite)
-                        if (char in self.__platform_characters - self.__non_wall_platform_characters) and (self.give_movement_to_platform_sprites(sprite)) :
+                        if (self.give_movement_to_platform_sprites(sprite, sprite_char)) :
                             self.__platform_list.append(sprite)
-                        else : # This else only applies to the last if. This condition is met as long as the sprite didn't go into the platform list.
+                        else :
                             name_and_list[1].append(sprite)  
+                self.give_movement_to_non_platform_sprites(sprite, sprite_char)
 
         if not start_is_placed :
             raise Exception("Player must have a starting point")
