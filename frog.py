@@ -5,7 +5,7 @@ from blob import Blob
 
 
 """Speed of the blue blobs"""
-FROG_SPEED = -1       # is negative to make the slime move in the direction it is facing (technicality)
+FROG_SPEED = -1       # is negative to make the frog move in the direction it is facing (technicality)
 JUMP_SPEED = 10
 FROG_GRAVITY = 1
 
@@ -25,7 +25,7 @@ class Frog(Blob):
             if random.randint(1,50) == 1:
                 self.change_y = 18
                 self.center_y += self.change_y
-                arcade.play_sound(arcade.load_sound(":resources:sounds/jump2.wav"))
+                # arcade.play_sound(arcade.load_sound(":resources:sounds/jump2.wav"))
             Blob.move(self,wall_list)
         else:
             self.change_y -= FROG_GRAVITY

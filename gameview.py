@@ -102,7 +102,6 @@ class GameView(arcade.View):
         self.sprite_tuple = (self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
                              self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
                                self.__monster_list, self.__player_sprite_list, self.__weapon_list) 
-        self.__player_sprite_list, # ATTENTION : What?
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
                   self.__monster_list,  self.__boss_list, self.__door_list, self.__lever_list, self.__end_list, 
                   self.__platform_list, self.__non_platform_moving_sprites_list)
@@ -127,7 +126,6 @@ class GameView(arcade.View):
         self.__text_boss_life = arcade.Text("zzeibvbi", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
         for boss in self.__monster_list:
             if isinstance(boss,Boss):
-                print("t")
                 string_score ="malenia blade of miquela:  " + str(boss.hit_points)
                 self.__text_boss_life.text = string_score
                 print(string_score)
@@ -233,7 +231,6 @@ class GameView(arcade.View):
                         self.__weapon_icon['texture'] = "assets/kenney-voxel-items-png/bow.png"
                 
                                   
-    # ATTENTION : Enlever les arguments si on ne les utilise pas?
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
         """Called when the user a mouse button."""
 
@@ -417,10 +414,11 @@ class GameView(arcade.View):
             self.__current_map_name = self.__next_map
             self.setup()
 
-    # ATTENTION : Add death sound
+    # ATTENTION : Change death sound?
     def __setup_from_initial(self) -> None :
         """Setup the game from the initial map."""
         assert os.path.exists(self.__initial_map_name)
+        arcade.play_sound(arcade.load_sound(":resources:/sounds/lose2.wav"))
         self.__current_map_name = self.__initial_map_name
         self.setup()
 
