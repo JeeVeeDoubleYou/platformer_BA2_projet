@@ -23,7 +23,7 @@ class GameView(arcade.View):
 
     __player_sprite_list: arcade.SpriteList[arcade.Sprite]
     __wall_list: arcade.SpriteList[arcade.Sprite]
-    __platform_list : arcade.SpriteList[arcade.Sprite]
+    __list_of_sprites_in_platforms : arcade.SpriteList[arcade.Sprite]
     __lava_list: arcade.SpriteList[arcade.Sprite]
     __coin_list: arcade.SpriteList[arcade.Sprite]
     __weapon_list: arcade.SpriteList[Weapon]
@@ -81,12 +81,12 @@ class GameView(arcade.View):
         self.__won = False
 
 
-        self.sprite_tuple = (self.__wall_list, self.__platform_list, self.__coin_list, self.__lava_list,
+        self.sprite_tuple = (self.__wall_list, self.__list_of_sprites_in_platforms, self.__coin_list, self.__lava_list,
                              self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
                                self.__monster_list, self.__player_sprite_list, self.__weapon_list) 
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
                   self.__monster_list,  self.__boss_list, self.__door_list, self.__lever_list, self.__end_list, 
-                  self.__platform_list, self.__non_platform_moving_sprites_list)
+                  self.__list_of_sprites_in_platforms, self.__non_platform_moving_sprites_list)
         self.__player.set_position(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         
         self.__next_map = map.get_next_map()
@@ -103,7 +103,7 @@ class GameView(arcade.View):
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
-            platforms=self.__platform_list,
+            platforms=self.__list_of_sprites_in_platforms,
             walls=self.__solid_block_list, 
             gravity_constant = constants.PLAYER_GRAVITY
         )
@@ -116,7 +116,7 @@ class GameView(arcade.View):
         """Sets all sprite lists to their initial empty values"""
         self.__player_sprite_list = arcade.SpriteList()
         self.__wall_list = arcade.SpriteList(use_spatial_hash=True)
-        self.__platform_list = arcade.SpriteList()
+        self.__list_of_sprites_in_platforms = arcade.SpriteList()
         self.__coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.__lava_list = arcade.SpriteList(use_spatial_hash=True)
         self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
@@ -321,7 +321,7 @@ class GameView(arcade.View):
                     self.solid_block_update() # ATTENTION 1 : Duplicate
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
-            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__platform_list)):
+            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__list_of_sprites_in_platforms)):
                 arrow.remove_from_sprite_lists()
                 arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
             for lava_hit in arcade.check_for_collision_with_list(arrow, self.__lava_list) :

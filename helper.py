@@ -1,5 +1,11 @@
 from typing import Final
 
+def matrix_line_num_to_arcade(line : int, total_height : int) -> int :
+        """Tranforms a line number taken from looping through the map matrix to the line number considered by arcade.
+        Arcade convention is top line is height - 1, last line is 0."""
+        assert (line < total_height)
+        return total_height - (line + 1)
+
 class Disk :
 
     """Immable class defining a 2D disk around a certain center point with a given radius."""
