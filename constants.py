@@ -1,85 +1,85 @@
 """All global constants are defined here. File to be imported as needed."""
 
-"""Lateral speed of the player, in pixels per frame"""
 PLAYER_MOVEMENT_SPEED = 5
+"""Lateral speed of the player, in pixels per frame"""
 
-"""Gravity applied to the player, in pixels per frame"""
 PLAYER_GRAVITY = 1
+"""Gravity applied to the player, in pixels per frame"""
 
-"""Instant vertical speed for jumping, in pixels per frame"""
 PLAYER_JUMP_SPEED = 18
+"""Instant vertical speed for jumping, in pixels per frame"""
 
-"""Scale for all sprites"""
 SCALE = 0.5
+"""Scale for all sprites"""
 
-"""Size in pixels of one block"""
 PIXELS_IN_BLOCK = 64
+"""Size in pixels of one block"""
 
-"""Speed of platforms"""
 PLATFORM_SPEED = 1
+"""Speed of platforms"""
 
-"""Height of the arcade window in pixels"""
 WINDOW_HEIGHT = 720
+"""Height of the arcade window in pixels"""
 
-"""Width of the arcade window in pixels"""
 WINDOW_WIDTH = 1280
+"""Width of the arcade window in pixels"""
 
-"""Speed of the ghost"""
 GHOST_SPEED = -1       # is negative to make the slime move in the direction it is facing (technicality)
+"""Speed of the ghost"""
 
-"""Makes the ghost spawn at correct distance from floor"""
 GHOST_SPAWN_HEIGHT = 10 
+"""Makes the ghost spawn at correct distance from floor"""
 
-"""Max margin between player x coordinate and edges of camera"""
 CAMERA_X_MARGIN = 400
+"""Max margin between player x coordinate and edges of camera"""
 
-"""Max margin between player y coordinate and edges of camera"""
 CAMERA_Y_MARGIN = 200
+"""Max margin between player y coordinate and edges of camera"""
 
-"""Speed of an arrow"""
 ARROW_SPEED = 25
+"""Speed of an arrow"""
 
-"""Gravity felt by an arrow"""
 ARROW_GRAVITY = 0.8
+"""Gravity felt by an arrow"""
 
-"""Speed of bats"""
 BAT_SPEED = 2
+"""Speed of bats"""
 
-"""Radius in which a bat can move around it's spawning point"""
 BAT_ACTION_RADIUS = 75
+"""Radius in which a bat can move around it's spawning point"""
 
-"""Number of frames every which we change direction randomly"""
 BAT_FRAMES = 2
-
-"""Speed of the blue blobs"""
-BLUE_BLOB_SPEED = -2       # is negative to make the slime move in the direction it is facing (technicality)
-
-"""Speed of boss"""
-BOSS_SPEED = 3
-
-"""Radius in which boss can move around it's spawning point"""
-BOSS_ACTION_RADIUS = 500
-
 """Number of frames every which we change direction randomly"""
+
+BLUE_BLOB_SPEED = -2       # is negative to make the slime move in the direction it is facing (technicality)
+"""Speed of the blue blobs"""
+
+BOSS_SPEED = 3
+"""Speed of boss"""
+
+BOSS_ACTION_RADIUS = 500
+"""Radius in which boss can move around it's spawning point"""
+
 BOSS_FRAMES = 80
+"""Number of frames every which we change direction randomly"""
 
-"""Speed of the frogs blobs"""
 FROG_SPEED = -1       # is negative to make the frog move in the direction it is facing (technicality)
+"""Speed of the frogs blobs"""
 
-"""Frog jump speed"""
 FROG_JUMP_SPEED = 10
+"""Frog jump speed"""
 
-"""Gravity felt by frogs"""
 FROG_GRAVITY = 1
+"""Gravity felt by frogs"""
 
-"""Distance between weapon and center of player"""
 DISTANCE_ARME_JOUEUR = 25 # ATTENTION : Ça veut dire quoi?
+"""Distance between weapon and center of player"""
 
-"""Height of weapon compared to player center"""
 DELTA_H = 5
+"""Height of weapon compared to player center"""
 
-"""Number of frames after spawn during which the sword can hit an enemy"""
 SWORD_ACTIVE_FRAMES = 7
+"""Number of frames after spawn during which the sword can hit an enemy"""
 
-"""Number of frames necessary after spawn before bow can shoot"""
 BOW_TIME_OUT = 15
+"""Number of frames necessary after spawn before bow can shoot"""
