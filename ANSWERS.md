@@ -39,8 +39,7 @@ dans la direction du blob
 
 ### Question 4 (Paul):Comment transférez-vous le score de la joueuse d’un niveau à l’autre ?
 
-on transfere le score en ne reinitialisant pas la joueuse d'un niveau a l'autre. 
-
+Une nouvelle instance de Player() est crée à chaque fois qu'on recommence à partir du premier niveau, mais pas quand on passe d'un niveau à l'autre. Comme le nombre de pièces que la joueuse a ramassé est stocké dans player, cela permet de garder le score d'un niveau à l'autre.
 
 ### Question 3 (Paul) :Où le remettez-vous à zéro ? Avez-vous du code dupliqué entre les cas où la joueuse perd parce qu’elle a touché un ou monstre ou de la lave ?
 le score est initialiser en meme temps que la joueuse du coup il est remis a zero lors de l'inintialisation lors de la mort de la joueuse .
@@ -90,7 +89,7 @@ Si la flèche est bien positionnée, l’algorithme continue son exploration uni
 
 ### Question 2 (Gaëlle) : Sur quelle structure travaille cet algorithme ? Quels sont les avantages et inconvénients de votre choix ?
 L'algorithme se sert d'un ensemble de tuples de nombres entiers pour les positions déjà visitées. Nous avons choisi cette structure car les deux seules opérations que nous voulons faire dessus sont l'ajout d'un nouvel élément et la vérification de l'appartenance d'un élément à l'ensemble, et ces deux opérations sont très efficaces avec un ensemble.
-Pour créer les platformes, nous travaillons sur une classe que nous avons défini, dans laquelle nous stockons les positions initiales des blocs de la plateforme également dans un ensemble de tuples d'entiers. Les deux seules opérations que nous faisons dessus sont à nouveau la vérification d'appartenance et l'ajout d'un élément.
+Pour créer les platformes, nous travaillons sur une classe que nous avons défini, dans laquelle nous stockons les positions initiales des blocs de la plateforme également dans un ensemble de tuples d'entiers. Les deux seules opérations que nous faisons dessus sont à nouveau la vérification d'appartenance et l'ajout d'un élément. Les sets ont des inconvénients dans d'autre situations, mais dans notre cas, ils sont la structure la plus adaptée.
 
 ### Question 3 (Paul) : Quelle bibliothèque utilisez-vous pour lire les instructions des interrupteurs ? Dites en une ou deux phrases pourquoi vous avez choisi celle-là.
 
