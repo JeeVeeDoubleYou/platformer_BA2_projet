@@ -122,25 +122,30 @@ class GameView(arcade.View):
         self.__player = Player(0, 0)
 
     def create_ui(self) -> None :
-        # ATTENTION : Séparer par sections et commenter
+        # Icône montrant l'arme active 
         weapon_rect = Rect(0, 0, 0, 0, 50, 50, 
                             self.__fixed_camera.top_left.x+30,
                             self.__fixed_camera.top_left.y-30,)
         self.__weapon_icon : dict[str, Rect | str] = {'rect' : weapon_rect, 
                                                'texture' : 'assets/kenney-voxel-items-png/sword_silver.png' }
+        
+        # Compteur de pièces 
         coin_rect = Rect(0, 0, 0, 0, 50, 50,
-                        self.__fixed_camera.bottom_left.x+20,
+                        self.__fixed_camera.bottom_left.x+35,
                         self.__fixed_camera.bottom_left.y+20)
         self.__coin_icon : dict[str, Rect | str] = {'rect' : coin_rect, 
                                                'texture' : ":resources:images/items/coinGold.png" }
-        self.__texture_list = (self.__weapon_icon, self.__coin_icon)
+        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+50, self.__fixed_camera.bottom_left.y+12, arcade.color.BLACK, 16)
         
-        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+35, self.__fixed_camera.bottom_left.y+12, arcade.color.BLACK, 16)
-        self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
+        self.__textured_ui_list = (self.__weapon_icon, self.__coin_icon)
+        
+        # Montre la vie du boss, s'il y en a un
+        self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+125, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
 
         for monster in self.__monster_list:
             self.update_boss_life_ui(monster)
 
+        # Ici est crée le texte de victoire
         self.__win_text = arcade.Text(
                         "Congratulations, you've won !",
                         color = arcade.color.BLACK,
@@ -158,7 +163,7 @@ class GameView(arcade.View):
                         if monster.hit_points == 0:
                             string_score = "The boss has been defeated"
                         else : 
-                            string_score ="malenia blade of miquela: "
+                            string_score ="Malenia, Blade of Miquella: "
                             for i in range (monster.hit_points):
                                 string_score += " ♥ "
                         self.__text_boss_life.text = string_score
@@ -457,7 +462,7 @@ class GameView(arcade.View):
                     list.draw()
             # ATTENTION : Relire ça
             with self.__fixed_camera.activate(): 
-                for texture_rect in self.__texture_list:
+                for texture_rect in self.__textured_ui_list:
                     if 'rect' in texture_rect and 'texture' in texture_rect:           
                         rect = texture_rect['rect']
                         texture = texture_rect['texture']
