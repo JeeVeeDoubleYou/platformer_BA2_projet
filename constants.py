@@ -72,6 +72,8 @@ JUMP_SPEED = 10
 """Gravity felt by frogs"""
 FROG_GRAVITY = 1
 
+"""Distance between weapon and center of player"""
 DISTANCE_ARME_JOUEUR = 25 # ATTENTION : Ça veut dire quoi?
 
+"""Height of weapon compared to player center"""
 DELTA_H = 5

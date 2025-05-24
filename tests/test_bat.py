@@ -1,6 +1,6 @@
 import math
 import arcade
-from bat import ACTION_RADIUS
+from constants import BAT_ACTION_RADIUS
 from gameview import GameView
 
 
@@ -18,4 +18,4 @@ def test_bat(window: arcade.Window) -> None:
         window.test(1)
         current_bat_x = bat.center_x
         current_bat_y = bat.center_y
-        assert(math.sqrt((current_bat_x - initial_bat_x)**2 + (current_bat_y - initial_bat_y)**2) <= ACTION_RADIUS)
+        assert(math.sqrt((current_bat_x - initial_bat_x)**2 + (current_bat_y - initial_bat_y)**2) <= BAT_ACTION_RADIUS)
