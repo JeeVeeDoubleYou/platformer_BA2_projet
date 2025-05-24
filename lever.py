@@ -24,7 +24,7 @@ class Lever(arcade.Sprite):
         self.on_deactivate = on_deactivate
         self.activated = start_on
         if self.activated:
-            self.on_action
+            self.texture = arcade.load_texture(":resources:images/tiles/leverRight.png")
         self.on_activation_close = activation_close
         self.on_activation_open = activation_open
         self.on_deactivation_close = deactivation_close

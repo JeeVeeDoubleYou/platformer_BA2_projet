@@ -124,7 +124,14 @@ class GameView(arcade.View):
                             self.__fixed_camera.top_left.y-30,)
         self.__weapon_icon : dict[str, Rect | str] = {'rect' : weapon_rect, 
                                                'texture' : 'assets/kenney-voxel-items-png/sword_silver.png' }
-        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+10, self.__fixed_camera.bottom_left.y+10, arcade.color.BLACK, 12)
+        coin_rect = Rect(0, 0, 0, 0, 50, 50,
+                        self.__fixed_camera.bottom_left.x+20,
+                        self.__fixed_camera.bottom_left.y+20)
+        self.__coin_icon : dict[str, Rect | str] = {'rect' : coin_rect, 
+                                               'texture' : ":resources:images/items/coinGold.png" }
+        self.__texture_list = (self.__weapon_icon, self.__coin_icon)
+        
+        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+35, self.__fixed_camera.bottom_left.y+15, arcade.color.BLACK, 16)
         self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
 
         for monster in self.__monster_list:
@@ -149,7 +156,7 @@ class GameView(arcade.View):
                         else : 
                             string_score ="malenia blade of miquela:  "
                             for i in range (monster.hit_points):
-                                string_score += " ♡ "
+                                string_score += " ♥ "
                         self.__text_boss_life.text = string_score
         
     def __reset_sprite_lists(self) -> None :
@@ -425,7 +432,7 @@ class GameView(arcade.View):
 
     def update_user_interface(self) -> None :
         """"geres les compteur et icones sur l'ecran"""
-        string_score ="Coin score = " + str(self.__player.coin_score)
+        string_score ="X " + str(self.__player.coin_score)
         self.__text_score.text = string_score
 
 
@@ -445,11 +452,12 @@ class GameView(arcade.View):
                     list.draw()
             # ATTENTION : Relire ça
             with self.__fixed_camera.activate(): 
-                if 'rect' in self.__weapon_icon and 'texture' in self.__weapon_icon:           
-                    rect = self.__weapon_icon['rect']
-                    texture = self.__weapon_icon['texture']
-                    assert(isinstance(rect, Rect) and isinstance(texture, str))
-                    arcade.draw_texture_rect(arcade.load_texture(texture), rect)
+                for texture_rect in self.__texture_list:
+                    if 'rect' in texture_rect and 'texture' in texture_rect:           
+                        rect = texture_rect['rect']
+                        texture = texture_rect['texture']
+                        assert(isinstance(rect, Rect) and isinstance(texture, str))
+                        arcade.draw_texture_rect(arcade.load_texture(texture), rect)
                 self.__text_score.draw()
                 self.__text_boss_life.draw()
             

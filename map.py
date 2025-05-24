@@ -141,8 +141,8 @@ class Map :
     # ATTENTION : Wanted to refactor the switch underneath but i have problems with dict type anotation in function 
     # def set_lever_action(self, dict_key : str, open_list : list[Door], close_list : list[Door], map_doors : list[list[Door|None]]):
 
-    def lever_door_linking_2(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
-        """"""
+    def lever_door_linking(self, map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
+        """Make the levere able to open their door"""
         try:
             match self.__ymal_part:
                 case {'switches': list() as switches}:
@@ -159,40 +159,40 @@ class Map :
                         off_deactivate : bool = False
                         match switch:
                             case {'switch_on': list() as switch_on}:
-                                # tuple = self.action_linking(switch_on, map_doors)
-                                # activation_open = tuple[0] 
-                                # activation_close = tuple[1] 
-                                # on_deactivate = tuple[2]
-                                for element in switch_on:
-                                    if not isinstance(element,dict):
-                                        raise Exception("A switch_on action is incorect")
-                                    assert(isinstance(switch,dict))
-                                    match element:
-                                        case {'action':'disable'}:
-                                            one_time_use = True
-                                        case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                                            self.add_door_to_list(map_doors, x, y, activation_open)
-                                        case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                                            self.add_door_to_list(map_doors, x, y, activation_close)
+                                tuple = self.action_linking(switch_on, map_doors)
+                                activation_open = tuple[0] 
+                                activation_close = tuple[1] 
+                                on_deactivate = tuple[2]
+                                #for element in switch_on:
+                                #    if not isinstance(element,dict):
+                                #        raise Exception("A switch_on action is incorect")
+                                #    assert(isinstance(switch,dict))
+                                #    match element:
+                                #        case {'action':'disable'}:
+                                #            one_time_use = True
+                                #        case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
+                                #            self.add_door_to_list(map_doors, x, y, activation_open)
+                                #        case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
+                                #            self.add_door_to_list(map_doors, x, y, activation_close)
                         match switch:
                             case {'switch_off': list() as switch_off}:
-                                #         tuple = self.action_linking(switch_off, map_doors)
-                                #         deactivation_open = tuple[0] 
-                                #         deactivation_close = tuple[1] 
-                                #         off_deactivate = tuple[2]
-                                # if switch.get('state') == True:
-                                #     start_on = True
-                                for element in switch_off:
-                                    if not isinstance(element,dict):
-                                        raise Exception("A switch_off action is incorect")
-                                    assert(isinstance(switch, dict))
-                                    match element:
-                                        case {'action':'disable'}:
-                                            one_time_use = True
-                                        case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                                            self.add_door_to_list(map_doors, x, y, deactivation_open)    
-                                        case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                                            self.add_door_to_list(map_doors, x, y, deactivation_close)        
+                                        tuple = self.action_linking(switch_off, map_doors)
+                                        deactivation_open = tuple[0] 
+                                        deactivation_close = tuple[1] 
+                                        off_deactivate = tuple[2]
+                        if switch.get('state') == True:
+                            start_on = True
+                                #for element in switch_off:
+                                #    if not isinstance(element,dict):
+                                #        raise Exception("A switch_off action is incorect")
+                                #    assert(isinstance(switch, dict))
+                                #    match element:
+                                #        case {'action':'disable'}:
+                                #            one_time_use = True
+                                #        case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
+                                #            self.add_door_to_list(map_doors, x, y, deactivation_open)    
+                                #        case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
+                                #            self.add_door_to_list(map_doors, x, y, deactivation_close)        
                         match switch:
                             case {'x': int() as x, 'y': int() as y}:
                                 lever_in_map = map_levers[y][x]
@@ -438,7 +438,7 @@ class Map :
             raise Exception("Player must have a starting point")
         if self.__next_map is not None and not end_is_placed :
             raise Exception("The file sets the next map but no end to the level")
-        self.lever_door_linking_2(map_doors,map_levers) 
+        self.lever_door_linking(map_doors,map_levers) 
         
     # ATTENTION : Should be a property?
     def get_player_coordinates(self) -> tuple[int, int] :
