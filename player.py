@@ -38,9 +38,6 @@ class Player(arcade.Sprite):
         """Updates coin score by one."""
         self.coin_score += 1
 
-    def reset_coin_counter (self) -> None:
-        self.coin_score = 0
-
     def change_weapon(self) -> None:
         """
         Switches the available weapon in hand. Calls to this function should always be preceded by clearing the

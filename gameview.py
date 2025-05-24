@@ -61,6 +61,7 @@ class GameView(arcade.View):
 
         self.__error = False
         self.__won = False
+        self.create_new_player()
 
         # Choose a nice comfy background color
         self.background_color = arcade.types.Color(223, 153, 153)
@@ -94,8 +95,8 @@ class GameView(arcade.View):
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
                   self.__monster_list,  self.__boss_list, self.__door_list, self.__lever_list, self.__end_list, 
                   self.__platform_list, self.__non_platform_moving_sprites_list)
+        self.__player.set_position(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         
-        self.__player = Player(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         self.__next_map = map.get_next_map()
         
         self.__player_sprite_list.append(self.__player)
@@ -117,6 +118,9 @@ class GameView(arcade.View):
         )
         self.__player.physics_engine = self.physics_engine
 
+    def create_new_player(self) -> None :
+        self.__player = Player(0, 0)
+
     def create_ui(self) -> None :
         # ATTENTION : Séparer par sections et commenter
         weapon_rect = Rect(0, 0, 0, 0, 50, 50, 
@@ -131,7 +135,7 @@ class GameView(arcade.View):
                                                'texture' : ":resources:images/items/coinGold.png" }
         self.__texture_list = (self.__weapon_icon, self.__coin_icon)
         
-        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+35, self.__fixed_camera.bottom_left.y+15, arcade.color.BLACK, 16)
+        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+35, self.__fixed_camera.bottom_left.y+12, arcade.color.BLACK, 16)
         self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+200, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
 
         for monster in self.__monster_list:
@@ -154,7 +158,7 @@ class GameView(arcade.View):
                         if monster.hit_points == 0:
                             string_score = "The boss has been defeated"
                         else : 
-                            string_score ="malenia blade of miquela:  "
+                            string_score ="malenia blade of miquela: "
                             for i in range (monster.hit_points):
                                 string_score += " ♥ "
                         self.__text_boss_life.text = string_score
@@ -206,7 +210,7 @@ class GameView(arcade.View):
                 self.__setup_from_initial()
             case arcade.key.ESCAPE:
                 # reset level
-                self.__player.reset_coin_counter()
+                self.create_new_player()
                 self.setup()
 
     
@@ -428,11 +432,12 @@ class GameView(arcade.View):
         assert os.path.exists(self.__initial_map_name)
         arcade.play_sound(arcade.load_sound(":resources:/sounds/lose2.wav"))
         self.__current_map_name = self.__initial_map_name
+        self.create_new_player()
         self.setup()
 
     def update_user_interface(self) -> None :
         """"geres les compteur et icones sur l'ecran"""
-        string_score ="X " + str(self.__player.coin_score)
+        string_score = " " + str(self.__player.coin_score)
         self.__text_score.text = string_score
 
 
