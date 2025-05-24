@@ -2,16 +2,13 @@ import arcade
 import constants
 from monster import Monster
 
-"""Speed of the blue blobs"""
-BLUE_BLOB_SPEED = -2       # is negative to make the slime move in the direction it is facing (technicality)
-
 class Blob(Monster):
     """Represents a blob, how it moves and checks for collistions"""
 
     def __init__(self, x: float, y: float,) -> None :
         
         super().__init__(":resources:/images/enemies/slimeBlue.png")
-        self.speed = BLUE_BLOB_SPEED
+        self.speed = constants.BLUE_BLOB_SPEED
         self.center_x = x
         self.center_y = y
         self.alpha = 255

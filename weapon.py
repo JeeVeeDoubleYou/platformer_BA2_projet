@@ -1,8 +1,7 @@
 from abc import abstractmethod
 import arcade
 from math_personal import sin_deg, cos_deg, atan2_deg
-
-DELTA_H = 5
+import constants
 
 
 class Weapon(arcade.Sprite):
@@ -22,11 +21,10 @@ class Weapon(arcade.Sprite):
     def in_hit_frame(self) -> None :
         ...
 
-
     def update_angle(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> None:
         """Takes mouse, player and camera positions as arguments and changes the angle of the weapon in consequence"""
         delta_x = mouse_position.x + camera_bottom_left.x - player_position.x
-        delta_y = mouse_position.y + camera_bottom_left.y - player_position.y - DELTA_H
+        delta_y = mouse_position.y + camera_bottom_left.y - player_position.y - constants.DELTA_H
         self.angle = atan2_deg(delta_x, delta_y) - self.texture_angle
         
     def set_texture_angle(self, texture_angle: float) -> None :
@@ -34,10 +32,9 @@ class Weapon(arcade.Sprite):
 
 
     def update_position(self, player_position : arcade.Vec2) -> None :
-        DISTANCE_ARME_JOUEUR = 25 
         
-        self.center_x = player_position.x+DISTANCE_ARME_JOUEUR*sin_deg(self.angle+self.texture_angle)
-        self.center_y = player_position.y+DISTANCE_ARME_JOUEUR*cos_deg(self.angle+self.texture_angle)-DELTA_H
+        self.center_x = player_position.x+ constants.DISTANCE_ARME_JOUEUR*sin_deg(self.angle+self.texture_angle)
+        self.center_y = player_position.y+ constants.DISTANCE_ARME_JOUEUR*cos_deg(self.angle+self.texture_angle)- constants.DELTA_H
         
         self.frames_from_spawn += 1
         self.in_hit_frame()

@@ -4,16 +4,7 @@ from monster import Monster
 import arcade
 import math
 from helper import Disk
-
-"""Speed of b
-ats"""
-BAT_SPEED = 2
-
-"""Radius in which bat can move around it's spawning point"""
-ACTION_RADIUS = 75
-
-"""Number of frames every which we change direction randomly"""
-FRAMES = 2
+import constants
 
 class Bat(Monster):
     """Represents a bat, defines how it moves"""
@@ -33,17 +24,17 @@ class Bat(Monster):
 
         self.angle_deg = 0.0
 
-        self.__frames_until_random = FRAMES
+        self.__frames_until_random = constants.BAT_FRAMES
 
-        self.action_area = Disk(self.__initial_x, self.__initial_y, ACTION_RADIUS)
+        self.action_area = Disk(self.__initial_x, self.__initial_y, constants.BAT_ACTION_RADIUS)
 
-    def move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
+    def move(self, _ : arcade.SpriteList[arcade.Sprite]) -> None:
         "Makes the bat move"
         
         self.__frames_until_random -= 1
 
         if self.__frames_until_random == 0 or  not self.__can_move(self.__new_speed(self.angle_deg)):
-            self.__frames_until_random = FRAMES
+            self.__frames_until_random = constants.BAT_FRAMES
             while True :
                 # Check bat isn't stuck
                 temp_angle_change = random.gauss(0,20) 
@@ -70,12 +61,12 @@ class Bat(Monster):
         self.angle_deg = temp_angle % 360
 
 
-    def __new_speed(self, angle__deg : float, speed : float = BAT_SPEED) -> tuple[float, float]:
+    def __new_speed(self, angle__deg : float) -> tuple[float, float]:
         """Calculates the x and y speeds in order to keep a total constant speed of 'speed', 
         depending on the angle of the movement, given in degres and with respect to the x axis going right.
         """
-        x_speed = math.cos(math.radians(angle__deg)) * BAT_SPEED
-        y_speed = math.sin(math.radians(angle__deg)) * BAT_SPEED
+        x_speed = math.cos(math.radians(angle__deg)) * constants.BAT_SPEED
+        y_speed = math.sin(math.radians(angle__deg)) * constants.BAT_SPEED
         if x_speed*self.scale_x > 0.5  :
             """flip the bat if it go fast enought in the direction it is not facing"""
             self.scale_x *= -1      #flip the sprite horizontaly

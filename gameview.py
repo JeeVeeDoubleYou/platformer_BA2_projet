@@ -1,10 +1,7 @@
 import os
 import sys
-from typing import Optional
 import arcade
-from arcade import Rect
 import constants
-from platforms import Direction
 from non_platform_moving_blocks import NonPlatformMovingBlocks
 from player import Player
 from player import WeaponType
@@ -19,11 +16,6 @@ from lever import Lever
 from door import Door
 from map import Map
 from UI import UI
-
-
-
-CAMERA_X_MARGIN = 400
-CAMERA_Y_MARGIN = 200
 
 
 class GameView(arcade.View):
@@ -283,17 +275,17 @@ class GameView(arcade.View):
         """Updates camera position when player moves/dies"""
 
         camera_x, camera_y = self.__camera.position
-        if (self.__camera.center_right.x < self.__player.center_x + CAMERA_X_MARGIN):
+        if (self.__camera.center_right.x < self.__player.center_x + constants.CAMERA_X_MARGIN):
             camera_x += max(abs(self.player_speed_x), constants.PLATFORM_SPEED)
-        elif (self.__camera.center_left.x > self.__player.center_x - CAMERA_X_MARGIN):
+        elif (self.__camera.center_left.x > self.__player.center_x - constants.CAMERA_X_MARGIN):
             camera_x -= max(abs(self.player_speed_x), constants.PLATFORM_SPEED)
 
-        if (self.__camera.top_center.y < self.__player.center_y + CAMERA_Y_MARGIN) :
+        if (self.__camera.top_center.y < self.__player.center_y + constants.CAMERA_Y_MARGIN) :
             if self.__player.change_y != 0 :
                 camera_y += self.__player.change_y
             else :
                 camera_y += constants.PLATFORM_SPEED
-        elif (self.__camera.bottom_center.y + CAMERA_Y_MARGIN > self.__player.center_y) :
+        elif (self.__camera.bottom_center.y + constants.CAMERA_Y_MARGIN > self.__player.center_y) :
             if self.__player.change_y != 0 :
                 camera_y += self.__player.change_y
             else :

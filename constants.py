@@ -15,9 +15,6 @@ SCALE = 0.5
 """Size in pixels of one block"""
 PIXELS_IN_BLOCK = 64
 
-"""Size in pixels of half a block"""
-HALF_BLOCK = PIXELS_IN_BLOCK / 2
-
 """Speed of platforms"""
 PLATFORM_SPEED = 1
 
@@ -32,3 +29,49 @@ GHOST_SPEED = -1       # is negative to make the slime move in the direction it 
 
 """Makes the ghost spawn at correct distance from floor"""
 GHOST_SPAWN_HEIGHT = 10 
+
+"""Max margin between player x coordinate and edges of camera"""
+CAMERA_X_MARGIN = 400
+
+"""Max margin between player y coordinate and edges of camera"""
+CAMERA_Y_MARGIN = 200
+
+"""Speed of an arrow"""
+ARROW_SPEED = 25
+
+"""Gravity felt by an arrow"""
+ARROW_GRAVITY = 0.8
+
+"""Speed of bats"""
+BAT_SPEED = 2
+
+"""Radius in which a bat can move around it's spawning point"""
+BAT_ACTION_RADIUS = 75
+
+"""Number of frames every which we change direction randomly"""
+BAT_FRAMES = 2
+
+"""Speed of the blue blobs"""
+BLUE_BLOB_SPEED = -2       # is negative to make the slime move in the direction it is facing (technicality)
+
+"""Speed of boss"""
+BOSS_SPEED = 3
+
+"""Radius in which boss can move around it's spawning point"""
+BOSS_ACTION_RADIUS = 500
+
+"""Number of frames every which we change direction randomly"""
+BOSS_FRAMES = 80
+
+"""Speed of the frogs blobs"""
+FROG_SPEED = -1       # is negative to make the frog move in the direction it is facing (technicality)
+
+"""Frog jump speed"""
+JUMP_SPEED = 10
+
+"""Gravity felt by frogs"""
+FROG_GRAVITY = 1
+
+DISTANCE_ARME_JOUEUR = 25 # ATTENTION : Ça veut dire quoi?
+
+DELTA_H = 5

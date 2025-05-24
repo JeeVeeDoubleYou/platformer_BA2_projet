@@ -2,8 +2,6 @@ import arcade
 import constants
 from weapon import Weapon
 
-
-
 class Bow(Weapon):
     """Defines how the bow works"""
 

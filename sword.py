@@ -3,7 +3,7 @@ import constants
 from weapon import Weapon
 
 class Sword(Weapon):
-    """define how the sword work """
+    """Defines how the sword works"""
 
     def __init__(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> None :
         super().__init__("assets/kenney-voxel-items-png/sword_silver.png", constants.SCALE*0.7, 45, mouse_position, player_position, camera_bottom_left)

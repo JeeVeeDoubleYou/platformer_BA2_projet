@@ -3,7 +3,6 @@ from typing import Final
 import arcade
 
 import constants 
-from constants import HALF_BLOCK
 from platforms import Direction
 
 
