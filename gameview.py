@@ -2,6 +2,7 @@ import os
 import sys
 from typing import Optional
 import arcade
+from arcade import Rect
 import constants
 from platforms import Direction
 from non_platform_moving_blocks import NonPlatformMovingBlocks
@@ -17,10 +18,9 @@ from arrow import Arrow
 from lever import Lever
 from door import Door
 from map import Map
+from UI import UI
 
 
-
-from arcade import Rect
 
 CAMERA_X_MARGIN = 400
 CAMERA_Y_MARGIN = 200
@@ -105,8 +105,7 @@ class GameView(arcade.View):
         self.__camera.position = self.__player.position #type: ignore
         self. __fixed_camera.position = arcade.Vec2(0, 0)
 
-        self.create_ui()
-        self.update_user_interface()
+        self.__ui = UI(self.__fixed_camera, self.__monster_list, self.__player)
 
         self.solid_block_update() 
 
@@ -120,53 +119,6 @@ class GameView(arcade.View):
 
     def create_new_player(self) -> None :
         self.__player = Player(0, 0)
-
-    def create_ui(self) -> None :
-        # Icône montrant l'arme active 
-        weapon_rect = Rect(0, 0, 0, 0, 50, 50, 
-                            self.__fixed_camera.top_left.x+30,
-                            self.__fixed_camera.top_left.y-30,)
-        self.__weapon_icon : dict[str, Rect | str] = {'rect' : weapon_rect, 
-                                               'texture' : 'assets/kenney-voxel-items-png/sword_silver.png' }
-        
-        # Compteur de pièces 
-        coin_rect = Rect(0, 0, 0, 0, 50, 50,
-                        self.__fixed_camera.bottom_left.x+35,
-                        self.__fixed_camera.bottom_left.y+20)
-        self.__coin_icon : dict[str, Rect | str] = {'rect' : coin_rect, 
-                                               'texture' : ":resources:images/items/coinGold.png" }
-        self.__text_score = arcade.Text("", self.__fixed_camera.bottom_left.x+50, self.__fixed_camera.bottom_left.y+12, arcade.color.BLACK, 16)
-        
-        self.__textured_ui_list = (self.__weapon_icon, self.__coin_icon)
-        
-        # Montre la vie du boss, s'il y en a un
-        self.__text_boss_life = arcade.Text("", self.__fixed_camera.bottom_left.x+125, self.__fixed_camera.bottom_left.y+10, arcade.color.RED, 12)
-
-        for monster in self.__monster_list:
-            self.update_boss_life_ui(monster)
-
-        # Ici est crée le texte de victoire
-        self.__win_text = arcade.Text(
-                        "Congratulations, you've won !",
-                        color = arcade.color.BLACK,
-                        font_size= 54,
-                        font_name="Impact",
-                        x = constants.WINDOW_WIDTH/2,
-                        y = constants.WINDOW_HEIGHT/2,
-                        anchor_x="center",
-                        anchor_y="center"
-                        )
-        
-    def update_boss_life_ui(self, monster : Monster) -> None :
-            if isinstance(monster, Boss):
-                        string_score : str
-                        if monster.hit_points == 0:
-                            string_score = "The boss has been defeated"
-                        else : 
-                            string_score ="Malenia, Blade of Miquella: "
-                            for i in range (monster.hit_points):
-                                string_score += " ♥ "
-                        self.__text_boss_life.text = string_score
         
     def __reset_sprite_lists(self) -> None :
         """Sets all sprite lists to their initial empty values"""
@@ -246,11 +198,7 @@ class GameView(arcade.View):
             case arcade.MOUSE_BUTTON_RIGHT:
                 self.__weapon_list.clear()
                 self.__player.change_weapon()
-                match self.__player.selected_weapon_type:
-                    case WeaponType.SWORD:
-                        self.__weapon_icon['texture'] = "assets/kenney-voxel-items-png/sword_silver.png" 
-                    case WeaponType.BOW:
-                        self.__weapon_icon['texture'] = "assets/kenney-voxel-items-png/bow.png"
+                self.__ui.update_weapon_icon()
                 
                                   
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
@@ -365,7 +313,7 @@ class GameView(arcade.View):
         for coin in arcade.check_for_collision_with_list(self.__player, self.__coin_list) :
             coin.remove_from_sprite_lists()
             self.__player.coin_score_update()
-            self.update_user_interface()
+            self.__ui.update_coin_score()
             arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))            
                                                                             
         for arrow in self.__arrow_list :
@@ -378,7 +326,7 @@ class GameView(arcade.View):
             for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                 for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                     monster.die()
-                    self.update_boss_life_ui(monster)
+                    self.__ui.update_boss_life(monster)
                     self.solid_block_update() # ATTENTION 1 : Duplicate
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
@@ -397,7 +345,7 @@ class GameView(arcade.View):
                 deactivate = False
                 for monster in arcade.check_for_collision_with_list(current_weapon, self.__monster_list) :
                     monster.die()
-                    self.update_boss_life_ui(monster)
+                    self.__ui.update_boss_life(monster)
                     self.solid_block_update() # ATTENTION 1 : Duplicate
                     deactivate = True
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
@@ -440,11 +388,6 @@ class GameView(arcade.View):
         self.create_new_player()
         self.setup()
 
-    def update_user_interface(self) -> None :
-        """"geres les compteur et icones sur l'ecran"""
-        string_score = " " + str(self.__player.coin_score)
-        self.__text_score.text = string_score
-
 
 
     def on_draw(self) -> None:
@@ -453,23 +396,14 @@ class GameView(arcade.View):
         self.clear() # always start with self.clear()
 
         if self.__won :
-            self.__win_text.draw()
+            self.__ui.draw_winning_text()
         elif self.__error :
             self.__error_text.draw()
         else :
             with self.__camera.activate():
                 for list in self.sprite_tuple :
                     list.draw()
-            # ATTENTION : Relire ça
-            with self.__fixed_camera.activate(): 
-                for texture_rect in self.__textured_ui_list:
-                    if 'rect' in texture_rect and 'texture' in texture_rect:           
-                        rect = texture_rect['rect']
-                        texture = texture_rect['texture']
-                        assert(isinstance(rect, Rect) and isinstance(texture, str))
-                        arcade.draw_texture_rect(arcade.load_texture(texture), rect)
-                self.__text_score.draw()
-                self.__text_boss_life.draw()
+            self.__ui.draw_in_game()
             
     @property
     def player_x(self) -> float:
