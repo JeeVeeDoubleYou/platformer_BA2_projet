@@ -53,7 +53,7 @@ La next map est le chemin du prochain niveau, qui est stocké comme string dans 
 
 ### Question 6 (Gaëlle) : Que se passe-t-il si la joueuse atteint le E mais la carte n’a pas de next-map ?
 
-Pour l'instant, ce cas de figure n'est pas possible. Si la carte a un "E" mais pas de next-map, la méthode create_map() appelé dès le début lèvera une exception. La map est ainsi considérée comme non-valide. On pourrait éventuellement considérer qu'arriver à la fin d'un niveau qui n'a pas de suite signifie que la joueuse a gagné le jeu, et afficher un message de victoire.
+Si la joueuse atteint le point E mais que la carte n'a pas de next-map, nous considérons que le joueur a gagné le jeu. Alors, nous affichons un message de victoire, dont la seule façon de quitter et de fermer la fenêtre du jeu.
 
 # Semaine 5 (Arc et chauves-souris)
 
@@ -65,18 +65,32 @@ le rartio vitesse x et vitesse y et l'atan2
 
 ### Question 2 (Gaëlle) : Quelles formules utilisez-vous exactement pour le déplacement des chauves-souris (champ d’action, changements de direction, etc.) ?
 
+Le champ d’action de chaque chauve-souris est un disque de rayon constant, centré autour de sa position d’origine.
+Toutes les BAT_FRAMES frames, ou lorsqu’elle ne peut plus avancer dans sa direction actuelle sans sortir de ce disque, la chauve-souris choisit un angle aléatoire selon une distribution gaussienne centrée en 0 avec un écart-type de 20 degrés.
+Elle ajoute cet angle à sa direction actuelle (mesurée par rapport au centre du disque).
+Si elle peut se déplacer dans cette nouvelle direction tout en restant dans son champ d’action, elle adopte cette nouvelle direction. Sinon, elle tire un autre angle jusqu’à ce qu’un déplacement valide soit trouvé.
+
 ### Question 3 (Paul) : Comment avez-vous structuré votre programme pour que les flèches puissent poursuivre leur vol ?:Comment avez-vous structuré votre programme pour que les flèches puissent poursuivre leur vol ?
+
 les fleches sont stoquer dans une liste et chaques frames on vas chercher si les fleches restent dans les conditions adequates pour poursuivre leur vol sinon on les suprimes de la liste
 
-### Question 4 (Paul et Gaëlle)
+### Question 4 (Paul et Gaëlle) : Comment gérez-vous le fait que vous avez maintenant deux types de monstres, et deux types d’armes ? Comment faites-vous pour ne pas dupliquer du code entre ceux-ci ?
 
-Pour les deux types d'armes on a crée une classe Weapon qui gere les parties en commun avec l'arc et l'épée (c'est a dire principalement la gestion de l'angle ainci que la position de l'arme)
+Nous avons crée deux classes abstraites Monster et Weapon, qui sont respectivement les classes parent de Bat et Blob (notamment), et de Bow et Sword. C'est classes implémentent les méthodes communes à leurs sous-classes, et définissent des méthodes abstraites que toutes leurs sous classes doivent implémenter, afin de pouvoir utilser le polymorphisme dans gameview, notamment en itérant par dessus des listes de monstres sans devoir vérifier leur type. Les sous_classes n'ont pas d'autre méthodes publiques et celles définies dans leur superclasse.
 
 # Semaine 8 (Plateformes et interrupteurs)
 
 ### Question 1 (Gaëlle) : Quel algorithme utilisez-vous pour identifier tous les blocs d’une plateformes, et leurs limites de déplacement ?
 
+Nous utilisons un algorithme récursif qui démarre à partir d’un bloc de plateforme et explore tous les blocs adjacents non diagonaux.
+Si un bloc n’a pas encore été visité et qu’il s’agit d’un bloc de plateforme, il est ajouté à la plateforme, et l’algorithme poursuit l’exploration de ses voisins.
+Si le bloc n’est pas un bloc de plateforme, l’exploration ne continue pas depuis ce bloc.
+Toutefois, si le bloc est une flèche, l’algorithme vérifie si son orientation est compatible avec sa position par rapport à la plateforme (par exemple, une flèche vers le haut ne doit pas se trouver à gauche d’un bloc de plateforme).
+Si la flèche est bien positionnée, l’algorithme continue son exploration uniquement dans la direction indiquée, tant qu’il ne rencontre que des flèches pointant dans cette même direction. Ces flèches sont comptées afin de déterminer les limites de déplacement de la plateforme.
+
 ### Question 2 (Gaëlle) : Sur quelle structure travaille cet algorithme ? Quels sont les avantages et inconvénients de votre choix ?
+L'algorithme se sert d'un ensemble de tuples de nombres entiers pour les positions déjà visitées. Nous avons choisi cette structure car les deux seules opérations que nous voulons faire dessus sont l'ajout d'un nouvel élément et la vérification de l'appartenance d'un élément à l'ensemble, et ces deux opérations sont très efficaces avec un ensemble.
+Pour créer les platformes, nous travaillons sur une classe que nous avons défini, dans laquelle nous stockons les positions initiales des blocs de la plateforme également dans un ensemble de tuples d'entiers. Les deux seules opérations que nous faisons dessus sont à nouveau la vérification d'appartenance et l'ajout d'un élément.
 
 ### Question 3 (Paul) : Quelle bibliothèque utilisez-vous pour lire les instructions des interrupteurs ? Dites en une ou deux phrases pourquoi vous avez choisi celle-là.
 
