@@ -2,6 +2,9 @@ import arcade
 import constants
 from weapon import Weapon
 
+"""Number of frames after spawn during which the sword can hit an enemy"""
+SWORD_ACTIVE_FRAMES = 7
+
 class Sword(Weapon):
     """Defines how the sword works"""
 
@@ -12,10 +15,9 @@ class Sword(Weapon):
         self.is_active = True
         
     def in_hit_frame(self) -> None :
-        FRAMES_FOR_DAMAGES = 7
-        if FRAMES_FOR_DAMAGES < self.frames_from_spawn:
+        if SWORD_ACTIVE_FRAMES < self.frames_from_spawn:
             self.rgb = 255, 255, 255
-            self.is_active = False
+            self.deactivate()
 
     def deactivate(self) -> None:
-        self.frames_from_spawn = 7
+        self.is_active = False

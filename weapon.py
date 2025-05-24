@@ -7,7 +7,7 @@ import constants
 class Weapon(arcade.Sprite):
     """Defines how the weapon works and calculates it's movement"""
 
-    is_active : bool
+    __is_active : bool
     texture_angle : float
     
     def __init__(self, texture : str, scale : float, initial_angle : float, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) :
@@ -38,3 +38,11 @@ class Weapon(arcade.Sprite):
         
         self.frames_from_spawn += 1
         self.in_hit_frame()
+
+    @property
+    def is_active(self) -> bool :
+        return self.__is_active
+
+    @is_active.setter
+    def is_active(self, active : bool) -> None :
+        self.__is_active = active
