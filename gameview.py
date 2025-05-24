@@ -177,6 +177,8 @@ class GameView(arcade.View):
         if not self.can_play :
             return
 
+        # ATTENTION : Problème de polymorphisme avec Boss
+
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
                 
@@ -199,7 +201,7 @@ class GameView(arcade.View):
         if not self.can_play :
             return
 
-        # ATTENTION : Problème de polymorphisme, cette méthode ne devrait pas devoir choisir si c'est Bow ou pas. 
+        # ATTENTION : Problème de polymorphisme, cette méthode ne devrait pas devoir choisir si c'est Bow ou pas. + Boss 
         # Relire tuto polymorphisme pour voir comment amméliorer.
 
         match button:
