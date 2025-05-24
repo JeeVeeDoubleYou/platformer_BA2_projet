@@ -28,7 +28,7 @@ class Bat(Monster):
 
         self.action_area = Disk(self.__initial_x, self.__initial_y, constants.BAT_ACTION_RADIUS)
 
-    def move(self, _ : arcade.SpriteList[arcade.Sprite]) -> None:
+    def move(self, _wall : arcade.SpriteList[arcade.Sprite], _pos : arcade.Vec2) -> None:
         "Makes the bat move"
         
         self.__frames_until_random -= 1

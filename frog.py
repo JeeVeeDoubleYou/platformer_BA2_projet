@@ -13,14 +13,14 @@ class Frog(Blob):
         self.sync_hit_box_to_texture()
         self.speed = constants.FROG_SPEED
 
-    def move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
+    def move(self, wall_list : arcade.SpriteList[arcade.Sprite], _ : arcade.Vec2) -> None:
         if self.center_y <= self.initial_y:
             self.center_y = self.initial_y
             if random.randint(1,50) == 1:
                 self.change_y = 18
                 self.center_y += self.change_y
                 # arcade.play_sound(arcade.load_sound(":resources:sounds/jump2.wav"))
-            Blob.move(self,wall_list)
+            super().move(wall_list, _)
         else:
             self.change_y -= constants.FROG_GRAVITY
             self.center_y += self.change_y

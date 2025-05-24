@@ -67,7 +67,7 @@ BOSS_FRAMES = 80
 FROG_SPEED = -1       # is negative to make the frog move in the direction it is facing (technicality)
 
 """Frog jump speed"""
-JUMP_SPEED = 10
+FROG_JUMP_SPEED = 10
 
 """Gravity felt by frogs"""
 FROG_GRAVITY = 1

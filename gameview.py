@@ -253,11 +253,8 @@ class GameView(arcade.View):
         if self.physics_engine is not None :
             self.physics_engine.update()
 
-        for boss in self.__boss_list :
-            boss.ia(self.player_x,self.player_y)
-
         for monster in self.__monster_list :
-            monster.move(self.__wall_list)
+            monster.move(self.__wall_list, arcade.Vec2(self.player_x, self.player_y))
 
         for weapon in self.__weapon_list :
             weapon.update_position(arcade.Vec2(self.player_x, self.player_y))
@@ -328,10 +325,8 @@ class GameView(arcade.View):
             for lava_hit in arcade.check_for_collision_with_list(arrow, self.__lava_list) :
                 arrow.remove_from_sprite_lists()
 
-               
-
-           
-        if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.SWORD :
+                   
+        if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.SWORD : # ATTENTION : Polymorphisme !
             current_weapon = self.__weapon_list[0]
             if current_weapon.is_active :
                 deactivate = False

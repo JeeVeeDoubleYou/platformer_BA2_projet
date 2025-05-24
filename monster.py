@@ -12,7 +12,7 @@ class Monster(arcade.Sprite):
         super().__init__(texture, constants.SCALE)
 
     @abstractmethod
-    def move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> None:
+    def move(self, wall_list : arcade.SpriteList[arcade.Sprite], player_position : arcade.Vec2) -> None :
         """Moves the monster"""
         ...
 
