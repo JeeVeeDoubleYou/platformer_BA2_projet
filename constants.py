@@ -77,3 +77,9 @@ DISTANCE_ARME_JOUEUR = 25 # ATTENTION : Ça veut dire quoi?
 
 """Height of weapon compared to player center"""
 DELTA_H = 5
+
+"""Number of frames after spawn during which the sword can hit an enemy"""
+SWORD_ACTIVE_FRAMES = 7
+
+"""Number of frames necessary after spawn before bow can shoot"""
+BOW_TIME_OUT = 15

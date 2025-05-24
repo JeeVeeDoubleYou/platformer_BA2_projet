@@ -2,8 +2,6 @@ import arcade
 import constants
 from weapon import Weapon
 
-"""Number of frames necessary after spawn before bow can shoot"""
-BOW_TIME_OUT = 15
 class Bow(Weapon):
     """Defines how the bow works"""
 
@@ -14,7 +12,7 @@ class Bow(Weapon):
     def in_hit_frame(self) -> None :
         """Updates is_active attribute if Bow has been active long enough to be able to shoot"""
         
-        if BOW_TIME_OUT == self.frames_from_spawn:
+        if constants.BOW_TIME_OUT == self.frames_from_spawn:
            self.texture = arcade.load_texture("assets/kenney-voxel-items-png/bowArrow.png")
            self.angle += 80
            self.set_texture_angle(55)
