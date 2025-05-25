@@ -4,16 +4,16 @@ switches:
   - x: 2
     y: 11
     switch_on :
-      - action: open_gate
+      - action: open-gate
         x: 10
         y: 12
-      - action: open_gate
+      - action: open-gate
         x: 10
         y: 11
-      - action: open_gate
+      - action: open-gate
         x: 16
         y: 12
-      - action: open_gate
+      - action: open-gate
         x: 16
         y: 11
       - action : disable
