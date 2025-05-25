@@ -4,7 +4,10 @@ import constants
 
 class Lever(arcade.Sprite):
 
-    def __init__ (self, x: float, y:float) -> None:
+    __slots__ = ('on_activation_close', 'on_activation_open', 'on_deactivation_close', 'on_deactivation_open',
+                 'off_deactivate', 'on_deactivate', '__broken', 'activated', )
+
+    def __init__ (self, x: float, y:float) -> None :
         super().__init__(":resources:images/tiles/leverRight.png", constants.SCALE*1)
         self.on_activation_close : list[Door] = []
         self.on_activation_open : list[Door] = []
@@ -61,8 +64,3 @@ class Lever(arcade.Sprite):
             self.texture = arcade.load_texture(":resources:images/tiles/leverRight.png")
 
         self.sync_hit_box_to_texture()
-        
-
-
-
-

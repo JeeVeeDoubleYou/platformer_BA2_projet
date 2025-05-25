@@ -5,6 +5,8 @@ from blob import Blob
 class Ghost(Blob):
     """Represents a ghost, which is an enemy. Touching a ghost will kill the player."""
 
+    __slots__ = ()
+
     def __init__(self, x: float, y: float,) -> None :
         
         super().__init__(x, y - constants.GHOST_SPAWN_HEIGHT)
@@ -18,6 +20,6 @@ class Ghost(Blob):
         self.__make_transparent()
     
     def __make_transparent(self) -> None :
-        """Makes the ghost lighter until almost transparent-"""
+        """Makes the ghost lighter until almost transparent."""
         if self.alpha > 10: 
             self.alpha -= 1 

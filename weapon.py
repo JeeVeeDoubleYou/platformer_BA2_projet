@@ -12,6 +12,8 @@ from monster import Monster
 class Weapon(arcade.Sprite):
     """Defines how the weapon works and calculates it's movement"""
 
+    __slots__ = ('__texture_angle', 'frames_from_spawn', '__is_active', )
+
     __texture_angle : float
     
     def __init__(self, texture : str, scale : float, initial_angle : float, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) :
@@ -24,6 +26,12 @@ class Weapon(arcade.Sprite):
 
     @abstractmethod
     def in_hit_frame(self) -> None :
+        """
+        Update method called each frame. Manages activation status.
+        
+        Subclasses should override this method to implement logic that activates, deactivates,
+        or updates the weapon based on the number of frames since it was spawned.
+        """
         ...
 
     def on_mouse_release(self) -> Arrow | None :
@@ -34,7 +42,7 @@ class Weapon(arcade.Sprite):
 
     def check_collision(self, monster_list : arcade.SpriteList[Monster], lever_list : arcade.SpriteList[Lever], ui : UI) -> bool :
         """ 
-        Called tp check if the weapon collided with other game entities (e.g., monsters, levers, etc.).
+        Called to check if the weapon collided with other game entities (e.g., monsters, levers, etc.).
         This method can be overridden in subclasses to define specific collision behavior.
         Returns True if there was a collision, False otherwise.
         """
@@ -48,7 +56,7 @@ class Weapon(arcade.Sprite):
         self.in_hit_frame()
 
     def __update_angle(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> None:
-        """ Updates the weapon's angle based on the mouse, player, and camera positions.
+        """Updates the weapon's angle based on the mouse, player, and camera positions.
         """
         
         # Calculate mouse coordinates relative to world

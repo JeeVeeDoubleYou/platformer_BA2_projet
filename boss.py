@@ -20,6 +20,9 @@ class Attack(IntEnum) :
 
 class Boss(Monster, Lever):
     """Represents a Boss, defines how it moves"""
+
+    __slots__ = ('__initial_x', '__initial_y', 'choice', 'hit_points', 
+                 'angle_deplacement', 'action_area', 'frame_until_action', )
     
     __initial_x : Final[float]
     __initial_y : Final[float]
@@ -38,7 +41,7 @@ class Boss(Monster, Lever):
         self.__initial_x = x
         self.__initial_y = y
 
-        self.choice : Attack = Attack.WALK
+        self.__choice : Attack = Attack.WALK
 
         self.hit_points = 3
         self.texture = arcade.load_texture("assets/kenney-extended-enemies-png/spinner.png")
@@ -52,17 +55,19 @@ class Boss(Monster, Lever):
         self.action_area = Disk(self.__initial_x, self.__initial_y, constants.BOSS_ACTION_RADIUS)
 
     def move(self, wall : arcade.SpriteList[arcade.Sprite], player_position : arcade.Vec2) -> None:
+        """Execute the boss's AI decision and update its position accordingly."""
         self.__ia(player_position)
         self.__update_position()
 
     def __ia(self, player_position : arcade.Vec2) -> None:
-        """Make the boss chose it's next direction and speed and change it's color in order 
-        to be more predictable.
-        The boss chose it's next move at random a the and of each move amongs a list of possible move
+        """
+        Choose the boss's next movement and speed randomly at the end of the current action.
+        Change the boss's color to indicate the upcoming move.
+        Choose the boss's next move randomly at the end of the current action, among possible moves.
         """
         self.frame_until_action -= 1
-        if self.frame_until_action == 15:             #indicate the next move #couleurs temporaire
-                match self.choice:
+        if self.frame_until_action == 15:             # indicate the next move, with colors because cool
+                match self.__choice:
                     case Attack.PAUSE:  #bleu
                         self.rgb = 0, 0, 255
 
@@ -82,26 +87,26 @@ class Boss(Monster, Lever):
                 self.frame_until_action = constants.BOSS_FRAMES
                 self.speed = 2*constants.BOSS_SPEED
             elif self.action_area.contains_point(player_position):
-                match self.choice:          #chooses a random move to do 
+                match self.__choice:          #chooses a random move to do 
                     case Attack.PAUSE:  #the boss stop moving
                         self.speed = 0
                         self.frame_until_action = random.randint(40,80)
                         can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
-                        self.choice = random.choice(can_do)
+                        self.__choice = random.choice(can_do)
 
                     case Attack.RUSH:   #the boss move fast toward the player
                         self.angle_deplacement = math.pi + math.atan2(self.center_y - player_position.y, self.center_x - player_position.x)
-                        self.speed =2*constants.BOSS_SPEED
+                        self.speed = constants.BOSS_SPEED_RUSH*constants.BOSS_SPEED
                         self.frame_until_action = random.randint(20,60)
                         can_do = [Attack.PAUSE, Attack.RUSH, Attack.DASH]
-                        self.choice = random.choice(can_do)
+                        self.__choice = random.choice(can_do)
 
                     case Attack.WALK:   #the boss choose a random dirction and move
                         self.frame_until_action = random.randint(60,100)
                         self.angle_deplacement = 45*random.randint(0,7)       #pour obtenire une mouvement mecanique de scie
                         self.speed = constants.BOSS_SPEED
                         can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
-                        self.choice = random.choice(can_do)
+                        self.__choice = random.choice(can_do)
                         
 
                     case Attack.DASH:   # the boss move very fast around the player 
@@ -111,9 +116,9 @@ class Boss(Monster, Lever):
                         else:
                             left_or_right = -2*math.pi/3
                         self.angle_deplacement =left_or_right + math.atan2(self.center_y - player_position.y, self.center_x - player_position.x)
-                        self.speed =3*constants.BOSS_SPEED
+                        self.speed =constants.BOSS_SPEED_DASH*constants.BOSS_SPEED
                         can_do =[Attack.RUSH, Attack.DASH]
-                        self.choice = random.choice(can_do)                 
+                        self.__choice = random.choice(can_do)                 
             else :
                 self.speed=0
                 self.frame_until_action = constants.BOSS_FRAMES
@@ -123,21 +128,21 @@ class Boss(Monster, Lever):
         
 
     def __update_position(self) -> None:
-        """Updates position by adding one amount of 'speed'"""
+        """Update the boss's position by adding the current speed components."""
         self.center_x += self.change_x
         self.center_y += self.change_y
 
     def __new_speed(self) -> None:
-        """Calculates the x and y speeds in order to keep a total constant speed of 'speed', 
-        depending on the angle of the movement, given in degres and with respect to the x axis going right.
-        """
+        """Calculate the x and y speed components based on the current angle (in radians)
+        to maintain the set total speed."""
         self.change_x = math.cos(self.angle_deplacement) * self.speed
         self.change_y = math.sin(self.angle_deplacement) * self.speed
 
     def die(self) -> None:
+        """Reduce boss hit points. If zero, trigger death effects and remove the boss."""
         self.hit_points -=1
 
-        self.choice = Attack.WALK       #Make the boss back off 
+        self.__choice = Attack.WALK       #Make the boss back off 
         self.speed = -2*constants.BOSS_SPEED
         self.frame_until_action = 30
 

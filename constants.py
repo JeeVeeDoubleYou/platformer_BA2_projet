@@ -57,6 +57,12 @@ BLUE_BLOB_SPEED = -2       # is negative to make the slime move in the direction
 BOSS_SPEED = 3
 """Speed of boss"""
 
+BOSS_SPEED_RUSH = 2
+"""How many times faster the boss goes when rushing"""
+
+BOSS_SPEED_DASH = 3
+"""How many times faster the boss goes when dashing"""
+
 BOSS_ACTION_RADIUS = 500
 """Radius in which boss can move around it's spawning point"""
 
@@ -83,3 +89,4 @@ SWORD_ACTIVE_FRAMES = 7
 
 BOW_TIME_OUT = 15
 """Number of frames necessary after spawn before bow can shoot"""
+

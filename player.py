@@ -10,21 +10,20 @@ class Player(arcade.Sprite):
 
     Manages its movements, animations and interactions with the world.
     """
+    
 
-    is_going_left = False
-    is_going_right = False
-
-    allow_multi_jump: bool
-    allowed_jumps: int
-    allow_multi_jump = False
-    allowed_jumps = 1
-    physics_engine : arcade.PhysicsEnginePlatformer | None
+    __slots__ = ('physics_engine', 'coin_score', 'is_going_left', 
+                 'is_going_right', 'allow_multi_jump', 'allowed_jumps', 'selected_weapon_type', )
 
     def __init__(self, x: float, y: float) -> None :
         super().__init__(":resources:/images/animated_characters/female_adventurer/femaleAdventurer_idle.png", constants.SCALE)
-        self.physics_engine = None
+        self.physics_engine : arcade.PhysicsEnginePlatformer | None = None
         self.set_position(x, y)
         self.coin_score = 0
+        self.is_going_left = False
+        self.is_going_right = False
+        self.allow_multi_jump : bool = False
+        self.allowed_jumps : int = 1
 
         self.selected_weapon_type : WeaponType = WeaponType.SWORD
 
@@ -97,6 +96,7 @@ class Player(arcade.Sprite):
         self.center_y = new_y
 
     def create_weapon(self, mouse_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> Weapon :
+        """Create a weapon instance based on player's selected weapon and mouse position."""
         self_position = arcade.Vec2(self.center_x, self.center_y)
         return self.selected_weapon_type.create_weapon(mouse_position, self_position, camera_bottom_left)
 

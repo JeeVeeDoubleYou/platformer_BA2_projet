@@ -8,6 +8,8 @@ class Monster(arcade.Sprite):
     The class extends arcade.Sprite.
     """
 
+    __slots__ = ()
+
     def __init__(self, texture : str) -> None :
         super().__init__(texture, constants.SCALE)
 
