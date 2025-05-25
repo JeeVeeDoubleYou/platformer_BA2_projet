@@ -39,7 +39,7 @@ class Map :
     
     def __init__(self, current_map_name : str, wall_list: arcade.SpriteList[arcade.Sprite], 
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
-                 monster_list: arcade.SpriteList[Monster], boss_list: arcade.SpriteList[Boss], door_list: arcade.SpriteList[Door], 
+                 monster_list: arcade.SpriteList[Monster], door_list: arcade.SpriteList[Door], 
                  lever_list: arcade.SpriteList[Lever], end_list: arcade.SpriteList[arcade.Sprite], 
                  list_of_sprites_in_platforms: arcade.SpriteList[arcade.Sprite],
                  non_platform_moving_sprites_list : list[NonPlatformMovingBlocks]
@@ -50,7 +50,6 @@ class Map :
         self.__lava_list = lava_list
         self.__coin_list = coin_list
         self.__monster_list = monster_list
-        self.__boss_list = boss_list
         self.__door_list = door_list
         self.__lever_list = lever_list
         self.__end_list = end_list
@@ -166,7 +165,6 @@ class Map :
                         boss = Boss(x_coordinate, y_coordinate)
                         map_levers[line_num_arcade][position_x] = boss
                         self.__monster_list.append(boss)
-                        self.__boss_list.append(boss)
                     case "v" :
                         bat = Bat(x_coordinate, y_coordinate)
                         self.__monster_list.append(bat)   

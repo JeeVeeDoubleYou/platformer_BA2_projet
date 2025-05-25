@@ -75,7 +75,7 @@ FROG_GRAVITY = 1
 DISTANCE_ARME_JOUEUR = 25 # ATTENTION : Ça veut dire quoi?
 """Distance between weapon and center of player"""
 
-DELTA_H = 5
+WEAPON_OFFSET_Y = 5
 """Height of weapon compared to player center"""
 
 SWORD_ACTIVE_FRAMES = 7

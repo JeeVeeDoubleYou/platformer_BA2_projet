@@ -18,4 +18,5 @@ class Monster(arcade.Sprite):
 
     def die(self) -> None:
         """Kills the monster, removing it from it game"""
+        arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
         self.remove_from_sprite_lists()

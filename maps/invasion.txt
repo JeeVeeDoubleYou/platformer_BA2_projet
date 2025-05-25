@@ -1,9 +1,10 @@
 height: 5
 width: 24
+next-map : maps/chasse_pieces.txt
 ---
       v  v  v  v     v
                    v
        v  v  v  v     v
-S   g  g  g  g  g  f  E
+S   f  f  f  f  f  g  E
 ==  =  = v= v= v= v=££=
 ---

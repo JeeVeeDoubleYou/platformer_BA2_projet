@@ -145,6 +145,8 @@ class Boss(Monster, Lever):
         if self.hit_points == 0 :
             self.on_action()
             self.remove_from_sprite_lists() 
+        
+        arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
 
     
     
