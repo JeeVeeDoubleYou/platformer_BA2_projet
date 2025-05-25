@@ -46,7 +46,7 @@ class GameView(arcade.View):
         super().__init__()
 
         self.__error = False
-        self.__won = False
+
         self.create_new_player()
 
         # Choose a nice comfy background color
@@ -73,6 +73,7 @@ class GameView(arcade.View):
         self.__reset_sprite_lists()
 
         self.__won = False
+        self.mouse_override_for_tests : arcade.Vec2 | None = None # To be able to test thr weapons
 
 
         self.sprite_tuple = (self.__wall_list, self.__list_of_sprites_in_platforms, self.__coin_list, self.__lava_list,
@@ -363,6 +364,8 @@ class GameView(arcade.View):
 
     def __get_mouse_position(self) -> arcade.Vec2 :
         """Returns mouse position. If mouse doesn't exist, returns player position as safe value."""
+        if self.mouse_override_for_tests :
+            return self.mouse_override_for_tests
         if self.window.mouse is not None :
             return arcade.Vec2(self.window.mouse.data['x'], self.window.mouse.data['y'])
         else :
