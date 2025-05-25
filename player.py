@@ -1,22 +1,7 @@
 import arcade
 import constants
-from enum import IntEnum
 from weapon import Weapon
-from bow import Bow
-from sword import Sword
-
-
-class WeaponType(IntEnum) : 
-    BOW = 0
-    SWORD = 1
-
-    def create_weapon(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> Weapon :
-        match self :
-            case WeaponType.BOW : 
-                return Bow(mouse_position, player_position, camera_bottom_left)
-            case WeaponType.SWORD :
-                return Sword(mouse_position, player_position, camera_bottom_left)
-
+from weapon_type import WeaponType
 
 
 class Player(arcade.Sprite):

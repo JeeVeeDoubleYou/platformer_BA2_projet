@@ -4,13 +4,8 @@ import arcade
 import constants
 from non_platform_moving_blocks import NonPlatformMovingBlocks
 from player import Player
-from player import WeaponType
-from boss import Boss
-from boss import Attack
 from monster import Monster
 from weapon import Weapon
-from sword import Sword
-from bow import Bow
 from arrow import Arrow
 from lever import Lever
 from door import Door
@@ -29,7 +24,6 @@ class GameView(arcade.View):
     __weapon_list: arcade.SpriteList[Weapon]
     __arrow_list: arcade.SpriteList[Arrow]
     __monster_list: arcade.SpriteList[Monster]
-    __boss_list: arcade.SpriteList[Boss]
     __lever_list: arcade.SpriteList[Lever]
     __door_list: arcade.SpriteList[Door]
     __solid_block_list: arcade.SpriteList[arcade.Sprite]
@@ -85,8 +79,9 @@ class GameView(arcade.View):
                              self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
                                self.__monster_list, self.__player_sprite_list, self.__weapon_list) 
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
-                  self.__monster_list,  self.__boss_list, self.__door_list, self.__lever_list, self.__end_list, 
+                  self.__monster_list, self.__door_list, self.__lever_list, self.__end_list, 
                   self.__list_of_sprites_in_platforms, self.__non_platform_moving_sprites_list)
+        
         self.__player.set_position(map.get_player_coordinates()[0], map.get_player_coordinates()[1])
         
         self.__next_map = map.get_next_map()
@@ -97,7 +92,7 @@ class GameView(arcade.View):
         self.__camera.position = self.__player.position #type: ignore
         self. __fixed_camera.position = arcade.Vec2(0, 0)
 
-        self.__ui = UI(self.__fixed_camera, self.__monster_list, self.__player)
+        self.__ui = UI(self.__fixed_camera, self.__monster_list, self.__player.coin_score)
 
         self.solid_block_update() 
 
@@ -122,7 +117,6 @@ class GameView(arcade.View):
         self.__lever_list = arcade.SpriteList(use_spatial_hash=True)
         self.__door_list = arcade.SpriteList(use_spatial_hash=True)
         self.__monster_list = arcade.SpriteList()
-        self.__boss_list = arcade.SpriteList()
         self.__weapon_list = arcade.SpriteList()
         self.__arrow_list = arcade.SpriteList()
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
@@ -183,38 +177,34 @@ class GameView(arcade.View):
             case arcade.MOUSE_BUTTON_RIGHT:
                 self.__weapon_list.clear()
                 self.__player.change_weapon()
-                self.__ui.update_weapon_icon()
+                self.__ui.update_weapon_icon(self.__player.selected_weapon_type)
                 
                                   
     def on_mouse_release(self, mouse_x: int, mouse_y: int, button: int, modifiers: int) -> None:
-        """Called when the user a mouse button."""
+        """Called when the user releases a mouse button."""
 
         if not self.can_play :
             return
 
-        # ATTENTION : Problème de polymorphisme, cette méthode ne devrait pas devoir choisir si c'est Bow ou pas. + Boss 
-        # Relire tuto polymorphisme pour voir comment amméliorer.
-
         match button:
             case arcade.MOUSE_BUTTON_LEFT:
-                if self.has_weapon_in_hand :
-                    current_weapon = self.__weapon_list[0]
-                    if isinstance(current_weapon, Bow) and current_weapon.is_active :
-                        self.__arrow_list.append(Arrow(current_weapon))
+                if (weapon := self.current_weapon) is not None :
+                    if (arrow := weapon.on_mouse_release()) is not None :
+                        self.__arrow_list.append(arrow)
                 self.__weapon_list.clear()
 
             
 
-    def on_mouse_motion(self, mouse_x: int, mouse_y: int, buttons: int, modifiers: int) -> None:
-        """Called when the mouse moves."""
+    # def on_mouse_motion(self, mouse_x: int, mouse_y: int, buttons: int, modifiers: int) -> None:
+    #     """Called when the mouse moves."""
 
-        if not self.can_play :
-            return
+    #     if not self.can_play :
+    #         return
 
-        # ATTENTION : Problem if player moves but not mouse for weapons.
+    #     # ATTENTION : Problem if player moves but not mouse for weapons.
 
-        for weapon in self.__weapon_list:
-            weapon.update_angle(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
+    #     for weapon in self.__weapon_list:
+    #         weapon.update_angle(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
     
     # ATTENTION : Doctype ?
     def solid_block_update(self) -> None:
@@ -247,7 +237,8 @@ class GameView(arcade.View):
             monster.move(self.__wall_list, arcade.Vec2(self.player_x, self.player_y))
 
         for weapon in self.__weapon_list :
-            weapon.update_position(arcade.Vec2(self.player_x, self.player_y))
+            mouse_position = self.__get_mouse_position()
+            weapon.update_weapon(mouse_position, arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
 
         for arrow in self.__arrow_list :
             arrow.move()
@@ -279,67 +270,54 @@ class GameView(arcade.View):
                 camera_y -= constants.PLATFORM_SPEED
 
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
-        
-        
-    
-    def __check_collisions(self) -> None :
-        """
-        Checks collisions between player and coins : takes coins
-        Checks collisions between player and lava or monster : dies
-        Checks collisions between weapon and monster : monster dies
-        """
 
+    def __on_monster_death(self, monster : Monster) -> None :
+        monster.die()
+        self.__ui.update_boss_life(monster)
+        self.solid_block_update() # Because some monsters, like bosses, can affect doors
+        
+    def __coin_collisions(self) -> None :
+        """Handles collisions between coins and player"""
         for coin in arcade.check_for_collision_with_list(self.__player, self.__coin_list) :
             coin.remove_from_sprite_lists()
             self.__player.coin_score_update()
-            self.__ui.update_coin_score()
-            arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))            
-                                                                            
-        for arrow in self.__arrow_list :
+            self.__ui.update_coin_score(self.__player.coin_score)
+            arcade.play_sound(arcade.load_sound(":resources:sounds/coin5.wav"))
+
+    def __arrow_collisions(self) -> None :
+        """Handles collisions between arrows and everything else"""
+
+        for arrow in list(self.__arrow_list) : # To prevent bugs from modifying list while looping through it
+
             for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):
-                if not lever.broken:
-                    arrow.remove_from_sprite_lists()
-                    lever.on_action()
-                    self.solid_block_update()
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
-            for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
-                for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
-                    monster.die()
-                    self.__ui.update_boss_life(monster)
-                    self.solid_block_update() # ATTENTION 1 : Duplicate
-                    arrow.remove_from_sprite_lists()
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
-            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__list_of_sprites_in_platforms)):
+                lever.on_action()
+                self.solid_block_update()
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
                 arrow.remove_from_sprite_lists()
+                break
+
+            for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
+                self.__on_monster_death(monster)
+                arrow.remove_from_sprite_lists()
+                break
+
+            for _ in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__list_of_sprites_in_platforms, self.__lava_list)):
                 arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
-            for lava_hit in arcade.check_for_collision_with_list(arrow, self.__lava_list) :
                 arrow.remove_from_sprite_lists()
+                break
 
-                   
-        if self.has_weapon_in_hand and self.__player.selected_weapon_type == WeaponType.SWORD : # ATTENTION : Polymorphisme !
-            current_weapon = self.__weapon_list[0]
-            if current_weapon.is_active :
-                deactivate = False
-                for monster in arcade.check_for_collision_with_list(current_weapon, self.__monster_list) :
-                    monster.die()
-                    self.__ui.update_boss_life(monster)
-                    self.solid_block_update() # ATTENTION 1 : Duplicate
-                    deactivate = True
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))
-                for lever in arcade.check_for_collision_with_list(current_weapon, self.__lever_list):
-                    if not lever.broken:
-                        deactivate = True
-                        lever.on_action()
-                        self.solid_block_update()
-                        arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
-                if deactivate :
-                    for weapon in self.__weapon_list:
-                        assert(isinstance(weapon,Sword))
-                        weapon.deactivate()
+    
+    def __check_collisions(self) -> None :
+        """Handles all game collisions: player, weapons, arrows, monsters, coins, levers, lava, end."""
 
-        if arcade.check_for_collision_with_list(self.__player, self.__lava_list) != [] :
-            self.__setup_from_initial()
-        if arcade.check_for_collision_with_list(self.__player, self.__monster_list) != [] :
+        self.__coin_collisions()
+        self.__arrow_collisions()
+
+        if (weapon := self.current_weapon) is not None :
+            weapon.check_collision(self.__monster_list, self.__lever_list, self.__ui)
+            self.solid_block_update()
+
+        if arcade.check_for_collision_with_lists(self.__player, (self.__lava_list, self.__monster_list)) != [] :
             self.__setup_from_initial()
         if arcade.check_for_collision_with_list(self.__player, self.__end_list) != [] :
             self.__load_next_map()
@@ -381,7 +359,14 @@ class GameView(arcade.View):
                 for list in self.sprite_tuple :
                     list.draw()
             self.__ui.draw_in_game()
-            
+
+    def __get_mouse_position(self) -> arcade.Vec2 :
+        """Returns mouse position. If mouse doesn't exist, returns player position as safe value."""
+        if self.window.mouse is not None :
+            return arcade.Vec2(self.window.mouse.data['x'], self.window.mouse.data['y'])
+        else :
+            return arcade.Vec2(self.player_x, self.player_speed_y)
+    
     @property
     def player_x(self) -> float:
         return self.__player.center_x
@@ -415,10 +400,11 @@ class GameView(arcade.View):
         return len(self.__coin_list)
     
     @property
-    def has_weapon_in_hand(self) -> bool :
+    def current_weapon(self) -> Weapon | None :
+        """ Returns the currently in hand weapon, or None if the player isn't holding a weapon."""
         if len(self.__weapon_list) == 0 :
-            return False
-        return True
+            return None
+        return self.__weapon_list[0]
     
     @property
     def can_play(self) -> bool :

@@ -3,18 +3,17 @@ import constants
 import arcade
 
 from monster import Monster
-from player import Player, WeaponType
+from weapon_type import WeaponType
 
 class UI : 
     """Creates and draws all UI elements, like the score or the boss life bar"""
 
-    def __init__(self, fixed_camera : arcade.camera.Camera2D, monster_list : arcade.SpriteList[Monster], player : Player) -> None :
+    def __init__(self, fixed_camera : arcade.camera.Camera2D, monster_list : arcade.SpriteList[Monster], coin_score : int) -> None :
         self.__fixed_camera = fixed_camera
         self.__monster_list = monster_list
-        self.__player = player
-        self.__create_ui()
+        self.__create_ui(coin_score)
 
-    def __create_ui(self) -> None :
+    def __create_ui(self, coin_score : int) -> None :
         # Icône montrant l'arme active 
         weapon_rect = arcade.Rect(0, 0, 0, 0, 50, 50, 
                             self.__fixed_camera.top_left.x+30,
@@ -51,7 +50,7 @@ class UI :
                         )
         
         # Set initial scores
-        self.update_coin_score()
+        self.update_coin_score(coin_score)
         for monster in self.__monster_list :
              self.update_boss_life(monster)
 
@@ -68,9 +67,9 @@ class UI :
                             string_score += " ♥ "
                     self.__text_boss_life.text = string_score
 
-    def update_coin_score(self) -> None :
+    def update_coin_score(self, coin_score : int) -> None :
         """"Updates the on screen coin counter"""
-        self.__coin_score.text = " " + str(self.__player.coin_score)
+        self.__coin_score.text = " " + str(coin_score)
 
     def draw_winning_text(self) -> None :
         """Draws winning text"""
@@ -83,14 +82,10 @@ class UI :
             self.__coin_score.draw()
             self.__text_boss_life.draw()
 
-    def update_weapon_icon(self) -> None :
+    def update_weapon_icon(self, weapon : WeaponType) -> None :
         """Updates the active weapon icon on screen"""
-        match self.__player.selected_weapon_type:
-            case WeaponType.SWORD:
-                self.__weapon_icon['texture'] = "assets/kenney-voxel-items-png/sword_silver.png" 
-            case WeaponType.BOW:
-                self.__weapon_icon['texture'] = "assets/kenney-voxel-items-png/bow.png"
-
+        self.__weapon_icon['texture'] = weapon.weapon_icon()
+    
     def __draw_icons(self) -> None :
         """Draws UI elements that have icons"""
         for texture_rect in self.__textured_ui_list:

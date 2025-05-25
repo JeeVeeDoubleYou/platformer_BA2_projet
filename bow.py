@@ -1,4 +1,5 @@
 import arcade
+from arrow import Arrow
 import constants
 from weapon import Weapon
 
@@ -17,9 +18,13 @@ class Bow(Weapon):
            self.angle += 80
            self.set_texture_angle(55)
            self.__activate()
+        
+    def on_mouse_release(self) -> Arrow | None:
+        """Returns an arrow object if the bow is charged"""
+        if self.is_active :
+            return Arrow(self.center_x, self.center_y, self.total_angle)
+        return None
 
     def __activate(self) -> None :
         self.is_active = True
-           
-    
-    
+        

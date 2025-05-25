@@ -12,7 +12,7 @@ class Lever(arcade.Sprite):
         self.on_deactivation_open : list[Door] = []
         self.off_deactivate = False  
         self.on_deactivate = False  
-        self.broken = False                 #check if the lever is brocken or not
+        self.__broken = False                 #check if the lever is broken or not
         self.activated = False        #the activation status of the lever (on/off)
         self.center_x = x
         self.center_y = y
@@ -30,15 +30,19 @@ class Lever(arcade.Sprite):
         self.on_deactivation_close = deactivation_close
         self.on_deactivation_open = deactivation_open
 
+    @property
+    def is_active(self) -> bool :
+        return not self.__broken
+
     def on_action(self) -> None:
-        if self.broken :
+        if self.__broken :
             return
         
         self.activated = not self.activated
 
         if self.activated:
             if self.on_deactivate:
-                self.broken = True
+                self.__broken = True
                 self.alpha =  128
             for door in self.on_activation_open:
                 door.open()
@@ -48,7 +52,7 @@ class Lever(arcade.Sprite):
                 
         else:
             if self.off_deactivate:
-                self.broken = True
+                self.__broken = True
                 self.alpha =  128
             for door in self.on_deactivation_open:
                 door.open()
