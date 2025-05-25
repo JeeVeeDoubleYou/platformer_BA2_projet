@@ -1,11 +1,23 @@
 import arcade
 import constants
 from enum import IntEnum
+from weapon import Weapon
+from bow import Bow
+from sword import Sword
 
 
 class WeaponType(IntEnum) : 
-        BOW = 0
-        SWORD = 1
+    BOW = 0
+    SWORD = 1
+
+    def create_weapon(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> Weapon :
+        match self :
+            case WeaponType.BOW : 
+                return Bow(mouse_position, player_position, camera_bottom_left)
+            case WeaponType.SWORD :
+                return Sword(mouse_position, player_position, camera_bottom_left)
+
+
 
 class Player(arcade.Sprite):
     """
@@ -98,4 +110,8 @@ class Player(arcade.Sprite):
         """Sets new position for player without creating new instance of Player."""
         self.center_x = new_x
         self.center_y = new_y
+
+    def create_weapon(self, mouse_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> Weapon :
+        self_position = arcade.Vec2(self.center_x, self.center_y)
+        return self.selected_weapon_type.create_weapon(mouse_position, self_position, camera_bottom_left)
 
