@@ -194,28 +194,12 @@ class GameView(arcade.View):
                         self.__arrow_list.append(arrow)
                 self.__weapon_list.clear()
 
-            
-
-    # def on_mouse_motion(self, mouse_x: int, mouse_y: int, buttons: int, modifiers: int) -> None:
-    #     """Called when the mouse moves."""
-
-    #     if not self.can_play :
-    #         return
-
-    #     # ATTENTION : Problem if player moves but not mouse for weapons.
-
-    #     for weapon in self.__weapon_list:
-    #         weapon.update_angle(arcade.Vec2(mouse_x, mouse_y), arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
-    
-    # ATTENTION : Doctype ?
     def solid_block_update(self) -> None:
-        """make a list the wall_list and add the colsed doors in door_list """
+        """Updates the list consisting of wall_list and the closed doors in door_list"""
         self.__solid_block_list.clear()
-        for wall in self.__wall_list:
-            self.__solid_block_list.append(wall)
-        for door in self.__door_list:
-            if door.is_closed:
-                self.__solid_block_list.append(door)
+        self.__solid_block_list.extend(self.__wall_list)
+        open_doors = [door for door in self.__door_list if door.is_closed]
+        self.__solid_block_list.extend(open_doors)
 
 
 
