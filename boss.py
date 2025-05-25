@@ -19,7 +19,7 @@ class Attack(IntEnum) :
 
 
 class Boss(Monster, Lever):
-    """Represents a bat, defines how it moves"""
+    """Represents a Boss, defines how it moves"""
     
     __initial_x : Final[float]
     __initial_y : Final[float]
@@ -56,6 +56,10 @@ class Boss(Monster, Lever):
         self.__update_position()
 
     def __ia(self, player_position : arcade.Vec2) -> None:
+        """Make the boss chose it's next direction and speed and change it's color in order 
+        to be more predictable.
+        The boss chose it's next move at random a the and of each move amongs a list of possible move
+        """
         self.frame_until_action -= 1
         if self.frame_until_action == 15:             #indicate the next move #couleurs temporaire
                 match self.choice:
@@ -79,20 +83,20 @@ class Boss(Monster, Lever):
                 self.speed = 2*constants.BOSS_SPEED
             elif self.action_area.contains_point(player_position):
                 match self.choice:          #chooses a random move to do 
-                    case Attack.PAUSE:
+                    case Attack.PAUSE:  #the boss stop moving
                         self.speed = 0
                         self.frame_until_action = random.randint(40,80)
                         can_do = [Attack.WALK, Attack.RUSH, Attack.DASH]
                         self.choice = random.choice(can_do)
 
-                    case Attack.RUSH:
+                    case Attack.RUSH:   #the boss move fast toward the player
                         self.angle_deplacement = math.pi + math.atan2(self.center_y - player_position.y, self.center_x - player_position.x)
                         self.speed =2*constants.BOSS_SPEED
                         self.frame_until_action = random.randint(20,60)
                         can_do = [Attack.PAUSE, Attack.RUSH, Attack.DASH]
                         self.choice = random.choice(can_do)
 
-                    case Attack.WALK:         
+                    case Attack.WALK:   #the boss choose a random dirction and move
                         self.frame_until_action = random.randint(60,100)
                         self.angle_deplacement = 45*random.randint(0,7)       #pour obtenire une mouvement mecanique de scie
                         self.speed = constants.BOSS_SPEED
@@ -100,7 +104,7 @@ class Boss(Monster, Lever):
                         self.choice = random.choice(can_do)
                         
 
-                    case Attack.DASH:
+                    case Attack.DASH:   # the boss move very fast around the player 
                         self.frame_until_action = random.randint(20,40)
                         if random.getrandbits(1):
                             left_or_right = 2*math.pi/3

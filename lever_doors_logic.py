@@ -9,6 +9,7 @@ class LeverDoorsLogic :
 
     def __action_linking(self, switch_on_or_off: list[dict[str,object]],
                         map_doors: list[list[Door|None]]) ->tuple[list[Door],list[Door],bool]:
+        """Make door be opened or closed when the coresponding lever is ativated"""
         one_time_use : bool = False
         list_close: list[Door] = []
         list_open: list[Door] = []
@@ -29,6 +30,8 @@ class LeverDoorsLogic :
                     if not isinstance(door_in_map, Door):
                         raise Exception(f"There is no door at (x, y) = {(x, y)}")
                     list_close.append(door_in_map)
+                case _:
+                    raise Exception(f"unknown action")
         return (list_open, list_close, one_time_use)
             
     # ATTENTION : Is *never* used

@@ -208,6 +208,7 @@ class GameView(arcade.View):
     
     # ATTENTION : Doctype ?
     def solid_block_update(self) -> None:
+        """make a list the wall_list and add the colsed doors in door_list """
         self.__solid_block_list.clear()
         for wall in self.__wall_list:
             self.__solid_block_list.append(wall)
@@ -433,6 +434,10 @@ class GameView(arcade.View):
     @property
     def get_wall_list(self) -> arcade.SpriteList[arcade.Sprite]:
         return self.__wall_list
+    
+    @property
+    def get_lava_list(self) -> arcade.SpriteList[arcade.Sprite]:
+        return self.__lava_list
     
     @property
     def get_monster_list(self) -> arcade.SpriteList[Monster]:
