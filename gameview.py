@@ -12,9 +12,13 @@ from door import Door
 from map import Map
 from UI import UI
 
+import cProfile
+
 
 class GameView(arcade.View):
     """Main in-game view."""
+
+    profiler: cProfile.Profile
 
     __player_sprite_list: arcade.SpriteList[arcade.Sprite]
     __wall_list: arcade.SpriteList[arcade.Sprite]
@@ -44,6 +48,8 @@ class GameView(arcade.View):
     def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
+
+        self.profiler = cProfile.Profile()
 
         self.__error = False
 
@@ -207,6 +213,12 @@ class GameView(arcade.View):
         """Called once per frame, before drawing.
         This is where in-world time "advances" or "ticks"."""
 
+        self.profiler.enable()
+        self.do_on_update(delta_time)
+        self.profiler.disable()
+
+    def do_on_update(self, delta_time: float) -> None :
+        
         if not self.can_play: 
             return
 
