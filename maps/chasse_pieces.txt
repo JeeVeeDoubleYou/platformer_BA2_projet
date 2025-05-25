@@ -1,30 +1,31 @@
 height: 15
 width: 25
+next-map : maps/level_4.txt
 switches: 
   - x: 2
     y: 11
     switch_on :
-      - action: open_gate
+      - action: open-gate
         x: 10
         y: 12
-      - action: open_gate
+      - action: open-gate
         x: 10
         y: 11
-      - action: open_gate
+      - action: open-gate
         x: 16
         y: 12
-      - action: open_gate
+      - action: open-gate
         x: 16
         y: 11
       - action : disable
   - x: 7
     y: 12
     switch_on:
-      - action: close-gate
+      - action: open-gate
         x: 20
         y: 2
       - action: disable
----                                                     
+---   
  v  g o g*     o  g* o
   ======================
 ↑      ^  |     |
@@ -38,6 +39,6 @@ switches:
   =*↑x = ↑             ↓
   = ↑  = ↑          ====
   = x  v =£         |***
-  =    o       S  =oooo
+  =    o       S   =oooo
   ==£===================
 ---

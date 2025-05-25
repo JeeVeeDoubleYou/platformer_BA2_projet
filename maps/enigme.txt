@@ -1,5 +1,42 @@
 height: 14
 width: 25
+switches:
+  - x: 9
+    y: 0
+    switch_on :
+      - action: open-gate
+        x: 5
+        y: 10
+  - x: 0
+    y: 10
+    switch_on :
+      - action: open-gate
+        x: 4
+        y: 1
+      - action: open-gate
+        x: 5
+        y: 1
+      - action: close-gate
+        x: 11
+        y: 7
+  - x: 4
+    y: 10
+    switch_on :
+      - action: close-gate
+        x: 13
+        y: 8
+      - action: open-gate
+        x: 11
+        y: 7
+      - action: open-gate
+        x: 5
+        y: 12
+  - x: 4
+    y: 12
+    switch_on :
+      - action: close-gate
+        x: 15
+        y: 9
 ---
    ==            *
    =^|        £
