@@ -24,7 +24,7 @@ class Weapon(arcade.Sprite):
     def update_angle(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> None:
         """Takes mouse, player and camera positions as arguments and changes the angle of the weapon in consequence"""
         delta_x = mouse_position.x + camera_bottom_left.x - player_position.x
-        delta_y = mouse_position.y + camera_bottom_left.y - player_position.y - constants.DELTA_H
+        delta_y = mouse_position.y + camera_bottom_left.y - player_position.y - constants.WEAPON_OFFSET_Y
         self.angle = atan2_deg(delta_x, delta_y) - self.texture_angle
         
     def set_texture_angle(self, texture_angle: float) -> None :
@@ -34,7 +34,7 @@ class Weapon(arcade.Sprite):
     def update_position(self, player_position : arcade.Vec2) -> None :
         
         self.center_x = player_position.x+ constants.DISTANCE_ARME_JOUEUR*sin_deg(self.angle+self.texture_angle)
-        self.center_y = player_position.y+ constants.DISTANCE_ARME_JOUEUR*cos_deg(self.angle+self.texture_angle)- constants.DELTA_H
+        self.center_y = player_position.y+ constants.DISTANCE_ARME_JOUEUR*cos_deg(self.angle+self.texture_angle)- constants.WEAPON_OFFSET_Y
         
         self.frames_from_spawn += 1
         self.in_hit_frame()
