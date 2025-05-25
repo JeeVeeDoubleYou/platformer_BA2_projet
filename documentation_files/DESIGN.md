@@ -37,12 +37,3 @@ on update:
                 arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
             for lava_hit in arcade.check_for_collision_with_list(arrow, self.__lava_list) :
                 arrow.remove_from_sprite_lists()
-        
-
-    
-
-
-
-        
-
-
