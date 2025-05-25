@@ -68,7 +68,7 @@ class Map :
     #     return partition
 
     def get_ymal(self) -> None: 
-
+        """Get the dict part of the file that contain the height, width, next map, levers and door"""
         try : 
             with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
                 level = file.read()
@@ -81,6 +81,7 @@ class Map :
             raise Exception("Configuration lines on file aren't formated correctly")
 
     def __parse_config_2(self) -> None:
+        """extract from the dict the height width and next map"""
         self.get_ymal()
         self.__width = 0
         self.__height = 0

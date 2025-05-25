@@ -93,4 +93,10 @@ Pour créer les platformes, nous travaillons sur une classe que nous avons défi
 
 ### Question 3 (Paul) : Quelle bibliothèque utilisez-vous pour lire les instructions des interrupteurs ? Dites en une ou deux phrases pourquoi vous avez choisi celle-là.
 
+J'ai choisis pyymal car c'est la bibliotheque qui a le plus de tutoriel d'utilisation sur internet
+
 ### Question 4 (Paul) : Comment votre design général évolue-t-il pour tenir compte des interrupteurs et des portails ?
+
+J'ai change les wall de physics engine pour ne plus contenire que les murs mais aussi les portes fermes.
+Aussi l'epee est desormais desactiver quand on frappe un ennemi ou un interrupteur.
+Aussi on utilise le ymal pour lire la height, widht et next_map 

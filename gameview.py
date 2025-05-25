@@ -461,6 +461,14 @@ class GameView(arcade.View):
         return self.__wall_list
     
     @property
+    def get_lava_list(self) -> arcade.SpriteList[arcade.Sprite]:
+        return self.__lava_list
+    
+    @property
+    def get_player(self) -> arcade.SpriteList[arcade.Sprite]:
+        return self.__player
+    
+    @property
     def get_monster_list(self) -> arcade.SpriteList[Monster]:
         return self.__monster_list
     

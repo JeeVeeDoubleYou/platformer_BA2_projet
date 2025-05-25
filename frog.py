@@ -4,7 +4,7 @@ import random
 from blob import Blob
 
 class Frog(Blob):
-    """Represents a blob, how it moves and checks for collistions"""
+    """Represents a frog, how it moves and checks for collistions"""
 
     def __init__(self, x: float, y: float,) -> None :
         self.initial_y = y-22
@@ -14,6 +14,7 @@ class Frog(Blob):
         self.speed = constants.FROG_SPEED
 
     def move(self, wall_list : arcade.SpriteList[arcade.Sprite], _ : arcade.Vec2) -> None:
+        """move the frog and make it jump randomly"""
         if self.center_y <= self.initial_y:
             self.center_y = self.initial_y
             if random.randint(1,50) == 1:
