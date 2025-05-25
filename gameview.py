@@ -316,12 +316,11 @@ class GameView(arcade.View):
                     self.solid_block_update()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
             for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
-                for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
-                    monster.die()
-                    self.__ui.update_boss_life(monster)
-                    self.solid_block_update() # ATTENTION 1 : Duplicate
-                    arrow.remove_from_sprite_lists()
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
+                monster_hit.die()
+                self.__ui.update_boss_life(monster_hit)
+                self.solid_block_update() # ATTENTION 1 : Duplicate
+                arrow.remove_from_sprite_lists()
+                arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
             for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__list_of_sprites_in_platforms)):
                 arrow.remove_from_sprite_lists()
                 arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
