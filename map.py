@@ -31,8 +31,7 @@ class Map :
                                                               "\r", "←", "→", "↑", "↓"})
     __hidden_characters : Final[frozenset[str]] = frozenset({" ",  "\n","\r"})
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
-    __ymal_part : dict[str, object]
-    partition : list[str]
+    __ymal_part : dict[str,object]
     
     def __init__(self, current_map_name : str, wall_list: arcade.SpriteList[arcade.Sprite], 
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
@@ -55,11 +54,9 @@ class Map :
         self.__non_platform_moving_sprites_list = non_platform_moving_sprites_list
         self.__map_movement = MapMovement(self.__non_platform_moving_sprites_list)
 
-        self.__partition_file()
         self.__create_map()
     
     def __partition_file(self) -> None :
-        """Partitions file into two sections, the config and the map."""
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
             level = file.read()
             partition = section_split.split(level, 1)
@@ -68,6 +65,7 @@ class Map :
     def get_ymal(self) -> None: 
         """Get the dict part of the file that contain the height, width, next map, levers and door"""
         try : 
+            self.__partition_file()
             yaml_return : object = yaml.safe_load(self.partition[0])
             if (isinstance(yaml_return,dict)):
                 self.__ymal_part = yaml_return
@@ -76,8 +74,7 @@ class Map :
             raise Exception("Configuration lines on file aren't formated correctly")
 
     def __parse_config(self) -> None:
-        """Extract from the dict the height, width and next map of the file, 
-        and possibly other configuration attributes in the future."""
+        """Extract from the dict the height, width and next map of the file, and possibly other configuration attributes in the future."""
         self.get_ymal()
         self.__width = 0
         self.__height = 0
@@ -103,25 +100,24 @@ class Map :
 
     def __file_to_matrix(self) -> None :
         """Turns map file into a matrix"""
-        self.__map_matrix = [["" for i in range(self.__width)] for j in range(self.__height)]
-        # Matrice[Lines][Colonne]
-        if len(self.partition[1]) < self.__height + 1 :
-            raise Exception("There are more lines than expected in the map.")
-        for j, line in enumerate(self.partition[1]) :
-            if j == self.__height :
-                break
-            line = line.rstrip("\r").rstrip("\n").ljust(self.__width)
-            if len(line) > self.__width :
-                raise Exception(f"There is a line with more characters than {self.__width}") 
-            for i in range(self.__width) :
-                char = line[i]
-                if char not in self.__allowed_characters :
-                    raise Exception("The map contains an unknown character")
-                if char  in self.__hidden_characters :
-                    continue
-                self.__map_matrix[j][i] = char
-        if not section_split.fullmatch(self.partition[1][self.__height]) :
-            raise Exception(f"The map isn't exactly {self.__height} lines long")
+        self.__map_matrix = [["" for _ in range(self.__width)] for _ in range(self.__height)]
+        with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
+            while not section_split.fullmatch(f.readline()):
+                # Skips the configuration for of the file, taken care of by function self.__parse_config
+                continue
+            for j in range(self.__height) :
+                line = f.readline().rstrip("\n").ljust(self.__width)
+                if len(line) > self.__width :
+                    raise Exception(f"There is a line with more characters than {self.__width}") 
+                for i in range(self.__width) :
+                    char = line[i]
+                    if char not in self.__allowed_characters :
+                        raise Exception("The map contains an unknown character")
+                    if char  in self.__hidden_characters :
+                        continue
+                    self.__map_matrix[j][i] = char
+            if not section_split.fullmatch(f.readline()) :
+                raise Exception(f"The map isn't exactly {self.__height} lines long")
 
     def __create_map(self) -> None : 
         """Creates map from file, raises exceptions in case of errors in map."""
