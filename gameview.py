@@ -246,9 +246,9 @@ class GameView(arcade.View):
         self.__update_camera()
         self.__check_collisions()
         
-    # ATTENTION : Write a note about which camera (non static one) or not necessary?
     def __update_camera(self) -> None :
-        """Updates camera position when player moves/dies"""
+        """Updates camera position when player moves/dies. 
+        The camera in question is that moving one, not the static UI one."""
 
         camera_x, camera_y = self.__camera.position
         if (self.__camera.center_right.x < self.__player.center_x + constants.CAMERA_X_MARGIN):
@@ -332,7 +332,6 @@ class GameView(arcade.View):
             self.__current_map_name = self.__next_map
             self.setup()
 
-    # ATTENTION : Change death sound?
     def __setup_from_initial(self) -> None :
         """Setup the game from the initial map."""
         assert os.path.exists(self.__initial_map_name)

@@ -29,7 +29,7 @@ on update:
                 for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :    
                     monster.die()
                     self.__ui.update_boss_life(monster)
-                    self.solid_block_update() # ATTENTION 1 : Duplicate
+                    self.solid_block_update() 
                     arrow.remove_from_sprite_lists()
                     arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
             for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__list_of_sprites_in_platforms)):

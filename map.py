@@ -209,19 +209,8 @@ class Map :
             raise Exception("The file sets the next map but no end to the level")
         LeverDoorsLogic().lever_door_linking(self.__ymal_part, map_doors, map_levers) 
         
-    # ATTENTION : Should be a property?
     def get_player_coordinates(self) -> tuple[int, int] :
         return self.player_coordinates
     
-    # ATTENTION : Should be a property?
     def get_next_map(self) -> str | None :
         return self.__next_map
-    
-    # ATTENTION : Isn't used *anywhere*
-
-    # def valid_dict(self,dict: dict[str,object], key: str, type_in_dict: type ) -> bool:
-    #     """Return true if the dict have the key and the correct value type associated with that key """
-    #     if key in dict:
-    #         if isinstance(dict[key],type_in_dict):
-    #             return True
-    #     return False

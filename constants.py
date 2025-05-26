@@ -78,7 +78,7 @@ FROG_JUMP_SPEED = 10
 FROG_GRAVITY = 1
 """Gravity felt by frogs"""
 
-DISTANCE_ARME_JOUEUR = 25 # ATTENTION : Ça veut dire quoi?
+DISTANCE_ARME_JOUEUR = 25
 """Distance between weapon and center of player"""
 
 WEAPON_OFFSET_Y = 5

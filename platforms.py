@@ -101,7 +101,7 @@ class Platform :
     
     @direction.setter
     def direction(self, direction : Direction) -> None :
-        assert self.direction is None, self.direction # ATTENTION : Enlever apres virgule apres
+        assert self.direction is None
         match direction :
             case Direction.VERTICAL :
                 assert self.__horizontal_movement is None
