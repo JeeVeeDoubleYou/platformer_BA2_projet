@@ -12,10 +12,12 @@ class Door(arcade.Sprite):
         self.center_y = position_y
 
     def close(self) -> None :
+        """Closes the door"""
         self.__closed = True
         self.alpha =  255 
 
     def open(self) -> None :
+        """Opens the door"""
         self.__closed = False
         self.alpha = 64 
 

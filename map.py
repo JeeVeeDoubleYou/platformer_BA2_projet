@@ -9,7 +9,7 @@ from blob import Blob
 from lever import Lever
 from door import Door
 import constants
-from constants import PIXELS_IN_BLOCK, PLATFORM_SPEED
+from constants import PIXELS_IN_BLOCK
 from monster import Monster
 from boss import Boss
 from ghost import Ghost
@@ -18,11 +18,7 @@ from map_movement import MapMovement
 from helper import matrix_line_num_to_arcade
 from lever_doors_logic import LeverDoorsLogic
 
-
-
-from platforms import Platform, Direction
 from non_platform_moving_blocks import NonPlatformMovingBlocks
-from platform_arrows import PlatformArrows
 
 section_split = re.compile(r'---\s*\r?\n?')
 
@@ -35,7 +31,8 @@ class Map :
                                                               "\r", "←", "→", "↑", "↓"})
     __hidden_characters : Final[frozenset[str]] = frozenset({" ",  "\n","\r"})
     __arrow_characters : Final[frozenset[str]] = frozenset({"←", "→", "↑", "↓"})
-    __ymal_part : dict[str,object]
+    __ymal_part : dict[str, object]
+    partition : list[str]
     
     def __init__(self, current_map_name : str, wall_list: arcade.SpriteList[arcade.Sprite], 
                  lava_list: arcade.SpriteList[arcade.Sprite], coin_list: arcade.SpriteList[arcade.Sprite], 
@@ -60,27 +57,26 @@ class Map :
 
         self.__create_map()
     
-    # def partition_file(self) -> list[str] :
-    #     with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
-    #         level = file.read()
-    #         partition = section_split.split(level, 1)
-    #     return partition
+    def partition_file(self) -> None :
+        """Partitions file into two sections, the config and the map."""
+        with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
+            level = file.read()
+            partition = section_split.split(level, 1)
+        self.partition = partition
 
     def get_ymal(self) -> None: 
         """Get the dict part of the file that contain the height, width, next map, levers and door"""
         try : 
-            with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
-                level = file.read()
-                partition = section_split.split(level, 1)
-                yaml_return : object = yaml.safe_load(partition[0])
-                if (isinstance(yaml_return,dict)):
-                    self.__ymal_part = yaml_return
-                else : raise Exception("Configuration lines on file aren't formated correctly")
+            yaml_return : object = yaml.safe_load(self.partition[0])
+            if (isinstance(yaml_return,dict)):
+                self.__ymal_part = yaml_return
+            else : raise Exception("Configuration lines on file aren't formated correctly")
         except ValueError :
             raise Exception("Configuration lines on file aren't formated correctly")
 
-    def __parse_config_2(self) -> None:
-        """extract from the dict the height width and next map"""
+    def __parse_config(self) -> None:
+        """Extract from the dict the height, width and next map of the file, 
+        and possibly other configuration attributes in the future."""
         self.get_ymal()
         self.__width = 0
         self.__height = 0
@@ -108,29 +104,27 @@ class Map :
         """Turns map file into a matrix"""
         self.__map_matrix = [["" for i in range(self.__width)] for j in range(self.__height)]
         # Matrice[Lines][Colonne]
-        with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
-            while not section_split.fullmatch(f.readline()):
-                # ATTENTION : Function should probably only take second half of broken up file, so we can skip this
-                # Skips the configuration for of the file, taken care of by function self.__parse_config
-                continue
-            for j in range(self.__height) :
-                line = f.readline().rstrip("\n").ljust(self.__width)
-                if len(line) > self.__width :
-                    raise Exception(f"There is a line with more characters than {self.__width}") 
-                for i in range(self.__width) :
-                    char = line[i]
-                    if char not in self.__allowed_characters :
-                        raise Exception("The map contains an unknown character")
-                    if char  in self.__hidden_characters :
-                        continue
-                    self.__map_matrix[j][i] = char
-            if not section_split.fullmatch(f.readline()) :
-                raise Exception(f"The map isn't exactly {self.__height} lines long")
+        if len(self.partition[1]) < self.__height + 1 :
+            raise Exception("There are more lines than expected in the map.")
+        for j, line in enumerate(self.partition[1]) :
+            if j == self.__height :
+                break
+            line.rstrip("\r").rstrip("\n").ljust(self.__width)
+            if len(line) > self.__width :
+                raise Exception(f"There is a line with more characters than {self.__width}") 
+            for i in range(self.__width) :
+                char = line[i]
+                if char not in self.__allowed_characters :
+                    raise Exception("The map contains an unknown character")
+                if char  in self.__hidden_characters :
+                    continue
+                self.__map_matrix[j][i] = char
+        if not section_split.fullmatch(self.partition[1][self.__height]) :
+            raise Exception(f"The map isn't exactly {self.__height} lines long")
 
     def __create_map(self) -> None : 
         """Creates map from file, raises exceptions in case of errors in map."""
-        self.__parse_config_2()
-        #self.__parse_config()
+        self.__parse_config()
         self.__file_to_matrix()
         self.__map_movement.find_platforms_in_map_matrix(self.__map_matrix)
         

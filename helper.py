@@ -8,7 +8,7 @@ def matrix_line_num_to_arcade(line : int, total_height : int) -> int :
 
 class Disk :
 
-    """Immable class defining a 2D disk around a certain center point with a given radius."""
+    """Immutable class defining a 2D disk around a certain center point with a given radius."""
 
     __center_x : Final[float]
     __center_y : Final[float]

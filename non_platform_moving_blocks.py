@@ -43,6 +43,7 @@ class NonPlatformMovingBlocks :
                     self.__speed = constants.PLATFORM_SPEED 
 
     def move(self) -> None : 
+        """Makes non_platform_moving_blocks move."""
         match self.__direction :
             case Direction.VERTICAL :
                 assert self.__vertical_bounds is not None

@@ -4,12 +4,28 @@ from lever import Lever
 
 class LeverDoorsLogic :
 
+    """
+    Handles the logic linking levers to doors in the map.
+    This includes configuring which doors open or close when a lever is activated or deactivated,
+    supporting one-time-use levers, and setting initial door states based on configuration data.
+    """
+
     def __init__(self) -> None :
         pass
 
     def __action_linking(self, switch_on_or_off: list[dict[str,object]],
                         map_doors: list[list[Door|None]]) ->tuple[list[Door],list[Door],bool]:
-        """Make door be opened or closed when the coresponding lever is ativated"""
+        """
+        Interprets a list of lever actions and returns which doors to open or close.
+
+        Returns
+            - A list of doors to open
+            - A list of doors to close
+            - A boolean: True if this lever should be disabled after use
+
+        Raises exception: If an action is unknown or refers to an invalid map position.
+        """
+        
         one_time_use : bool = False
         list_close: list[Door] = []
         list_open: list[Door] = []
@@ -35,13 +51,16 @@ class LeverDoorsLogic :
         return (list_open, list_close, one_time_use)
 
     def lever_door_linking(self, ymal_part : dict[str,object], map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
-        """Make the levere able to open their door"""
+        """
+        Sets up the links between levers and doors based on the config data.
+        Raises Exception: If the config is invalid or references an invalid location.
+        """
         try:
             match ymal_part:
                 case {'switches': list() as switches}:
                     for switch in switches:
                         if not isinstance(switch,dict):
-                            raise Exception("the switch list is incorect")
+                            raise Exception("The switch list is incorect")
                         assert(isinstance(switch,dict))
                         activation_close : list[Door] = [] 
                         activation_open : list[Door] = []  
@@ -55,10 +74,7 @@ class LeverDoorsLogic :
                                 activation_open, activation_close, on_deactivate = self.__action_linking(switch_on, map_doors)
                         match switch:
                             case {'switch_off': list() as switch_off}:
-                                        tuple = self.__action_linking(switch_off, map_doors)
-                                        deactivation_open = tuple[0] 
-                                        deactivation_close = tuple[1] 
-                                        off_deactivate = tuple[2]
+                                deactivation_open, deactivation_close, off_deactivate = self.__action_linking(switch_off, map_doors)
                         if switch.get('state') == True:
                             start_on = True       
                         match switch:

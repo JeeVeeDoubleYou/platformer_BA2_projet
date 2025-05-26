@@ -31,7 +31,7 @@ class Player(arcade.Sprite):
         return f"Player({self.position})"
 
     def coin_score_update (self) -> None:
-        """Updates coin score by one."""
+        """Updates coin score by adding one."""
         self.coin_score += 1
 
     def change_weapon(self) -> None:

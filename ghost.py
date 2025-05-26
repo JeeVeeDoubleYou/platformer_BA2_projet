@@ -16,6 +16,7 @@ class Ghost(Blob):
         self.alpha = 255
 
     def move(self, wall_list : arcade.SpriteList[arcade.Sprite], _ : arcade.Vec2) -> None:
+        """Makes the ghost move, like a blob."""
         super().move(wall_list, _)
         self.__make_transparent()
     

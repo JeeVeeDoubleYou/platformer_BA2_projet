@@ -60,6 +60,7 @@ class Platform :
 
 
     def add_arrow_info(self, arrow : PlatformArrows, count : int) -> None :
+        """Sets movement of platforms"""
         distance = count * constants.PIXELS_IN_BLOCK # Converts number of arrows into number of pixels
         match arrow :
             case PlatformArrows.LEFT :
@@ -74,6 +75,13 @@ class Platform :
     def add_sprite(self, coordinates : tuple[int, int]) -> None :
         """Adds sprite to the platform, using it's initial coordinates."""
         self.__sprite_set.add((coordinates[0] * constants.PIXELS_IN_BLOCK, coordinates[1] * constants.PIXELS_IN_BLOCK))
+    
+    def contains(self, sprite : arcade.Sprite) -> bool :
+        """
+        Return True if sprite belongs to platform, False if it doesn't.
+        Should *only ever* be called to sprites that haven't moved yet.
+        """
+        return (sprite.center_y, sprite.center_x) in self.sprite_set
 
     @property
     def sprite_set(self) -> set[tuple[int, int]] :
@@ -108,11 +116,3 @@ class Platform :
             case Direction.HORIZONTAL :
                 assert self.__vertical_movement is None
         self.__direction = direction
-
-    
-    def contains(self, sprite : arcade.Sprite) -> bool :
-        """
-        Return True if sprite belongs to platform, False if it doesn't.
-        Should *only ever* be called to sprites that haven't moved yet.
-        """
-        return (sprite.center_y, sprite.center_x) in self.sprite_set

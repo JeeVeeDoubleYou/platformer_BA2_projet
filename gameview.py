@@ -112,6 +112,7 @@ class GameView(arcade.View):
         self.__player.physics_engine = self.physics_engine
 
     def create_new_player(self) -> None :
+        """Creates a new player instance."""
         self.__player = Player(0, 0)
         
     def __reset_sprite_lists(self) -> None :
@@ -131,6 +132,7 @@ class GameView(arcade.View):
         self.__non_platform_moving_sprites_list = []
 
     def __make_error_text(self, error : str) -> None :
+        """Creates the personalised error text, based on the particular error that has occured."""
         self.__error_text = arcade.Text(
                 text=f"ERROR : {error}",
                 color = arcade.color.RED_BROWN,
@@ -218,6 +220,7 @@ class GameView(arcade.View):
         self.profiler.disable()
 
     def do_on_update(self, delta_time: float) -> None :
+        """Only called in on_update, what actually happens when updates."""
         
         if not self.can_play: 
             return
@@ -270,6 +273,7 @@ class GameView(arcade.View):
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
 
     def __on_monster_death(self, monster : Monster) -> None :
+        """Called when a monster dies"""
         monster.die()
         self.__ui.update_boss_life(monster)
         self.solid_block_update() # Because some monsters, like bosses, can affect doors
