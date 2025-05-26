@@ -14,11 +14,10 @@ from monster import Monster
 from boss import Boss
 from ghost import Ghost
 from frog import Frog
+from non_platform_moving_blocks import NonPlatformMovingBlocks
 from map_movement import MapMovement
 from helper import matrix_line_num_to_arcade
 from lever_doors_logic import LeverDoorsLogic
-
-from non_platform_moving_blocks import NonPlatformMovingBlocks
 
 section_split = re.compile(r'---\s*\r?\n?')
 
