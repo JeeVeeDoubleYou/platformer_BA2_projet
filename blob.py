@@ -38,6 +38,5 @@ class Blob(Monster):
         self.center_y += 10
         is_not_blocked = arcade.check_for_collision_with_list(self, wall_list) != []
         return is_on_edge or is_not_blocked
-        
 
 

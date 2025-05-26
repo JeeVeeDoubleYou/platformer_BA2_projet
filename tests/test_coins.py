@@ -5,7 +5,7 @@ from gameview import GameView
 INITIAL_COIN_COUNT = 5
 
 def test_collect_coins(window: arcade.Window) -> None: 
-    view = GameView()
+    view = GameView("maps/testing_maps/default_map.txt")
     window.show_view(view)
 
     # Make sure we have the amount of coins we expect at the start

@@ -5,7 +5,7 @@ from gameview import GameView
 
 
 def test_key(window: arcade.Window) -> None:
-    view = GameView()
+    view = GameView("maps/testing_maps/default_map.txt")
     window.show_view(view)
 
     #start of the basic test

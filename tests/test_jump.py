@@ -5,7 +5,7 @@ from gameview import GameView
 
 
 def test_jump(window: arcade.Window) -> None:
-    view = GameView()
+    view = GameView("maps/testing_maps/default_map.txt")
     window.show_view(view)
     
     view.on_key_press(arcade.key.UP, 0)
