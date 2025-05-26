@@ -15,6 +15,7 @@ def test_levers_maps(window: arcade.Window) -> None :
 
     for file_path in Path("maps/levers_testing_maps").iterdir():
         if file_path.is_file():
-            with pytest.raises(Exception) :
+            with pytest.raises(Exception) as exception :
                 view = GameView(str(file_path))
                 window.show_view(view)
+            print(exception)

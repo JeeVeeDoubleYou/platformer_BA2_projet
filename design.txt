@@ -5,7 +5,7 @@ setup
 on update:
 
 
-    def move(self) -> None :    
+    def move(self) -> None :    # θ(1)
         """Defines the movement of an arrow."""
         
         self.change_y -= constants.ARROW_GRAVITY                    # θ(1)
@@ -18,25 +18,26 @@ on update:
             if (arrow.center_x < self.__camera.bottom_left.x):  # θ(1)
                 arrow.remove_from_sprite_lists()    # θ(1)
     
-    for arrow in self.__arrow_list : # utiliser n fois
-            for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):    et θ(n) repeter c=const fois
+    for arrow in self.__arrow_list : # utiliser n fois  θ(n²) deans le pir cas
+            for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):    # θ(n)  on repete n fois dans le pire des cas
+                    monster.die()    # θ(1)
                 if not lever.broken:    # θ(1)
                     arrow.remove_from_sprite_lists()    # θ(n)
                     lever.on_action()                   # θ(1)
                     self.solid_block_update()           # θ(1)
                     arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))          # θ(1)
-            for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) :   on repete n fois
-                for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :    
-                    monster.die()
-                    self.__ui.update_boss_life(monster)
-                    self.solid_block_update() # ATTENTION 1 : Duplicate
-                    arrow.remove_from_sprite_lists()
-                    arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav")) 
-            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__list_of_sprites_in_platforms)):
-                arrow.remove_from_sprite_lists()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
-            for lava_hit in arcade.check_for_collision_with_list(arrow, self.__lava_list) :
-                arrow.remove_from_sprite_lists()
+            for monster_hit in arcade.check_for_collision_with_list(arrow, self.__monster_list) : # θ(n)  on repete n fois dans le pire des cas
+                monster.die()    # θ(1)
+                self.__ui.update_boss_life(monster)  # θ(1)
+                self.solid_block_update()   # θ(1)
+                arrow.remove_from_sprite_lists()     # θ(n)
+                arcade.play_sound(arcade.load_sound(":resources:sounds/hurt4.wav"))  # θ(1)
+            for wall_hit in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__list_of_sprites_in_platforms)):   # θ(n)  on repete n fois dans le pire des cas
+                arrow.remove_from_sprite_lists()    # θ(n)
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))  # θ(1)
+            for lava_hit in arcade.check_for_collision_with_list(arrow, self.__lava_list) :  # θ(n)  on repete n fois dans le pire des cas
+
+                arrow.remove_from_sprite_lists()    # θ(1)
         
 
     

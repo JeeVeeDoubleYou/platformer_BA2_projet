@@ -21,11 +21,15 @@ class LeverDoorsLogic :
                 case {'action':'disable'}:
                     one_time_use = True
                 case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
+                    if   y < 0  or y > len(map_doors) or x > len(map_doors[0]) or  x < 0:
+                       raise Exception(f"door given at {(x, y)} is outside of the map")
                     door_in_map = map_doors[y][x]
                     if not isinstance(door_in_map, Door):
                         raise Exception(f"There is no door at (x, y) = {(x, y)}")
                     list_open.append(door_in_map)
                 case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
+                    if   y < 0  or y > len(map_doors) or x > len(map_doors[0]) or  x < 0:
+                       raise Exception(f"door given at {(x, y)} is outside of the map")
                     door_in_map = map_doors[y][x]
                     if not isinstance(door_in_map, Door):
                         raise Exception(f"There is no door at (x, y) = {(x, y)}")
@@ -37,6 +41,8 @@ class LeverDoorsLogic :
     # ATTENTION : Is *never* used
     def __add_door_to_list(self, map_doors : list[list[Door|None]], x : int, y : int, list : list[Door]) -> None :
         """Takes the [y][x] element in map_doors, checks that it's a door and adds it to the list."""
+        if   y < 0  or y > len(map_doors) or x > len(map_doors[0]) or  x < 0:
+           raise Exception(f"door given at {(x, y)} is outside of the map")
         door = map_doors[y][x]
         if not isinstance(door, Door):
             raise Exception(f"There is no door at (x, y) = {(x, y)}")
@@ -46,7 +52,9 @@ class LeverDoorsLogic :
     # ATTENTION : Wanted to refactor the switch underneath but i have problems with dict type anotation in function 
     # def set_lever_action(self, dict_key : str, open_list : list[Door], close_list : list[Door], map_doors : list[list[Door|None]]):
 
-    def lever_door_linking(self, ymal_part : dict[str,object], map_doors : list[list[Door|None]], map_levers : list[list[Lever|None]]) -> None:
+    def lever_door_linking(self, ymal_part : dict[str,object],
+                            map_doors : list[list[Door|None]],
+                            map_levers : list[list[Lever|None]]) -> None:
         """Make the levere able to open their door"""
         try:
             match ymal_part:
@@ -100,6 +108,8 @@ class LeverDoorsLogic :
                                 #            self.add_door_to_list(map_doors, x, y, deactivation_close)        
                         match switch:
                             case {'x': int() as x, 'y': int() as y}:
+                                if  y < 0  or y > len(map_levers) or x > len(map_levers[0]) or  x < 0:
+                                    raise Exception(f"lever given at {(x, y)} is outside of the map")
                                 lever_in_map = map_levers[y][x]
                                 if isinstance(lever_in_map, Lever):
                                     lever : Lever = lever_in_map
@@ -107,7 +117,7 @@ class LeverDoorsLogic :
                                                       deactivation_open, on_deactivate, off_deactivate, start_on)
                                 else: Exception(f"There is no lever at (x, y) = {(x, y)}")
                             case _ :
-                                raise Exception("Please precise where the lever is suposed to be with integer coordinate")
+                                raise Exception("Please, use integer to precise the lever coordinate")
             match ymal_part:
                 case {'gates': list() as doors}:
                     for door in doors:
@@ -116,6 +126,8 @@ class LeverDoorsLogic :
                         assert(isinstance(door,dict))
                         match door:
                             case {'x': int() as x, 'y': int() as y,'state':'open'}:
+                                if   y < 0  or y > len(map_doors) or x > len(map_doors[0]) or  x < 0:
+                                    raise Exception(f"door given at {(x, y)} is outside of the map")
                                 door_in_map = map_doors[y][x]
                                 if isinstance(door_in_map,Door):
                                     door_in_map.open()

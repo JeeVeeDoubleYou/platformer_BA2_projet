@@ -18,6 +18,9 @@ PIXELS_IN_BLOCK = 64
 PLATFORM_SPEED = 1
 """Speed of platforms"""
 
+WINDOW_TITLE = "Jeu trop bien"
+"""Nom de la fenetre"""
+
 WINDOW_HEIGHT = 720
 """Height of the arcade window in pixels"""
 
