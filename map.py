@@ -55,9 +55,10 @@ class Map :
         self.__non_platform_moving_sprites_list = non_platform_moving_sprites_list
         self.__map_movement = MapMovement(self.__non_platform_moving_sprites_list)
 
+        self.__partition_file()
         self.__create_map()
     
-    def partition_file(self) -> None :
+    def __partition_file(self) -> None :
         """Partitions file into two sections, the config and the map."""
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
             level = file.read()
