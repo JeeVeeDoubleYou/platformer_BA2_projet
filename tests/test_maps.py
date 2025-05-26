@@ -5,6 +5,10 @@ from gameview import GameView
 
 def test_bad_maps(window: arcade.Window) -> None: 
 
+    # Test bad path
+    with pytest.raises(Exception, match="The file path for initial level is incorrect") :
+        view = GameView("maps/bad_maps/no_such_map.txt")
+
     with pytest.raises(Exception, match="Configuration lines on file aren't formated correctly") :
         view = GameView("maps/bad_maps/no_config.txt")
 
@@ -34,12 +38,6 @@ def test_bad_maps(window: arcade.Window) -> None:
 
     with pytest.raises(Exception, match="The map isn't exactly 8 lines long") :
         view = GameView("maps/bad_maps/too_long_map.txt")
-
-
-    # Test bad path
-    with pytest.raises(Exception, match="The file path for initial level is incorrect") :
-        view = GameView("maps/bad_maps/no_such_map.txt")
-        window.show_view(view)
 
 
 def test_good_maps(window: arcade.Window) -> None :

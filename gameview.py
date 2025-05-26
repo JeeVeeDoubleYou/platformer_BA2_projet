@@ -46,14 +46,15 @@ class GameView(arcade.View):
 
 
     def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
-        # Magical incantion: initialize the Arcade view
-        super().__init__()
 
         self.profiler = cProfile.Profile()
 
-        self.__error = False
+        # Magical incantion: initialize the Arcade view
+        super().__init__()
 
-        self.create_new_player()
+        self.__error = False
+        self.__has_won = False
+
 
         # Choose a nice comfy background color
         self.background_color = arcade.types.Color(223, 153, 153)
@@ -62,11 +63,13 @@ class GameView(arcade.View):
         try :
             if not os.path.exists(map_name) :
                 raise Exception("The file path for initial level is incorrect")
+
             self.__initial_map_name = map_name
             self.__current_map_name = self.__initial_map_name
+            
             # Setup our game
+            self.create_new_player()
             self.setup()
-
         except Exception as e :
             self.__make_error_text(str(e))
             if self.__is_test : 
@@ -145,7 +148,6 @@ class GameView(arcade.View):
                 )
         self.background_color = arcade.color.ALMOND
         self.__error = True
-        self.__reset_sprite_lists()
 
     
     def on_key_press(self, key: int, modifiers: int) -> None:
