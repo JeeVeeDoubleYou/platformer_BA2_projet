@@ -110,7 +110,7 @@ class Map :
         for j, line in enumerate(self.partition[1]) :
             if j == self.__height :
                 break
-            line.rstrip("\r").rstrip("\n").ljust(self.__width)
+            line = line.rstrip("\r").rstrip("\n").ljust(self.__width)
             if len(line) > self.__width :
                 raise Exception(f"There is a line with more characters than {self.__width}") 
             for i in range(self.__width) :
