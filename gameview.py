@@ -17,8 +17,9 @@ import cProfile
 
 class GameView(arcade.View):
     """Main in-game view."""
-
+    
     profiler: cProfile.Profile
+    
 
     __player_sprite_list: arcade.SpriteList[arcade.Sprite]
     __wall_list: arcade.SpriteList[arcade.Sprite]
@@ -26,7 +27,7 @@ class GameView(arcade.View):
     __lava_list: arcade.SpriteList[arcade.Sprite]
     __coin_list: arcade.SpriteList[arcade.Sprite]
     __weapon_list: arcade.SpriteList[Weapon]
-    arrow_list: arcade.SpriteList[Arrow]
+    __arrow_list: arcade.SpriteList[Arrow]
     __monster_list: arcade.SpriteList[Monster]
     __lever_list: arcade.SpriteList[Lever]
     __door_list: arcade.SpriteList[Door]
@@ -72,6 +73,11 @@ class GameView(arcade.View):
             if self.__is_test : 
                 raise e
 
+    def special_map(self) -> None:
+        for x in range(10000):
+            lava = arcade.Sprite(":resources:/images/tiles/lava.png", center_x = x*64, center_y = 0 , scale = constants.SCALE)
+            self.__lava_list.append(lava)
+
 
     def setup(self) -> None:
         """Set up the game here."""
@@ -83,7 +89,7 @@ class GameView(arcade.View):
 
 
         self.sprite_tuple = (self.__wall_list, self.__list_of_sprites_in_platforms, self.__coin_list, self.__lava_list,
-                             self.__lever_list, self.__door_list , self.arrow_list, self.__end_list,
+                             self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
                                self.__monster_list, self.__player_sprite_list, self.__weapon_list) 
         map = Map(self.__current_map_name, self.__wall_list, self.__lava_list, self.__coin_list, 
                   self.__monster_list, self.__door_list, self.__lever_list, self.__end_list, 
@@ -125,7 +131,7 @@ class GameView(arcade.View):
         self.__door_list = arcade.SpriteList(use_spatial_hash=True)
         self.__monster_list = arcade.SpriteList()
         self.__weapon_list = arcade.SpriteList()
-        self.arrow_list = arcade.SpriteList()
+        self.__arrow_list = arcade.SpriteList()
         self.__end_list = arcade.SpriteList(use_spatial_hash=True)
         self.__solid_block_list = arcade.SpriteList(use_spatial_hash=True)
         self.__non_platform_moving_sprites_list = []
@@ -197,7 +203,7 @@ class GameView(arcade.View):
             case arcade.MOUSE_BUTTON_LEFT:
                 if (weapon := self.current_weapon) is not None :
                     if (arrow := weapon.on_mouse_release()) is not None :
-                        self.arrow_list.append(arrow)
+                        self.__arrow_list.append(arrow)
                 self.__weapon_list.clear()
 
     def solid_block_update(self) -> None:
@@ -239,7 +245,7 @@ class GameView(arcade.View):
                 mouse_position = self.__get_mouse_position()
                 weapon.update_weapon(mouse_position, arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
 
-        for arrow in self.arrow_list :
+        for arrow in self.__arrow_list :
             arrow.move()
             if (arrow.center_x < self.__camera.bottom_left.x):
                 arrow.remove_from_sprite_lists()
@@ -286,7 +292,7 @@ class GameView(arcade.View):
     def __arrow_collisions(self) -> None :
         """Handles collisions between arrows and everything else"""
 
-        for arrow in list(self.arrow_list) : # To prevent bugs from modifying list while looping through it
+        for arrow in list(self.__arrow_list) : # To prevent bugs from modifying list while looping through it
 
             for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):
                 if not lever.broken:
@@ -451,7 +457,7 @@ class GameView(arcade.View):
         return self.__weapon_list
     
     @property
-    def get_arrow_list(self) -> arcade.SpriteList[Arrow]:
-        return self.arrow_list
+    def get___arrow_list(self) -> arcade.SpriteList[Arrow]:
+        return self.__arrow_list
 
     
