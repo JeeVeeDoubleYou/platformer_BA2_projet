@@ -3,7 +3,7 @@
 
 Bienvenue à notre jeu platformer ! 
 
-Arcade Platformer est un jeu de plateforme en 2D réalisé avec la bibliothèque Python Arcade. Le joueur incarne une héroïne qui doit traverser des niveaux remplis d’obstacles, d’ennemis, de platformes mouvantes et de levier qui permettent d'ouvrir des portes.
+Arcade Platformer est un jeu de plateforme en 2D réalisé avec la bibliothèque Python Arcade. Le joueur incarne une héroïne qui doit traverser des niveaux remplis d’obstacles, d’ennemis, de platformes mouvantes et d'interrupteurs qui permettent d'ouvrir des portes.
 
 ![Screenshot du jeu](documentation_files/example.png)
 
@@ -40,11 +40,11 @@ Merci à **Alexandre Rossetti** pour les quatre premiers niveaux !
 > Enemi qui se déplace comme un blob, mais qui saute parfois.
 2. Ghost, à placer aveg "g" sur le sol
 > Enemi qui se déplace comme un blob, qui devient transparent.
-3. Boss, à placer avec "B", pas forcément sur le sol, avec une config comme un levier.
+3. Boss, à placer avec "B", pas forcément sur le sol, avec une config comme un interrupteur.
 > Ennemi avec ses propres attaques aléatoires. Il n'est pas affecté par les murs, possède plusieurs vies, et peut ouvrir des portes à sa mort.
 
 ### Arc
-L'arc a un délai avant d'être chargé, et tire une flèche quand le click gauche est relâché. Ce n'est pas exactement ce que les consignes demandaient pour le fonctionnement de l'arc, mais la modification à été approuvée par le Dr. Sébastien Doeraene.
+L'arc a un délai avant d'être chargé, et tire une flèche quand le click gauche est relâché. Ce n'est pas exactement ce que les consignes demandaient pour le fonctionnement de l'arc, mais la modification à été accepté par le Dr. Sébastien Doeraene.
 
 ### Bug Arcade
 En testant notre projet, nous avons trouvé un bug : 

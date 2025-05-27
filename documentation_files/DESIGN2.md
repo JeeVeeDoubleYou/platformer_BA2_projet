@@ -9,7 +9,7 @@
 
 | Module        | Classes | Description                  |
 |---------------|-------------------------------|------------------------------|
-| `monster.py`  | `Monster`                     | Classe abstraite de base des ennemis   |
+| `monster.py`  | `Monster`                     | Classe abstraite de base des ennemis. Elle étend arcade.Sprite |
 | `bat.py`      | `Bat`                         | Monstre qui vole aléatoirement, dans un rayon d'action. N'est pas affecté par les murs.                             |
 | `blob.py`     | `Blob`                        | Monstre qui bouge sur le sol, faisant des aller-retours.                             |
 | `frog.py`     | `Frog`                        | Monstre qui bouge comme un blob, mais qui saute verticalement parfois, aléatoirement.                          |
@@ -29,10 +29,10 @@ Monster
 
 | Module           | Classes | Description                  |
 |------------------|---------------------------------|------------------------------|
-| `weapon.py`      | `Weapon`                       | Classe abstraite de base des armes      |
-| `bow.py`         | `Bow`                         |                              |
-| `sword.py`       | `Sword`                       |                              |
-| `arrow.py`       | `Arrow`                       |                              |
+| `weapon.py`      | `Weapon`                       | Classe abstraite de base des armes. Elle étend arcade.Sprite. |
+| `bow.py`         | `Bow`                         | Classe représentant l'arc     |
+| `sword.py`       | `Sword`                       | Classe représentant l'épée  |
+| `arrow.py`       | `Arrow`                       | Classe représentant les flèches tirées par l'arc |
 | `weapon_type.py` | `WeaponType` | Enum des types d'armes : Bow et Sword, pour l'instant. Pour référencer une arme sans en créer une instance.  |
 
 ```
@@ -48,28 +48,33 @@ WeaponType
 
 | Module           | Classes | Description                  |
 |------------------|---------------------------------|------------------------------|
-| `player.py`      | `Player`                       |                              |
+| `player.py`      | `Player`                       | Classe représentant le joueur. Elle étend arcade.Sprite. |
 
 ## Map
 
 | Module                   | Classes    | Description                  |
 |--------------------------|-------------------------------|------------------------------|
-| `platforms.py`           | `Platform`                   |                              |
-| `platform_arrows.py`     | (probablement `PlatformArrow`)|                              |
-| `non_platform_moving_blocks.py` | (probablement `NonPlatformBlock`) |                        |
-| `lever.py`               | `Lever`                     |                              |
-| `lever_doors_logic.py`   | (logique/gestion)            |                              |
-| `door.py`                | `Door`                      |                              |
-| `map.py`          | `Map` (ou classe associée) | Gestion de la carte          |
-| `map_mouvement.py`| (classes déplacement ?)    | Mouvement sur la carte       |
+| `platforms.py`           | `Platform`, `Direction(Enum)`   | `Platform` représente une ensemble de blocs qui bougent ensemble. Ici, les blocs sont représentés par leur position initiale, par leur type. `Direction` représente les directions dans lesquelles peut bouger un platforme, VERTICAL ou HORIZONTAL. |
+| `platform_arrows.py`     | `PlatformArrows`| Une classe étendant `Enum`, permettant de transformer une flèche en caractère spécial, par exemple "←", en type de donné facilement manipulable par le code. |
+| `non_platform_moving_blocks.py` | `NonPlatformMovingBlocks` | Cette classe représente un bloc en mouvement, d'un type dont le mouvement n'est pas géré directement par Arcade, tel que la lave, ou les interrupteurs. |
+| `lever.py`               | `Lever`                     | Classe représentant un interrupteur, qui peut agir sur des `Door` |
+| `door.py`                | `Door`                      | Classe représentant une porte, qui peut-être être ouverte ou fermée.   |
+| `map.py`          | `Map` | Classe gérant la création des cartes. |
+| `map_mouvement.py`| `MapMovement` | Classe gérant le mouvement des platformes dans la carte.  |
+| `lever_doors_logic.py`   | `LeverDoorsLogic`          | Classe gérant l'association entre les `Lever` et les `Door`, à la création de la carte.  |
 
 ## Utilitaires
 
+*Ces modules sont importées presque partout, elles sont faites pour ça. Ce sont des modules qui nous 
+permettent de simplifier les calculs, de centraliser les constantes, et d'éviter la duplication de code pour des outils qui sont utilisés dans plusieurs classes
+différentes.*
+
 | Module            | Classes | Description                  |
 |-------------------|----------------------------|------------------------------|
-| `constants.py`    | (aucune)                  | Constantes globales          |
-| `helper.py`       | `Disk`, fonctions utilitaires | Fonctions math et géométrie |
-| `math_personal.py`| (fonctions)                | Fonctions math personnalisées|
+| `constants.py`    | -                  | Contient toutes les constantes du projet. Permet à celles-ci d'être facilement accessibles. |
+| `helper.py`       | `Disk`, fonctions utilitaires | `Disk` permet de créer le rayon d'action de la chauve-souris et du boss. |
+| `math_personal.py`| -               | Fonctions mathématiques simples mais non-présentes directement dans le module `math`. |
+| `custom_exception.py` | `CustomException` | Type d'Exception lancé par notre code, afin de s'assure que le message d'erreur à destination de l'utilisateur soit lisible. Tout autre type d'exception imprime simplement "An unknow error has occured".
 
 # Intéraction des classes entre elles
 
@@ -90,7 +95,7 @@ Pour cela, elle remplit les listes de `Monster`, `Lava`, etc., que `GameView` lu
 a fournies, avec les sprites correspondants, en se basant sur le fichier texte fourni.  
 
 En plus des sprites `Monster` et des blocs immobiles, la carte est aussi constituée 
-de plateformes mobiles, ainsi que de leviers. Afin de produire une carte complète 
+de plateformes mobiles, ainsi que de interrupteurs. Afin de produire une carte complète 
 comprenant ces éléments, la classe `Map` s’appuie sur les classes `MapMovement` 
 (qui permet de gérer les blocs mobiles) et `LeverDoorsLogic` (qui s'occupe des liens 
 entre les `Lever` et les `Door`). 
