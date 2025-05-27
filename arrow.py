@@ -6,6 +6,8 @@ from math_personal import sin_deg, cos_deg, atan2_deg
 
 class Arrow(arcade.Sprite):
     """Represents an arrow, from a bow"""
+
+    __slots__ = ()
     
     def __init__(self, initial_x : float, initial_y : float, angle : float) -> None :
         

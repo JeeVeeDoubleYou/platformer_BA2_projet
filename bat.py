@@ -8,6 +8,8 @@ import constants
 
 class Bat(Monster):
     """Represents a bat, defines how it moves"""
+
+    __slots__ = ('initial_x', 'initial_y', 'angle_def', '__frames_until_random', 'action_area', )
     
     __initial_x : Final[float]
     __initial_y : Final[float]
@@ -29,10 +31,11 @@ class Bat(Monster):
         self.action_area = Disk(self.__initial_x, self.__initial_y, constants.BAT_ACTION_RADIUS)
 
     def move(self, _wall : arcade.SpriteList[arcade.Sprite], _pos : arcade.Vec2) -> None:
-        "Makes the bat move"
+        """Update the bat's movement direction randomly and moves."""
         
         self.__frames_until_random -= 1
 
+        # Choose new movement angle when timer runs out or continuing in current path would lead to outside the action area
         if self.__frames_until_random == 0 or  not self.__can_move(self.__new_speed(self.angle_deg)):
             self.__frames_until_random = constants.BAT_FRAMES
             while True :
@@ -68,8 +71,8 @@ class Bat(Monster):
         x_speed = math.cos(math.radians(angle__deg)) * constants.BAT_SPEED
         y_speed = math.sin(math.radians(angle__deg)) * constants.BAT_SPEED
         if x_speed*self.scale_x > 0.5  :
-            """flip the bat if it go fast enought in the direction it is not facing"""
-            self.scale_x *= -1      #flip the sprite horizontaly
+            # Flips the bat horizontaly if it goes fast enough in the direction it isn't facing.
+            self.scale_x *= -1  
 
         return (x_speed, y_speed)
 

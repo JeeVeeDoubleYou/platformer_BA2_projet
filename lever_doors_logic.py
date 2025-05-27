@@ -4,12 +4,28 @@ from lever import Lever
 
 class LeverDoorsLogic :
 
+    """
+    Handles the logic linking levers to doors in the map.
+    This includes configuring which doors open or close when a lever is activated or deactivated,
+    supporting one-time-use levers, and setting initial door states based on configuration data.
+    """
+
     def __init__(self) -> None :
         pass
 
     def __action_linking(self, switch_on_or_off: list[dict[str,object]],
                         map_doors: list[list[Door|None]]) ->tuple[list[Door],list[Door],bool]:
-        """Make door be opened or closed when the coresponding lever is ativated"""
+        """
+        Interprets a list of lever actions and returns which doors to open or close.
+
+        Returns
+            - A list of doors to open
+            - A list of doors to close
+            - A boolean: True if this lever should be disabled after use
+
+        Raises exception: If an action is unknown or refers to an invalid map position.
+        """
+        
         one_time_use : bool = False
         list_close: list[Door] = []
         list_open: list[Door] = []
@@ -37,31 +53,21 @@ class LeverDoorsLogic :
                 case _:
                     raise Exception(f"unknown action")
         return (list_open, list_close, one_time_use)
-            
-    # ATTENTION : Is *never* used
-    def __add_door_to_list(self, map_doors : list[list[Door|None]], x : int, y : int, list : list[Door]) -> None :
-        """Takes the [y][x] element in map_doors, checks that it's a door and adds it to the list."""
-        if   y < 0  or y > len(map_doors) or x > len(map_doors[0]) or  x < 0:
-           raise Exception(f"door given at {(x, y)} is outside of the map")
-        door = map_doors[y][x]
-        if not isinstance(door, Door):
-            raise Exception(f"There is no door at (x, y) = {(x, y)}")
-        assert(isinstance(door, Door))
-        list.append(door)
-
-    # ATTENTION : Wanted to refactor the switch underneath but i have problems with dict type anotation in function 
-    # def set_lever_action(self, dict_key : str, open_list : list[Door], close_list : list[Door], map_doors : list[list[Door|None]]):
+ 
 
     def lever_door_linking(self, ymal_part : dict[str,object],
                             map_doors : list[list[Door|None]],
                             map_levers : list[list[Lever|None]]) -> None:
-        """Make the levere able to open their door"""
+        """
+        Sets up the links between levers and doors based on the config data.
+        Raises Exception: If the config is invalid or references an invalid location.
+        """
         try:
             match ymal_part:
                 case {'switches': list() as switches}:
                     for switch in switches:
                         if not isinstance(switch,dict):
-                            raise Exception("the switch list is incorect")
+                            raise Exception("The switch list is incorect")
                         assert(isinstance(switch,dict))
                         activation_close : list[Door] = [] 
                         activation_open : list[Door] = []  
@@ -72,40 +78,12 @@ class LeverDoorsLogic :
                         off_deactivate : bool = False
                         match switch:
                             case {'switch_on': list() as switch_on}:
-                                tuple = self.__action_linking(switch_on, map_doors)
-                                activation_open = tuple[0] 
-                                activation_close = tuple[1] 
-                                on_deactivate = tuple[2]
-                                #for element in switch_on:
-                                #    if not isinstance(element,dict):
-                                #        raise Exception("A switch_on action is incorect")
-                                #    assert(isinstance(switch,dict))
-                                #    match element:
-                                #        case {'action':'disable'}:
-                                #            one_time_use = True
-                                #        case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                                #            self.add_door_to_list(map_doors, x, y, activation_open)
-                                #        case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                                #            self.add_door_to_list(map_doors, x, y, activation_close)
+                                activation_open, activation_close, on_deactivate = self.__action_linking(switch_on, map_doors)
                         match switch:
                             case {'switch_off': list() as switch_off}:
-                                        tuple = self.__action_linking(switch_off, map_doors)
-                                        deactivation_open = tuple[0] 
-                                        deactivation_close = tuple[1] 
-                                        off_deactivate = tuple[2]
+                                deactivation_open, deactivation_close, off_deactivate = self.__action_linking(switch_off, map_doors)
                         if switch.get('state') == True:
-                            start_on = True
-                                #for element in switch_off:
-                                #    if not isinstance(element,dict):
-                                #        raise Exception("A switch_off action is incorect")
-                                #    assert(isinstance(switch, dict))
-                                #    match element:
-                                #        case {'action':'disable'}:
-                                #            one_time_use = True
-                                #        case {'x': int() as x, 'y': int() as y,'action':'open-gate'}:
-                                #            self.add_door_to_list(map_doors, x, y, deactivation_open)    
-                                #        case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
-                                #            self.add_door_to_list(map_doors, x, y, deactivation_close)        
+                            start_on = True       
                         match switch:
                             case {'x': int() as x, 'y': int() as y}:
                                 if  y < 0  or y > len(map_levers) or x > len(map_levers[0]) or  x < 0:

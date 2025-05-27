@@ -3,6 +3,8 @@ import constants
 
 class Door(arcade.Sprite):
 
+    __slots__ = ('__closed', )
+
     def __init__ (self, position_x: float, position_y: float) -> None:
         super().__init__(":resources:images/tiles/lockYellow.png", constants.SCALE)
         self.__closed = True
@@ -10,10 +12,12 @@ class Door(arcade.Sprite):
         self.center_y = position_y
 
     def close(self) -> None :
+        """Closes the door"""
         self.__closed = True
         self.alpha =  255 
 
     def open(self) -> None :
+        """Opens the door"""
         self.__closed = False
         self.alpha = 64 
 

@@ -14,6 +14,7 @@ class UI :
         self.__create_ui(coin_score)
 
     def __create_ui(self, coin_score : int) -> None :
+        """Creates initial UI state."""
         # Icône montrant l'arme active 
         weapon_rect = arcade.Rect(0, 0, 0, 0, 50, 50, 
                             self.__fixed_camera.top_left.x+30,

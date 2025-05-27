@@ -25,7 +25,10 @@ class NonPlatformMovingBlocks :
     
         self.__horizontal_bounds = (int(self.__initial_position.x - movement[0]), int(self.__initial_position.x + movement[1]))
         
-        # ATTENTION : Il faudrait changer tous les mouvement pour associer top à droite, comme ca on a pas besoin du match direction car movement[0] sera la direction initiale
+        # Info : Il faudrait changer tous les mouvement pour associer top à droite (plutôt que top à gauche), 
+        # comme ca on a pas besoin du match direction car movement[0] sera la direction initiale, mais il faudrait changer une bonne
+        # partie du code pour que se soit cohérent, je n'ai pas le temps.
+
         # Mettre la vitesse initiale à droite ou vers le haut, sauf s'il n'y a pas de movement dans ces directions
         match self.__direction :
             case Direction.VERTICAL :
@@ -40,6 +43,7 @@ class NonPlatformMovingBlocks :
                     self.__speed = constants.PLATFORM_SPEED 
 
     def move(self) -> None : 
+        """Makes non_platform_moving_blocks move."""
         match self.__direction :
             case Direction.VERTICAL :
                 assert self.__vertical_bounds is not None

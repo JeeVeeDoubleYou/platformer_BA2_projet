@@ -60,6 +60,12 @@ BLUE_BLOB_SPEED = -2       # is negative to make the slime move in the direction
 BOSS_SPEED = 3
 """Speed of boss"""
 
+BOSS_SPEED_RUSH = 2
+"""How many times faster the boss goes when rushing"""
+
+BOSS_SPEED_DASH = 3
+"""How many times faster the boss goes when dashing"""
+
 BOSS_ACTION_RADIUS = 500
 """Radius in which boss can move around it's spawning point"""
 
@@ -75,7 +81,7 @@ FROG_JUMP_SPEED = 10
 FROG_GRAVITY = 1
 """Gravity felt by frogs"""
 
-DISTANCE_ARME_JOUEUR = 25 # ATTENTION : Ça veut dire quoi?
+DISTANCE_ARME_JOUEUR = 25
 """Distance between weapon and center of player"""
 
 WEAPON_OFFSET_Y = 5
@@ -86,3 +92,4 @@ SWORD_ACTIVE_FRAMES = 7
 
 BOW_TIME_OUT = 15
 """Number of frames necessary after spawn before bow can shoot"""
+

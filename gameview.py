@@ -47,14 +47,15 @@ class GameView(arcade.View):
 
 
     def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
-        # Magical incantion: initialize the Arcade view
-        super().__init__()
 
         self.profiler = cProfile.Profile()
 
-        self.__error = False
+        # Magical incantion: initialize the Arcade view
+        super().__init__()
 
-        self.create_new_player()
+        self.__error = False
+        self.__has_won = False
+
 
         # Choose a nice comfy background color
         self.background_color = arcade.types.Color(223, 153, 153)
@@ -63,11 +64,13 @@ class GameView(arcade.View):
         try :
             if not os.path.exists(map_name) :
                 raise Exception("The file path for initial level is incorrect")
+
             self.__initial_map_name = map_name
             self.__current_map_name = self.__initial_map_name
-            # Setup our game
-            self.setup()
 
+            # Setup our game
+            self.create_new_player()
+            self.setup()
         except Exception as e :
             self.__make_error_text(str(e))
             if self.__is_test : 
@@ -87,8 +90,6 @@ class GameView(arcade.View):
         self.__reset_sprite_lists()
 
         self.__won = False
-        self.mouse_override_for_tests : arcade.Vec2 | None = None # To be able to test thr weapons
-
 
         self.sprite_tuple = (self.__wall_list, self.__list_of_sprites_in_platforms, self.__coin_list, self.__lava_list,
                              self.__lever_list, self.__door_list , self.__arrow_list, self.__end_list,
@@ -120,6 +121,7 @@ class GameView(arcade.View):
         self.__player.physics_engine = self.physics_engine
 
     def create_new_player(self) -> None :
+        """Creates a new player instance."""
         self.__player = Player(0, 0)
         
     def __reset_sprite_lists(self) -> None :
@@ -139,6 +141,7 @@ class GameView(arcade.View):
         self.__non_platform_moving_sprites_list = []
 
     def __make_error_text(self, error : str) -> None :
+        """Creates the personalised error text, based on the particular error that has occured."""
         self.__error_text = arcade.Text(
                 text=f"ERROR : {error}",
                 color = arcade.color.RED_BROWN,
@@ -151,7 +154,6 @@ class GameView(arcade.View):
                 )
         self.background_color = arcade.color.ALMOND
         self.__error = True
-        self.__reset_sprite_lists()
 
     
     def on_key_press(self, key: int, modifiers: int) -> None:
@@ -226,6 +228,7 @@ class GameView(arcade.View):
         self.profiler.disable()
 
     def do_on_update(self, delta_time: float) -> None :
+        """Only called in on_update, what actually happens when updates."""
         
         if not self.can_play: 
             return
@@ -255,9 +258,9 @@ class GameView(arcade.View):
         self.__update_camera()
         self.__check_collisions()
         
-    # ATTENTION : Write a note about which camera (non static one) or not necessary?
     def __update_camera(self) -> None :
-        """Updates camera position when player moves/dies"""
+        """Updates camera position when player moves/dies. 
+        The camera in question is that moving one, not the static UI one."""
 
         camera_x, camera_y = self.__camera.position
         if (self.__camera.center_right.x < self.__player.center_x + constants.CAMERA_X_MARGIN):
@@ -279,6 +282,7 @@ class GameView(arcade.View):
         self.__camera.position = arcade.Vec2(camera_x, camera_y)
 
     def __on_monster_death(self, monster : Monster) -> None :
+        """Called when a monster dies"""
         monster.die()
         self.__ui.update_boss_life(monster)
         self.solid_block_update() # Because some monsters, like bosses, can affect doors
@@ -344,7 +348,6 @@ class GameView(arcade.View):
             self.__current_map_name = self.__next_map
             self.setup()
 
-    # ATTENTION : Change death sound?
     def __setup_from_initial(self) -> None :
         """Setup the game from the initial map."""
         assert os.path.exists(self.__initial_map_name)
@@ -372,8 +375,6 @@ class GameView(arcade.View):
 
     def __get_mouse_position(self) -> arcade.Vec2 :
         """Returns mouse position. If mouse doesn't exist, returns player position as safe value."""
-        if self.mouse_override_for_tests :
-            return self.mouse_override_for_tests
         if self.window.mouse is not None :
             return arcade.Vec2(self.window.mouse.data['x'], self.window.mouse.data['y'])
         else :

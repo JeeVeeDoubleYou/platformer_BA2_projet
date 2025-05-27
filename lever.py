@@ -4,7 +4,19 @@ import constants
 
 class Lever(arcade.Sprite):
 
-    def __init__ (self, x: float, y:float) -> None:
+    """
+    Represents a lever on the map that can be toggled to open or close doors.
+
+    A Lever can:
+        - Be toggled (activated/deactivated)
+        - Trigger specific doors to open/close on activation and deactivation
+        - Be marked as "broken" (unusable) after one use if configured
+    """
+
+    __slots__ = ('on_activation_close', 'on_activation_open', 'on_deactivation_close', 'on_deactivation_open',
+                 'off_deactivate', 'on_deactivate', '__broken', 'activated', )
+
+    def __init__ (self, x: float, y:float) -> None :
         super().__init__(":resources:images/tiles/leverRight.png", constants.SCALE*1)
         self.on_activation_close : list[Door] = []
         self.on_activation_open : list[Door] = []
@@ -20,6 +32,9 @@ class Lever(arcade.Sprite):
     def link_doors(self, activation_close : list[Door], activation_open : list[Door], 
                  deactivation_close : list[Door], deactivation_open : list[Door], on_deactivate : bool = False, off_deactivate : bool = False,
                  start_on : bool = False) -> None :
+        
+        """Configures the lever's behavior: which doors it affects and its initial state."""
+        
         self.off_deactivate = off_deactivate
         self.on_deactivate = on_deactivate
         self.activated = start_on
@@ -35,7 +50,12 @@ class Lever(arcade.Sprite):
         return not self.broken
 
     def on_action(self) -> None:
-        if self.broken :
+        """
+        Called when lever is hit with sword or arrow. 
+        Could take into account other hit collisions, in the future. 
+        Toggles the lever's state and triggers the appropriate door actions.
+        """
+        if self.__broken :
             return
         
         self.activated = not self.activated
@@ -61,8 +81,3 @@ class Lever(arcade.Sprite):
             self.texture = arcade.load_texture(":resources:images/tiles/leverRight.png")
 
         self.sync_hit_box_to_texture()
-        
-
-
-
-

@@ -9,20 +9,15 @@ from blob import Blob
 from lever import Lever
 from door import Door
 import constants
-from constants import PIXELS_IN_BLOCK, PLATFORM_SPEED
+from constants import PIXELS_IN_BLOCK
 from monster import Monster
 from boss import Boss
 from ghost import Ghost
 from frog import Frog
+from non_platform_moving_blocks import NonPlatformMovingBlocks
 from map_movement import MapMovement
 from helper import matrix_line_num_to_arcade
 from lever_doors_logic import LeverDoorsLogic
-
-
-
-from platforms import Platform, Direction
-from non_platform_moving_blocks import NonPlatformMovingBlocks
-from platform_arrows import PlatformArrows
 
 section_split = re.compile(r'---\s*\r?\n?')
 
@@ -60,27 +55,25 @@ class Map :
 
         self.__create_map()
     
-    # def partition_file(self) -> list[str] :
-    #     with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
-    #         level = file.read()
-    #         partition = section_split.split(level, 1)
-    #     return partition
+    def __partition_file(self) -> None :
+        with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
+            level = file.read()
+            partition = section_split.split(level, 1)
+        self.partition = partition
 
     def get_ymal(self) -> None: 
         """Get the dict part of the file that contain the height, width, next map, levers and door"""
         try : 
-            with open(self.__current_map_name, "r", encoding="utf-8", newline='') as file:
-                level = file.read()
-                partition = section_split.split(level, 1)
-                yaml_return : object = yaml.safe_load(partition[0])
-                if (isinstance(yaml_return,dict)):
-                    self.__ymal_part = yaml_return
-                else : raise Exception("Configuration lines on file aren't formated correctly")
+            self.__partition_file()
+            yaml_return : object = yaml.safe_load(self.partition[0])
+            if (isinstance(yaml_return,dict)):
+                self.__ymal_part = yaml_return
+            else : raise Exception("Configuration lines on file aren't formated correctly")
         except ValueError :
             raise Exception("Configuration lines on file aren't formated correctly")
 
-    def __parse_config_2(self) -> None:
-        """extract from the dict the height width and next map"""
+    def __parse_config(self) -> None:
+        """Extract from the dict the height, width and next map of the file, and possibly other configuration attributes in the future."""
         self.get_ymal()
         self.__width = 0
         self.__height = 0
@@ -106,11 +99,9 @@ class Map :
 
     def __file_to_matrix(self) -> None :
         """Turns map file into a matrix"""
-        self.__map_matrix = [["" for i in range(self.__width)] for j in range(self.__height)]
-        # Matrice[Lines][Colonne]
+        self.__map_matrix = [["" for _ in range(self.__width)] for _ in range(self.__height)]
         with open(self.__current_map_name, "r", encoding="utf-8", newline='') as f :
             while not section_split.fullmatch(f.readline()):
-                # ATTENTION : Function should probably only take second half of broken up file, so we can skip this
                 # Skips the configuration for of the file, taken care of by function self.__parse_config
                 continue
             for j in range(self.__height) :
@@ -129,8 +120,7 @@ class Map :
 
     def __create_map(self) -> None : 
         """Creates map from file, raises exceptions in case of errors in map."""
-        self.__parse_config_2()
-        #self.__parse_config()
+        self.__parse_config()
         self.__file_to_matrix()
         self.__map_movement.find_platforms_in_map_matrix(self.__map_matrix)
         
@@ -209,19 +199,8 @@ class Map :
             raise Exception("The file sets the next map but no end to the level")
         LeverDoorsLogic().lever_door_linking(self.__ymal_part, map_doors, map_levers) 
         
-    # ATTENTION : Should be a property?
     def get_player_coordinates(self) -> tuple[int, int] :
         return self.player_coordinates
     
-    # ATTENTION : Should be a property?
     def get_next_map(self) -> str | None :
         return self.__next_map
-    
-    # ATTENTION : Isn't used *anywhere*
-
-    # def valid_dict(self,dict: dict[str,object], key: str, type_in_dict: type ) -> bool:
-    #     """Return true if the dict have the key and the correct value type associated with that key """
-    #     if key in dict:
-    #         if isinstance(dict[key],type_in_dict):
-    #             return True
-    #     return False
