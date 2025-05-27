@@ -72,11 +72,13 @@ class GameView(arcade.View):
             self.__make_error_text(str(e))
             if self.__is_test : 
                 raise e
+            
+        self.special_map()
 
     def special_map(self) -> None:
-        for x in range(10000):
-            lava = arcade.Sprite(":resources:/images/tiles/lava.png", center_x = x*64, center_y = 0 , scale = constants.SCALE)
-            self.__lava_list.append(lava)
+        for x in range(100):
+            arrow = Arrow(10, 1000, 0)
+            self.__arrow_list.append(arrow)
 
 
     def setup(self) -> None:

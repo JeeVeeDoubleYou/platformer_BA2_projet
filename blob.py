@@ -22,8 +22,8 @@ class Blob(Monster):
         if self.__can_move(wall_list):
             self.speed = -self.speed
             self.scale_x *= -1      #flip the slime horizontaly
-            self.strafe(self.speed)
-
+            self.center_x += self.speed
+            
     def __can_move(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> bool:
         self.center_x += 20*self.speed
         self.center_y -= 10
