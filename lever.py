@@ -14,7 +14,7 @@ class Lever(arcade.Sprite):
     """
 
     __slots__ = ('on_activation_close', 'on_activation_open', 'on_deactivation_close', 'on_deactivation_open',
-                 'off_deactivate', 'on_deactivate', '__broken', 'activated', )
+                 'off_deactivate', 'on_deactivate', 'broken', 'activated', )
 
     def __init__ (self, x: float, y:float) -> None :
         super().__init__(":resources:images/tiles/leverRight.png", constants.SCALE*1)
@@ -55,7 +55,7 @@ class Lever(arcade.Sprite):
         Could take into account other hit collisions, in the future. 
         Toggles the lever's state and triggers the appropriate door actions.
         """
-        if self.__broken :
+        if self.broken :
             return
         
         self.activated = not self.activated
