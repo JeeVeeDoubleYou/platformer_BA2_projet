@@ -4,6 +4,7 @@ from enum import Enum, auto
 import arcade
 import constants
 from platform_arrows import PlatformArrows
+from custom_exception import CustomException
 
 
 class Direction(Enum) :
@@ -37,7 +38,7 @@ class Platform :
         vertical = up != 0 or down != 0
 
         if (horizontal and vertical) or (horizontal and self.is_vertical) or (vertical and self.is_horizontal) :
-            raise Exception("A platform can't move both vertically and horizontally")
+            raise CustomException("A platform can't move both vertically and horizontally")
         
         if horizontal :
             if self.__horizontal_movement is None :
@@ -46,7 +47,7 @@ class Platform :
             else :
                 l, r = self.__horizontal_movement
                 if l * left != 0 or r * right != 0 :
-                    raise Exception("A platform can't have more that one line of arrows applying to it per direction")
+                    raise CustomException("A platform can't have more that one line of arrows applying to it per direction")
                 self.__horizontal_movement = (l if left == 0 else left, r if right == 0 else right)
         if vertical :
             if self.__vertical_movement is None :
@@ -55,7 +56,7 @@ class Platform :
             else :
                 u, d = self.__vertical_movement
                 if u * up != 0 or d * down != 0 :
-                    raise Exception("A platform can't have more that one line of arrows applying to it per direction")
+                    raise CustomException("A platform can't have more that one line of arrows applying to it per direction")
                 self.__vertical_movement = (u if up == 0 else up, d if down == 0 else down)
 
 
