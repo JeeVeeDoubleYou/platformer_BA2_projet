@@ -14,7 +14,7 @@ class Lever(arcade.Sprite):
     """
 
     __slots__ = ('on_activation_close', 'on_activation_open', 'on_deactivation_close', 'on_deactivation_open',
-                 'off_deactivate', 'on_deactivate', '__broken', 'activated', )
+                 'off_deactivate', 'on_deactivate', 'broken', 'activated', )
 
     def __init__ (self, x: float, y:float) -> None :
         super().__init__(":resources:images/tiles/leverRight.png", constants.SCALE*1)
@@ -24,7 +24,7 @@ class Lever(arcade.Sprite):
         self.on_deactivation_open : list[Door] = []
         self.off_deactivate = False  
         self.on_deactivate = False  
-        self.__broken = False                 #check if the lever is broken or not
+        self.broken = False                 #check if the lever is broken or not
         self.activated = False        #the activation status of the lever (on/off)
         self.center_x = x
         self.center_y = y
@@ -47,7 +47,7 @@ class Lever(arcade.Sprite):
 
     @property
     def is_active(self) -> bool :
-        return not self.__broken
+        return not self.broken
 
     def on_action(self) -> None:
         """
@@ -55,14 +55,14 @@ class Lever(arcade.Sprite):
         Could take into account other hit collisions, in the future. 
         Toggles the lever's state and triggers the appropriate door actions.
         """
-        if self.__broken :
+        if self.broken :
             return
         
         self.activated = not self.activated
 
         if self.activated:
             if self.on_deactivate:
-                self.__broken = True
+                self.broken = True
                 self.alpha =  128
             for door in self.on_activation_open:
                 door.open()
@@ -72,7 +72,7 @@ class Lever(arcade.Sprite):
                 
         else:
             if self.off_deactivate:
-                self.__broken = True
+                self.broken = True
                 self.alpha =  128
             for door in self.on_deactivation_open:
                 door.open()

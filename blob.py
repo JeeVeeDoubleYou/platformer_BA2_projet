@@ -24,8 +24,8 @@ class Blob(Monster):
         if self.__should_change_direction(wall_list):
             self.speed = -self.speed
             self.scale_x *= -1      # Flip sprite horizontally
-            self.strafe(self.speed)
-
+            self.center_x += self.speed
+            
     def __should_change_direction(self, wall_list : arcade.SpriteList[arcade.Sprite]) -> bool:
         """Determines if the blob should reverse direction based on platform edges and wall collisions.
         Returns True if blob is at an edge (no floor ahead) or blocked by a wall ahead, False otherwise.

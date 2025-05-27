@@ -20,7 +20,7 @@ def main() -> None:
     arcade.run()
 
     game_view.profiler.dump_stats("profile.prof")
-
+    #game_view.profiler.print_stats(sort='cumtime')
 
 if __name__ == "__main__":
     main()

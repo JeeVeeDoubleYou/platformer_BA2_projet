@@ -18,8 +18,9 @@ import cProfile
 
 class GameView(arcade.View):
     """Main in-game view."""
-
+    
     profiler: cProfile.Profile
+    
 
     __player_sprite_list: arcade.SpriteList[arcade.Sprite]
     __wall_list: arcade.SpriteList[arcade.Sprite]
@@ -79,6 +80,13 @@ class GameView(arcade.View):
             self.__make_error_text("An unknow error has occured")
             if self.__is_test : 
                 raise e
+            
+        #   self.special_map()
+
+    def special_map(self) -> None:
+        for x in range(100):
+            arrow = Arrow(10, 1000, 0)
+            self.__arrow_list.append(arrow)
 
 
     def setup(self) -> None:
@@ -243,8 +251,9 @@ class GameView(arcade.View):
             monster.move(self.__wall_list, arcade.Vec2(self.player_x, self.player_y))
 
         for weapon in self.__weapon_list :
-            mouse_position = self.__get_mouse_position()
-            weapon.update_weapon(mouse_position, arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
+            if not self.__is_test :         #pour que l'on ne puisse pas bouger la sourie pendent un test
+                mouse_position = self.__get_mouse_position()
+                weapon.update_weapon(mouse_position, arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
 
         for arrow in self.__arrow_list :
             arrow.move()
@@ -297,11 +306,14 @@ class GameView(arcade.View):
         for arrow in list(self.__arrow_list) : # To prevent bugs from modifying list while looping through it
 
             for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):
-                lever.on_action()
-                self.solid_block_update()
-                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
-                arrow.remove_from_sprite_lists()
+                if not lever.broken:
+                    lever.on_action()
+                    self.solid_block_update()
+                    arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
+                    arrow.remove_from_sprite_lists()
                 break
+
+                
 
             for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
                 self.__on_monster_death(monster)
@@ -453,7 +465,7 @@ class GameView(arcade.View):
         return self.__weapon_list
     
     @property
-    def get_arrow_list(self) -> arcade.SpriteList[Arrow]:
+    def get___arrow_list(self) -> arcade.SpriteList[Arrow]:
         return self.__arrow_list
 
     
