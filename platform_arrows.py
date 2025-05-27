@@ -1,5 +1,6 @@
 from __future__ import annotations
 from enum import Enum
+from custom_exception import CustomException
 
 
 class PlatformArrows(Enum) : 
@@ -52,4 +53,4 @@ class PlatformArrows(Enum) :
             case "↓" :
                 return PlatformArrows.DOWN
             case _ :
-                raise Exception("Invalid arrow ", {arrow})
+                raise CustomException("Invalid arrow ", {arrow})

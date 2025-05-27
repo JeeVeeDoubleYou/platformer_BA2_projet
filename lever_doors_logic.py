@@ -1,5 +1,6 @@
 from door import Door
 from lever import Lever
+from custom_exception import CustomException
 
 
 class LeverDoorsLogic :
@@ -31,7 +32,7 @@ class LeverDoorsLogic :
         list_open: list[Door] = []
         for element in switch_on_or_off:
             if not isinstance(element,dict):
-                raise Exception("A switch_on action is incorect")
+                raise CustomException("A switch_on action is incorect")
             assert(isinstance(element,dict))
             match element:
                 case {'action':'disable'}:
@@ -41,17 +42,17 @@ class LeverDoorsLogic :
                        raise Exception(f"door given at {(x, y)} is outside of the map")
                     door_in_map = map_doors[y][x]
                     if not isinstance(door_in_map, Door):
-                        raise Exception(f"There is no door at (x, y) = {(x, y)}")
+                        raise CustomException(f"There is no door at (x, y) = {(x, y)}")
                     list_open.append(door_in_map)
                 case {'x': int() as x, 'y': int() as y,'action':'close-gate'}:
                     if   y < 0  or y > len(map_doors) or x > len(map_doors[0]) or  x < 0:
                        raise Exception(f"door given at {(x, y)} is outside of the map")
                     door_in_map = map_doors[y][x]
                     if not isinstance(door_in_map, Door):
-                        raise Exception(f"There is no door at (x, y) = {(x, y)}")
+                        raise CustomException(f"There is no door at (x, y) = {(x, y)}")
                     list_close.append(door_in_map)
                 case _:
-                    raise Exception(f"unknown action")
+                    raise CustomException(f"unknown action")
         return (list_open, list_close, one_time_use)
  
 
@@ -67,7 +68,7 @@ class LeverDoorsLogic :
                 case {'switches': list() as switches}:
                     for switch in switches:
                         if not isinstance(switch,dict):
-                            raise Exception("The switch list is incorect")
+                            raise CustomException("The switch list is incorect")
                         assert(isinstance(switch,dict))
                         activation_close : list[Door] = [] 
                         activation_open : list[Door] = []  
@@ -93,14 +94,14 @@ class LeverDoorsLogic :
                                     lever : Lever = lever_in_map
                                     lever.link_doors(activation_close ,activation_open, deactivation_close,
                                                       deactivation_open, on_deactivate, off_deactivate, start_on)
-                                else: Exception(f"There is no lever at (x, y) = {(x, y)}")
+                                else: CustomException(f"There is no lever at (x, y) = {(x, y)}")
                             case _ :
                                 raise Exception("Please, use integer to precise the lever coordinate")
             match ymal_part:
                 case {'gates': list() as doors}:
                     for door in doors:
                         if not isinstance(door, dict):
-                            raise Exception("A door action is incorect")
+                            raise CustomException("A door action is incorect")
                         assert(isinstance(door,dict))
                         match door:
                             case {'x': int() as x, 'y': int() as y,'state':'open'}:
@@ -109,7 +110,7 @@ class LeverDoorsLogic :
                                 door_in_map = map_doors[y][x]
                                 if isinstance(door_in_map,Door):
                                     door_in_map.open()
-                                else: raise Exception(f"There is no door at (x, y) = {(x, y)}")
+                                else: raise CustomException(f"There is no door at (x, y) = {(x, y)}")
                                 
         except ValueError :
             pass

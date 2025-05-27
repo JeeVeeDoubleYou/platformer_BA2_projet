@@ -11,6 +11,7 @@ from lever import Lever
 from door import Door
 from map import Map
 from UI import UI
+from custom_exception import CustomException
 
 import cProfile
 
@@ -63,7 +64,7 @@ class GameView(arcade.View):
 
         try :
             if not os.path.exists(map_name) :
-                raise Exception("The file path for initial level is incorrect")
+                raise CustomException("The file path for initial level is incorrect")
 
             self.__initial_map_name = map_name
             self.__current_map_name = self.__initial_map_name
@@ -71,8 +72,12 @@ class GameView(arcade.View):
             # Setup our game
             self.create_new_player()
             self.setup()
-        except Exception as e :
+        except CustomException as e :
             self.__make_error_text(str(e))
+            if self.__is_test : 
+                raise e
+        except Exception as e :
+            self.__make_error_text("An unknow error has occured")
             if self.__is_test : 
                 raise e
             

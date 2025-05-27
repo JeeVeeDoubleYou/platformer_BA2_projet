@@ -18,6 +18,7 @@ from non_platform_moving_blocks import NonPlatformMovingBlocks
 from map_movement import MapMovement
 from helper import matrix_line_num_to_arcade
 from lever_doors_logic import LeverDoorsLogic
+from custom_exception import CustomException
 
 section_split = re.compile(r'---\s*\r?\n?')
 
@@ -68,9 +69,9 @@ class Map :
             yaml_return : object = yaml.safe_load(self.partition[0])
             if (isinstance(yaml_return,dict)):
                 self.__ymal_part = yaml_return
-            else : raise Exception("Configuration lines on file aren't formated correctly")
+            else : raise CustomException("Configuration lines on file aren't formated correctly")
         except ValueError :
-            raise Exception("Configuration lines on file aren't formated correctly")
+            raise CustomException("Configuration lines on file aren't formated correctly")
 
     def __parse_config(self) -> None:
         """Extract from the dict the height, width and next map of the file, and possibly other configuration attributes in the future."""
@@ -82,20 +83,20 @@ class Map :
                 case {"width":width,"height":height}:
                     if isinstance(width, int):
                         self.__width = width
-                    else: raise Exception("The width must be an integer")
+                    else: raise CustomException("The width must be an integer")
                     if isinstance(height, int):
                         self.__height = height
-                    else: raise Exception("The height must be an integer")
+                    else: raise CustomException("The height must be an integer")
             if "next-map" in self.__ymal_part:
                 if isinstance(self.__ymal_part["next-map"],str) and os.path.exists(self.__ymal_part["next-map"]) :
                     self.__next_map = self.__ymal_part["next-map"]
-                else: raise Exception("The next map path is incorrect")                                                                                                                                                                                                           
+                else: raise CustomException("The next map path is incorrect")                                                                                                                                                                                                           
         except ValueError :
-            raise Exception("Configuration lines on file aren't formated correctly")    #je check 2 fois pas sur que c'est necessaire
+            raise CustomException("Configuration lines on file aren't formated correctly")    #je check 2 fois pas sur que c'est necessaire
         if (self.__width == 0 or self.__height == 0) :
-            raise Exception(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
+            raise CustomException(f"Width and height should be defined and non-zero in configuration of file {self.__current_map_name}")
         if (self.__width < 0 or self.__height < 0) :
-            raise Exception("Width and height should be positive numbers")
+            raise CustomException("Width and height should be positive numbers")
 
     def __file_to_matrix(self) -> None :
         """Turns map file into a matrix"""
@@ -107,16 +108,16 @@ class Map :
             for j in range(self.__height) :
                 line = f.readline().rstrip("\n").ljust(self.__width)
                 if len(line) > self.__width :
-                    raise Exception(f"There is a line with more characters than {self.__width}") 
+                    raise CustomException(f"There is a line with more characters than {self.__width}") 
                 for i in range(self.__width) :
                     char = line[i]
                     if char not in self.__allowed_characters :
-                        raise Exception("The map contains an unknown character")
+                        raise CustomException("The map contains an unknown character")
                     if char  in self.__hidden_characters :
                         continue
                     self.__map_matrix[j][i] = char
             if not section_split.fullmatch(f.readline()) :
-                raise Exception(f"The map isn't exactly {self.__height} lines long")
+                raise CustomException(f"The map isn't exactly {self.__height} lines long")
 
     def __create_map(self) -> None : 
         """Creates map from file, raises exceptions in case of errors in map."""
@@ -139,7 +140,7 @@ class Map :
                 match sprite_char : 
                     case "S" :
                         if start_is_placed :
-                            raise Exception("Player can't be placed twice")
+                            raise CustomException("Player can't be placed twice")
                         start_is_placed = True
                         self.player_coordinates = (x_coordinate, y_coordinate)
                     case "o" :
@@ -173,7 +174,7 @@ class Map :
                         match sprite_char :
                             case "E" :
                                 if end_is_placed :
-                                    raise Exception("There can't be two ending points to a level")
+                                    raise CustomException("There can't be two ending points to a level")
                                 end_is_placed = True
                                 name_and_list = (":resources:/images/tiles/signExit.png", self.__end_list)
                             case "=" :
@@ -194,9 +195,9 @@ class Map :
                 self.__map_movement.give_movement_to_non_platform_sprites(sprite, sprite_char)
 
         if not start_is_placed :
-            raise Exception("Player must have a starting point")
+            raise CustomException("Player must have a starting point")
         if self.__next_map is not None and not end_is_placed :
-            raise Exception("The file sets the next map but no end to the level")
+            raise CustomException("The file sets the next map but no end to the level")
         LeverDoorsLogic().lever_door_linking(self.__ymal_part, map_doors, map_levers) 
         
     def get_player_coordinates(self) -> tuple[int, int] :
