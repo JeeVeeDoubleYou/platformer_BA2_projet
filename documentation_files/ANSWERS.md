@@ -47,7 +47,7 @@ Nous testons en faisant une map où la joueuse apparait à côté d'un blob, et 
 Puis nous testons en changant la direction de l'épée, et en s'assurant que cette fois-ci, le blob ne meurs pas.
 Dans `GameView`, nous avons du bloquer la fonctionnalité que l'épée suive la souris, pour les tests, afin que la position de la souris n'aie pas d'impact sur la réussite des tests.
 
-### Question 4 :Comment transférez-vous le score de la joueuse d’un niveau à l’autre ?
+### Question 4 : Comment transférez-vous le score de la joueuse d’un niveau à l’autre ?
 
 Une nouvelle instance de Player() est crée à chaque fois qu'on recommence à partir du premier niveau, mais pas quand on passe d'un niveau à l'autre. Comme le nombre de pièces que la joueuse a ramassé est stocké dans player, cela permet de garder le score d'un niveau à l'autre. Lorsqu'un nouveau niveau est chargé, sans créer de nouveau joueur, seules les coordonnées du joueur sont mises à jour. Ainsi, le joueur garde aussi son choix d'arme d'un niveau à l'autre.
 

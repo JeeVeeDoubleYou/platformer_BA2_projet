@@ -13,26 +13,14 @@ Format :
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 
 ### Gaëlle : 
-* [] ANSWERS.MD (2,4 questions, semaine 5)
-* [] Print errors on map standard si mauvaise map
-* [] Lave & exits on platforms
-* [] Test plateformes
-* [] ANSWERS.MD (1, 2 questions, semaine 8)
+
+FINI !
 
 
 ### Paul : 
 
+FINI !
 
-* [] ANSWERS.MD (deux dernières questions, semaine 3)
-* [] Test coin counter
-* [] Test player death
-* [] ANSWERS.MD (4 premieres ?, semaine 4)
-* [] Bow and arrow
-* [] Test bow and arrow
-* [] ANSWERS.MD (1,2,4 questions, semaine 5)
-* [] Intérupteurs
-* [] Test intérupteurs
-* [] ANSWERS.MD (3, 4 questions, semaine 8)
 
 * [] Écran de fin de jeu pour enlever problème si end mais pas next_map
 
@@ -73,7 +61,6 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 * [x] Encapsulation, modularisation et réorganisation du code        180    
 * [x] ANSWERS.MD (deux premières questions)                           20 
 * [x] ANSWERS.MD (deux dernières questions)                           10
-* 
 
 ### Semaine 4
 
@@ -114,10 +101,29 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 
 ### Semaine 10
 
+* [x] Intérupteurs                                                   600
+* [x] ANSWERS.MD                                                      40
+
 ### Semaine 11
+
+* [x] Intérupteurs                                                   500
+* [x] Lave & exits sur platformes                                    300
 
 ### Semaine 12
 
+* [x] Refactoring                                                    300
+* [x] Interupteurs sur platformes                                    500
+* [x] Écran de fin de jeu et écran d'erreurs                          60
+
 ### Semaine 13
 
+* [x] Refactoring                                                    300
+* [x] Refactoring des questions                                      300
+* [x] Extensions                                                     500
+
 ### Semaine 14
+
+* [x] Documentation                                                  300
+* [x] Tests                                                          300
+* [x] Complexité                                                     200
+* [x] Benchmarking                                                   120

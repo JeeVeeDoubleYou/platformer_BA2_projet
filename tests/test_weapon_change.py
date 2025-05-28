@@ -4,9 +4,7 @@ from gameview import GameView
 from sword import Sword
 from bow import Bow
 
-# ATTENTION : Marche pas
-
-def test_sword(window: arcade.Window) -> None:
+def test_weapon_change(window: arcade.Window) -> None:
     view = GameView("maps/testing_maps/default_map.txt")
     window.show_view(view)
     #verifie que l'épée tue le monstre

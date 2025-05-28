@@ -3,7 +3,7 @@
 
 Bienvenue à notre jeu platformer ! 
 
-Arcade Platformer est un jeu de plateforme en 2D réalisé avec la bibliothèque Python Arcade. Le joueur incarne une héroïne qui doit traverser des niveaux remplis d’obstacles, d’ennemis, de platformes mouvantes et de levier qui permettent d'ouvrir des portes.
+Arcade Platformer est un jeu de plateforme en 2D réalisé avec la bibliothèque Python Arcade. Le joueur incarne une héroïne qui doit traverser des niveaux remplis d’obstacles, d’ennemis, de platformes mouvantes et d'interrupteurs qui permettent d'ouvrir des portes.
 
 ![Screenshot du jeu](documentation_files/example.png)
 
@@ -32,6 +32,17 @@ pour choisir le niveau que vous voulez.
 
 Merci à **Alexandre Rossetti** pour les quatre premiers niveaux !
 
+### Comment jouer
+
+1. Pour avancer, utiliser les touches A et D ou les flèches latérales.  
+2. Pour sauter, utiliser la touche W, la flèche du haut ou l'espace.  
+3. Pour utiliser une arme, faites click gauche. L'épée est active tant qu'elle est rouge.  
+4. Pour changer l'arme active, faites click droit.  
+5. Pour ouvrir une porte, taper le levier correspondant avec l'épée ou avec une flèche.  
+6. Toucher un monstre, même en sautant dessus, fait perdre le niveau.  
+
+**Bon jeu !**
+
 ### Description des extensions
 
 *Pour ceux qui savent créer des map :*
@@ -40,11 +51,11 @@ Merci à **Alexandre Rossetti** pour les quatre premiers niveaux !
 > Enemi qui se déplace comme un blob, mais qui saute parfois.
 2. Ghost, à placer aveg "g" sur le sol
 > Enemi qui se déplace comme un blob, qui devient transparent.
-3. Boss, à placer avec "B", pas forcément sur le sol, avec une config comme un levier.
+3. Boss, à placer avec "B", pas forcément sur le sol, avec une config comme un interrupteur.
 > Ennemi avec ses propres attaques aléatoires. Il n'est pas affecté par les murs, possède plusieurs vies, et peut ouvrir des portes à sa mort.
 
 ### Arc
-L'arc a un délai avant d'être chargé, et tire une flèche quand le click gauche est relâché. Ce n'est pas exactement ce que les consignes demandaient pour le fonctionnement de l'arc, mais la modification à été approuvée par le Dr. Sébastien Doeraene.
+L'arc a un délai avant d'être chargé, et tire une flèche quand le click gauche est relâché. Ce n'est pas exactement ce que les consignes demandaient pour le fonctionnement de l'arc, mais la modification à été accepté par le Dr. Sébastien Doeraene.
 
 ### Bug Arcade
 En testant notre projet, nous avons trouvé un bug : 
