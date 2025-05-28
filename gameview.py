@@ -13,6 +13,8 @@ from map import Map
 from UI import UI
 from custom_exception import CustomException
 
+from map_movement import MapMovement
+
 import cProfile
 
 
@@ -84,7 +86,7 @@ class GameView(arcade.View):
         #self.special_map()
 
     def special_map(self) -> None:
-        for x in range(4000):
+        for x in range(50000):
             arrow = Arrow(10, 1000, 180)
             self.__arrow_list.append(arrow)
 
@@ -117,6 +119,7 @@ class GameView(arcade.View):
         self.__ui.update_weapon_icon(self.__player.selected_weapon_type)
 
         self.solid_block_update() 
+        self.test_compexite_plateformes()
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
@@ -223,15 +226,28 @@ class GameView(arcade.View):
         open_doors = [door for door in self.__door_list if door.is_closed]
         self.__solid_block_list.extend(open_doors)
 
+    def test_compexite_plateformes(self) -> None:
+        """Called once per frame, before drawing.
+        This is where in-world time "advances" or "ticks"."""
 
+        
+        map_test : list[list[str]] = []
+        for i in range (10):
+            line = []
+            for j in range (10):
+                line.append("=")
+            map_test.append(line)
+        self.profiler.enable()
+        MapMovement.find_platforms_in_map_matrix(map_test)
+        self.profiler.disable()
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
         This is where in-world time "advances" or "ticks"."""
 
-        self.profiler.enable()
+        #self.profiler.enable()
         self.do_on_update(delta_time)
-        self.profiler.disable()
+        #self.profiler.disable()
 
     def do_on_update(self, delta_time: float) -> None :
         """Only called in on_update, what actually happens when updates."""
@@ -262,10 +278,14 @@ class GameView(arcade.View):
             # The program should just ignore this and not update weapon angle in that frame.
             pass
 
+
+        self.profiler.enable()
         for arrow in self.__arrow_list :
             arrow.move()
             if (arrow.center_y < self.__camera.bottom_left.y):
                 arrow.remove_from_sprite_lists()
+        self.profiler.disable()
+        
 
         self.__update_camera()
         self.__check_collisions()

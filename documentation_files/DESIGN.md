@@ -245,13 +245,13 @@ Donc, on en conclut que dans le pire cas possible, la complexite est de O(9n) = 
 
 
 
-Arrow on updade tourne en θ(n²) ou n est le nombre d'arrow
+Arrow on updade tourne en θ(n) ou n est le nombre d'arrow
 
 les deux fonction qui utilisent les arrow sont:
 
 
 
-for arrow in list(self.__arrow_list) : #on repete n donc θ(n²)
+for arrow in list(self.__arrow_list) : #on repete n donc θ(n)
 
             for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):# on repete c fois (c=cst) donc θ(n)
                 if not lever.broken:
