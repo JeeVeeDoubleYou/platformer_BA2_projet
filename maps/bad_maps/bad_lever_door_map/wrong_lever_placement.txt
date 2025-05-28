@@ -1,8 +1,8 @@
 height: 2
 width: 5
 switches:
-    -x: 1
-     y: a
+  - x: 4
+    y: 1
 ---
 S ^
 =====

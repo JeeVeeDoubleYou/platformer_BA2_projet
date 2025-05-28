@@ -1,6 +1,7 @@
 import arcade
 import pytest
 from gameview import GameView
+import re
 
 
 def test_bad_maps(window: arcade.Window) -> None: 
@@ -39,9 +40,11 @@ def test_bad_maps(window: arcade.Window) -> None:
     with pytest.raises(Exception, match="The map isn't exactly 8 lines long") :
         view = GameView("maps/bad_maps/too_long_map.txt")
 
+    with pytest.raises(Exception, match=re.escape(f"There is no lever at (x, y) = {(4, 1)}")) :
+        view = GameView("maps/bad_maps/bad_lever_door_map/wrong_lever_placement.txt")
+
     #   with pytest.raises(Exception, match="Please, use integer to precise the lever coordinate") :
     #       view = GameView("maps/bad_maps/wrong_lever_placement.txt")
-
         
 
 def test_good_maps(window: arcade.Window) -> None :
