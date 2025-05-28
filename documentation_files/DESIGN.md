@@ -154,18 +154,15 @@ nous nous assurons que self.__horizontal_movement soit None, avant d'autorister 
 La méthode __partition_file() de `Map` utilise les expressions régulières, afin de permettre à notre code de lire une map créée 
 aussi bien sur Mac, Linux et Windows.
 
-#Analyse complexite
+# Analyse de complexité
 
-analyse de complexite de setup de plateforme avec n nombred de blocks dans la plateforme
+## Setup()
+Analyse de complexité du setup d'une platforme, avec paramètre n où n est le nombre de blocs constituant une plateforme, plus le nombre de flèches qui l'affectent.
+Voici les fonctions qui gèrent l'initialisation des plateformes, pour référence.
 
-
-
+```python
 def find_platforms_in_map_matrix(self, map_matrix : list[list[str]]) -> None :
-        """Goes to each position in self.__map_matrix and checks if the sprite there could be part of
-        a moving platform. If so, it calls function self.grouping_platform(), passing an empty platform instance, 
-        which becomes a full platform. 
-        This platform gets added to self.__list_of_platforms if it's movement is not zero.
-        """
+
         visited : set[tuple[int, int]] = set()     # θ(1)
 
         for line in range(len(map_matrix)) :   
@@ -175,23 +172,10 @@ def find_platforms_in_map_matrix(self, map_matrix : list[list[str]]) -> None :
                     self.__grouping_platform(map_matrix, line, column, platform, visited, None) # θ(f)
                     if platform.moves : # θ(1)
                         self.__list_of_platforms.append(platform)   # θ(1)
+```
 
-
-
-
-
+```python
 def __grouping_platform(self, map_matrix : list[list[str]], line : int, column : int, platform : Platform, visited : set[tuple[int, int]], valid_arrow : PlatformArrows | None) -> None :
-        """Recursive function taking as arguments :
-            - line, column
-                The lines and column numbers of possible platform sprites       
-            - platform
-                The platform it is creating                                     
-            - visited
-                A set of already visited positions, which are positions of sprites that can't be currently added to the platform. 
-                They could either belong to another platform, not be the correct type of sprite or already belong to this platform.       
-            - valid_arrow
-                The only arrow type that could affect the platform, if the current sprite is an arrow.
-        """
 
         if line < 0 or column < 0 or line >= len(map_matrix) or column >= len(map_matrix[0]) or (line, column) in visited : 
             return  # θ(1)
@@ -214,86 +198,76 @@ def __grouping_platform(self, map_matrix : list[list[str]], line : int, column :
 
             for d_line, d_col, direction_arrow in [(0, -1, PlatformArrows.LEFT), (0, 1, PlatformArrows.RIGHT), (1, 0, PlatformArrows.DOWN), (-1, 0, PlatformArrows.UP)] :
                 self.__grouping_platform(map_matrix, line + d_line, column + d_col, platform, visited, direction_arrow)
+```
 
-On cree 4 instances de self.grouping_plateforme et un appel a self.grouping_plateforme est en O(1). 
-On pourrait donc penser que self.grouping_plateforme est en θ(4^n).
-Or, pour une case aux coordonnees x, y, on ne peut avoir que 4 appels a
-self.__grouping_platform(map_matrix, x, y, visited, direction_arrow).
-En effet, on ne peut acceder a une case que par 4 chemins differents, sinon cela veut dire que l'on a accede a une case deja contenue dans visited.
-Donc, pour chaque case comprise dans notre plateforme et sa frontiere, on ne peut avoir que 4 appels.
-Et on sait aussi que la frontiere est au plus de 2n + 2 (cas ou l'on prend une plateforme allongee).
+La fonction `find_platforms_in_map_matrix()` a pour but d’explorer la matrice représentant notre carte, d’identifier les groupes de cases correspondant à des plateformes mobiles, puis de les regrouper à l’aide de la fonction récursive `grouping_platform()`. Pour faire cela, elle parcourt chaque case de la matrice et, si la case contient un caractère de plateforme et n’a pas encore été visitée, elle initialise une nouvelle instance de plateforme et appelle `grouping_platform()` pour regrouper toutes les cases adjacentes formant cette plateforme.
 
-Donc, on en conclut que dans le pire cas possible, la complexite est de O(9n) = O(n)
+Dans notre analyse de complexité, nous allons nous intéresser uniquement à la complexité de créer une seule plateforme, pas toutes les plateforme de carte. Alors, nous allons commencer par remarquer la ligne de code suivante, dans `find_platforms_in_map_matrix()` :
 
+```python 
+if map_matrix[line][column] in self.__platform_characters and (line, column) not in visited : 
+```
 
+Cette condition, associée au code dans `grouping_platform()` qui ajoute une case au set `visited` s'il fait partie de la plateforme que l'on est en train d'explorer, assure que la fonction `find_platforms_in_map_matrix()` n'explore jamais deux fois la même case. Ainsi, pour notre analyse de complexité, comme nous nous concentrons uniquement sur une plateformes, il suffit d'analyser la fonction récursive `grouping_platform()`.
 
+La fonction `grouping_platform()` visite récursivement les cases voisines tant qu’elles sont valides (c’est-à-dire qu’elles sont dans la matrice, non encore visitées, et qu’elles contiennent un caractère de plateforme ou une flèche). Elle ajoute chaque case visitée et valide à un ensemble visited, ce qui garantit qu’aucune case n’est explorée plus d’une fois, si l'on considère qu'explorer une case signifie passer les deux premières conditions de la fonction de `grouping_platform()`, qui sont en θ(1). 
 
+Même si chaque appel récursif peut théoriquement générer jusqu’à quatre appels supplémentaires (vers les quatre directions cardinales), le mécanisme de marquage dans visited empêche toute redondance. Le nombre total d'appels récursifs est donc en O(n), puisque chaque case valide est explorée une seule fois, et que les cases sont valides ne sont jamais explorées.
 
+## On_update()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Analyse de complexité du update des flèches tirées par l'arc, avec paramètre n où n est le nombre de flèches dans le jeu.
+Voici les fonctions qui gèrent la mise à jour des flèches, pour référence.
 Arrow on updade tourne en θ(n²) ou n est le nombre d'arrow
 
-les deux fonction qui utilisent les arrow sont:
 
+```python
+def __arrow_collisions(self) -> None :
 
+        for arrow in list(self.__arrow_list) : # θ(n)
 
-for arrow in list(self.__arrow_list) : #on repete n donc θ(n²)
-
-            for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list):# on repete c fois (c=cst) donc θ(n)
+            for lever in arcade.check_for_collision_with_list(arrow, self.__lever_list): # θ(1)
                 if not lever.broken:
-                    lever.on_action()   # θ(1)
-                    self.solid_block_update()   # θ(1)
+                    lever.on_action() # θ(1)
+                    self.solid_block_update() # θ(1)
                     arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav")) 
-                    arrow.remove_from_sprite_lists()    # θ(1)
+                    arrow.remove_from_sprite_lists() # θ(1) (par l'implémentation d'arcade)
                 break
+
                 
 
-            for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) : on repete c fois(c=cst) donc θ(n)
-                self.__on_monster_death(monster)    # θ(1)
-                arrow.remove_from_sprite_lists()    # θ(1)
-                break   # θ(1)
+            for monster in arcade.check_for_collision_with_list(arrow, self.__monster_list) :
+                self.__on_monster_death(monster) # θ(1)
+                arrow.remove_from_sprite_lists() # θ(1)
+                break
 
-            for _ in arcade.check_for_collision_with_lists(arrow, ( self.__solid_block_list,
-                                                                    self__list_of_sprites_in_platforms, 
-                                                                    self.__lava_list)):# θ(c) on repete c fois(c=cst) donc θ(n)
+            for _ in arcade.check_for_collision_with_lists(arrow, (self.__solid_block_list, self.__list_of_sprites_in_platforms, self.__lava_list)): # θ(1)
+                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))
+                arrow.remove_from_sprite_lists() # θ(1)
+                break
 
-                arcade.play_sound(arcade.load_sound(":resources:sounds/rockHit2.wav"))  # θ(1)
-                arrow.remove_from_sprite_lists()    # θ(1)
-                break   # θ(1)
+```
 
-for arrow in self.__arrow_list :   on repete n donc #   θ(n)
-            arrow.move()    #  θ(1)
-            if (arrow.center_y < self.__camera.bottom_left.y):  #  θ(1)
-                arrow.remove_from_sprite_lists()    #  θ(1)
+```python
+    def do_on_update(self, delta_time: float) -> None :
+        
+        # autre code, non pertinent 
 
+        for arrow in self.__arrow_list : # θ(n)
+            arrow.move() # θ(1), voir plus bas
+            if (arrow.center_y < self.__camera.bottom_left.y): # θ(1)
+                arrow.remove_from_sprite_lists() # θ(1)
+```
 
-def move(self) -> None : # donc θ(1)
+```python
+    def move(self) -> None :
         """Defines the movement of an arrow."""
         
-        self.change_y -= constants.ARROW_GRAVITY    #  θ(1)
-        self.center_x += self.change_x  #  θ(1)
-        self.center_y += self.change_y  #  θ(1)
-        self.angle = atan2_deg(self.change_x,self.change_y) - 45    #  θ(1)
+        self.change_y -= constants.ARROW_GRAVITY # θ(1)
+        self.center_x += self.change_x # θ(1)
+        self.center_y += self.change_y # θ(1)
+        self.angle = atan2_deg(self.change_x,self.change_y) - 45 # θ(1)
+```
+La première chose que nous devons remarquer, en analysant la complexité, est la complexité de la fonction `remove_from_sprite_lists()`, une fonction d'Arcade. Cette fonction s'exécute en θ(1)l où le nombre d'opérations constances est faible, car les sprites ne sont pas enlevées de chaque liste individuellement, mais directement du physics engine. Une fois que l'on sait ça, nous pouvons voir que les seules opérations qui ne s'effectuent pas en θ(1) sont les boucles sur les flèches, qui sont en θ(n). Comme il y a deux telles boucles, mais qu'elles ne sont pas imbriquées, nous trouvons que le total est du update est en θ(n).
 
-
-
-
-
-
-arrow.remove_from_sprite_lists()    # θ(1)
-Apparament  arrow.remove from spritelist est en θ(1) voici quelques hypotheses sur pourquoi ce serait le cas:
-1:Arcade remarque quand plusieurs sprites sont retires en meme temps et supprime directement la liste au lieu de supprimer les sprites un par un
+Ici, nous pouvons en profiter pour mettre en évidence l'avantage d'avoir utilisé une fonction de la bibliothèque externe Arcade, plutôt que d'avoir essayé de récrire la fonction par nous-mêmes. En effet, si nous avions dû enlever chaque flèche de chaque SpriteList par nous-mêmes, comme il peut y avoir un très grand nombre de SpriteList dans le jeu, cela aurait pu affecter les performances du jeu. Cela n'aurait pas affecté la complexité algorithmique, car le nombre de SpriteList est constant ici, mais nous savons que dans un problème pratique, la seule complexité théorique ne suffit pas à évaluer les performances d'un programme.
