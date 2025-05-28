@@ -32,6 +32,17 @@ pour choisir le niveau que vous voulez.
 
 Merci à **Alexandre Rossetti** pour les quatre premiers niveaux !
 
+### Comment jouer
+
+1. Pour avancer, utiliser les touches A et D ou les flèches latérales.  
+2. Pour sauter, utiliser la touche W, la flèche du haut ou l'espace.  
+3. Pour utiliser une arme, faites click gauche. L'épée est active tant qu'elle est rouge.  
+4. Pour changer l'arme active, faites click droit.  
+5. Pour ouvrir une porte, taper le levier correspondant avec l'épée ou avec une flèche.  
+6. Toucher un monstre, même en sautant dessus, fait perdre le niveau.  
+
+**Bon jeu !**
+
 ### Description des extensions
 
 *Pour ceux qui savent créer des map :*
