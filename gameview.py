@@ -114,6 +114,7 @@ class GameView(arcade.View):
         self. __fixed_camera.position = arcade.Vec2(0, 0)
 
         self.__ui = UI(self.__fixed_camera, self.__monster_list, self.__player.coin_score)
+        self.__ui.update_weapon_icon(self.__player.selected_weapon_type)
 
         self.solid_block_update() 
 
@@ -250,11 +251,16 @@ class GameView(arcade.View):
         for monster in self.__monster_list :
             monster.move(self.__wall_list, arcade.Vec2(self.player_x, self.player_y))
 
-        for weapon in self.__weapon_list :
-            if not self.__is_test :         #pour que l'on ne puisse pas bouger la sourie pendent un test
-                mouse_position = self.__get_mouse_position()
-                weapon.update_angle(mouse_position, arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
-            weapon.update_weapon(arcade.Vec2(self.player_x, self.player_y))
+        try :
+            for weapon in self.__weapon_list :
+                if not self.__is_test :         # Pour que l'on ne puisse pas bouger la souris pendant les tests
+                    mouse_position = self.__get_mouse_position()
+                    weapon.update_angle(mouse_position, arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
+                weapon.update_weapon(arcade.Vec2(self.player_x, self.player_y))
+        except KeyError :
+            # Sometimes getting the mouse position from acade throws an exception, but not often. 
+            # The program should just ignore this and not update weapon angle in that frame.
+            pass
 
         for arrow in self.__arrow_list :
             arrow.move()
