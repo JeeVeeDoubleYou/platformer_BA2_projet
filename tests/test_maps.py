@@ -43,6 +43,21 @@ def test_bad_maps(window: arcade.Window) -> None:
     with pytest.raises(Exception, match=re.escape(f"There is no lever at (x, y) = {(4, 1)}")) :
         view = GameView("maps/bad_maps/bad_lever_door_map/wrong_lever_placement.txt")
 
+    with pytest.raises(Exception, match="Please, use integer to precise the lever coordinate") :
+        view = GameView("maps/bad_maps/bad_lever_door_map/bad_lever_coordinates.txt")
+
+    with pytest.raises(Exception, match=re.escape(f"lever given at {(1000, 1)} is outside of the map")) :
+        view = GameView("maps/bad_maps/bad_lever_door_map/lever_oustide_the_map.txt")
+    
+    with pytest.raises(Exception, match=re.escape(f"door given at {(1000, 1)} is outside of the map")) :
+        view = GameView("maps/bad_maps/bad_lever_door_map/door_outside_the_map.txt")
+
+    with pytest.raises(Exception, match=re.escape(f"There is no door at (x, y) = {(3, 1)}")) :
+        view = GameView("maps/bad_maps/bad_lever_door_map/bad_door_palcement.txt")
+
+    
+    
+
     #   with pytest.raises(Exception, match="Please, use integer to precise the lever coordinate") :
     #       view = GameView("maps/bad_maps/wrong_lever_placement.txt")
         
