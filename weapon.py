@@ -21,7 +21,7 @@ class Weapon(arcade.Sprite):
         self.frames_from_spawn = 0
         self.__is_active = False
         self.set_texture_angle(initial_angle)
-        self.__update_angle(mouse_position, player_position, camera_bottom_left)
+        self.update_angle(mouse_position, player_position, camera_bottom_left)
         self.__update_position(player_position)
 
     @abstractmethod
@@ -48,16 +48,14 @@ class Weapon(arcade.Sprite):
         """
         return False
 
-    def update_weapon(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> None:
-        """Updates the weapon position, angle, and activation status"""
+    def update_weapon(self, player_position : arcade.Vec2) -> None:
+        """Updates the weapon position and activation status"""
         self.frames_from_spawn += 1
-        self.__update_angle(mouse_position, player_position, camera_bottom_left)
         self.__update_position(player_position)
         self.in_hit_frame()
 
-    def __update_angle(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> None:
-        """Updates the weapon's angle based on the mouse, player, and camera positions.
-        """
+    def update_angle(self, mouse_position : arcade.Vec2, player_position : arcade.Vec2, camera_bottom_left : arcade.Vec2) -> None:
+        """Updates the weapon's angle based on the mouse, player, and camera positions."""
         
         # Calculate mouse coordinates relative to world
         world_mouse_x = mouse_position.x + camera_bottom_left.x

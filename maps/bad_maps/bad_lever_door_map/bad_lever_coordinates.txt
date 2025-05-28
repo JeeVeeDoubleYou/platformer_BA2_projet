@@ -1,0 +1,9 @@
+height: 2
+width: 5
+switches:
+  - x: f
+    y: a
+---
+S ^
+=====
+---
