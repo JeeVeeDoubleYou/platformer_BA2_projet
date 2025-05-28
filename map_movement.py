@@ -32,6 +32,7 @@ class MapMovement :
                     if platform.moves :
                         self.__list_of_platforms.append(platform)
 
+
     def __grouping_platform(self, map_matrix : list[list[str]], line : int, column : int, platform : Platform, visited : set[tuple[int, int]], valid_arrow : PlatformArrows | None) -> None :
         """Recursive function taking as arguments :
             - line, column

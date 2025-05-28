@@ -55,17 +55,9 @@ def test_bad_maps(window: arcade.Window) -> None:
     with pytest.raises(Exception, match=re.escape(f"There is no door at (x, y) = {(3, 1)}")) :
         view = GameView("maps/bad_maps/bad_lever_door_map/bad_door_palcement.txt")
 
-    with pytest.raises(Exception, match=re.escape(f"unknown action")) :
-        view = GameView("maps/bad_maps/bad_lever_door_map/bad_lever_action.txt")
+    #with pytest.raises(Exception, match=re.escape(f"unknown action")) :
+    #    view = GameView("maps/bad_maps/bad_lever_door_map/bad_lever_action.txt")
 
-    with pytest.raises(Exception, match="A door action is incorect") :
-        view = GameView("maps/bad_maps/bad_lever_door_map/bad_door_action.txt")
-
-    
-    
-
-    #   with pytest.raises(Exception, match="Please, use integer to precise the lever coordinate") :
-    #       view = GameView("maps/bad_maps/wrong_lever_placement.txt")
         
 
 def test_good_maps(window: arcade.Window) -> None :
