@@ -83,7 +83,7 @@ class GameView(arcade.View):
             if self.__is_test : 
                 raise e
            
-        self.special_map()
+        #self.special_map()
 
     def special_map(self) -> None:
         for x in range(50000):
