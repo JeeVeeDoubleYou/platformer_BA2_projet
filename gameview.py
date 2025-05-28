@@ -81,11 +81,11 @@ class GameView(arcade.View):
             if self.__is_test : 
                 raise e
             
-        #   self.special_map()
+        #self.special_map()
 
     def special_map(self) -> None:
-        for x in range(100):
-            arrow = Arrow(10, 1000, 0)
+        for x in range(4000):
+            arrow = Arrow(10, 1000, 180)
             self.__arrow_list.append(arrow)
 
 
@@ -253,11 +253,12 @@ class GameView(arcade.View):
         for weapon in self.__weapon_list :
             if not self.__is_test :         #pour que l'on ne puisse pas bouger la sourie pendent un test
                 mouse_position = self.__get_mouse_position()
-                weapon.update_weapon(mouse_position, arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
+                weapon.update_angle(mouse_position, arcade.Vec2(self.player_x, self.player_y), self.__camera.bottom_left)
+            weapon.update_weapon(arcade.Vec2(self.player_x, self.player_y))
 
         for arrow in self.__arrow_list :
             arrow.move()
-            if (arrow.center_x < self.__camera.bottom_left.x):
+            if (arrow.center_y < self.__camera.bottom_left.y):
                 arrow.remove_from_sprite_lists()
 
         self.__update_camera()
@@ -465,7 +466,7 @@ class GameView(arcade.View):
         return self.__weapon_list
     
     @property
-    def get___arrow_list(self) -> arcade.SpriteList[Arrow]:
+    def get_arrow_list(self) -> arcade.SpriteList[Arrow]:
         return self.__arrow_list
 
     
