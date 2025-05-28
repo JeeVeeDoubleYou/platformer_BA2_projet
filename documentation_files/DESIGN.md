@@ -226,6 +226,18 @@ Et on sait aussi que la frontiere est au plus de 2n + 2 (cas ou l'on prend une p
 Donc, on en conclut que dans le pire cas possible, la complexite est de O(9n) = O(n)
 
 
+resultat des tests (un seul appel donc le cumtime = percall):
+number	cumtime
+25	    0.00154
+100	    0.00454 
+400	    0.0166
+900	    0.0344
+
+
+
+
+
+
 
 
 
@@ -297,3 +309,15 @@ def move(self) -> None : # donc θ(1)
 arrow.remove_from_sprite_lists()    # θ(1)
 Apparament  arrow.remove from spritelist est en θ(1) voici quelques hypotheses sur pourquoi ce serait le cas:
 1:Arcade remarque quand plusieurs sprites sont retires en meme temps et supprime directement la liste au lieu de supprimer les sprites un par un
+
+resultat des test:
+number	cumtime	 	
+10	    0.0422 
+100	    0.565
+500	    0.984
+1000    1.95
+2000	3.91
+5000	9.73
+10000	19.3 
+20000	38.4
+50000	104

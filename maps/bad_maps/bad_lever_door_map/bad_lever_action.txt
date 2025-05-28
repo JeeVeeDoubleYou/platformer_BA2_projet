@@ -1,0 +1,8 @@
+height: 2
+width: 5
+switches:
+  - x: 2
+    y: 1
+    switch_on:
+      - action: open_gate # Il y a un '_' et pas un '-'
+        x: 3maps/bad_maps/bad_lever_door_map/bad_door_palcement.txt

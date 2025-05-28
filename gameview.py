@@ -82,8 +82,8 @@ class GameView(arcade.View):
             self.__make_error_text("An unknow error has occured")
             if self.__is_test : 
                 raise e
-            
-        #self.special_map()
+           
+        self.special_map()
 
     def special_map(self) -> None:
         for x in range(50000):
@@ -119,7 +119,7 @@ class GameView(arcade.View):
         self.__ui.update_weapon_icon(self.__player.selected_weapon_type)
 
         self.solid_block_update() 
-        self.test_compexite_plateformes()
+        #self.test_compexite_plateformes()
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
@@ -232,13 +232,14 @@ class GameView(arcade.View):
 
         
         map_test : list[list[str]] = []
-        for i in range (10):
+        for i in range (5):
             line = []
-            for j in range (10):
+            for j in range (5):
                 line.append("=")
             map_test.append(line)
+        map_mouvement = MapMovement(self.__non_platform_moving_sprites_list)
         self.profiler.enable()
-        MapMovement.find_platforms_in_map_matrix(map_test)
+        map_mouvement.find_platforms_in_map_matrix(map_test)
         self.profiler.disable()
 
     def on_update(self, delta_time: float) -> None:
@@ -357,7 +358,9 @@ class GameView(arcade.View):
         """Handles all game collisions: player, weapons, arrows, monsters, coins, levers, lava, end."""
 
         self.__coin_collisions()
+        self.profiler.enable()
         self.__arrow_collisions()
+        self.profiler.disable()
 
         if (weapon := self.current_weapon) is not None :
             weapon.check_collision(self.__monster_list, self.__lever_list, self.__ui)
