@@ -5,4 +5,9 @@ switches:
     y: 1
     switch_on:
       - action: open_gate # Il y a un '_' et pas un '-'
-        x: 3maps/bad_maps/bad_lever_door_map/bad_door_palcement.txt
+        x: 3
+        y: 1
+---
+S ^ |
+=====
+---

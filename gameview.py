@@ -51,7 +51,6 @@ class GameView(arcade.View):
 
     def __init__(self, map_name : str = "maps/testing_maps/default_map.txt") -> None:
 
-        self.profiler = cProfile.Profile()
 
         # Magical incantion: initialize the Arcade view
         super().__init__()
@@ -83,12 +82,6 @@ class GameView(arcade.View):
             if self.__is_test : 
                 raise e
            
-        #self.special_map()
-
-    def special_map(self) -> None:
-        for x in range(50000):
-            arrow = Arrow(10, 1000, 180)
-            self.__arrow_list.append(arrow)
 
 
     def setup(self) -> None:
@@ -119,7 +112,6 @@ class GameView(arcade.View):
         self.__ui.update_weapon_icon(self.__player.selected_weapon_type)
 
         self.solid_block_update() 
-        #self.test_compexite_plateformes()
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.__player,
@@ -238,17 +230,13 @@ class GameView(arcade.View):
                 line.append("=")
             map_test.append(line)
         map_mouvement = MapMovement(self.__non_platform_moving_sprites_list)
-        self.profiler.enable()
         map_mouvement.find_platforms_in_map_matrix(map_test)
-        self.profiler.disable()
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
         This is where in-world time "advances" or "ticks"."""
 
-        #self.profiler.enable()
         self.do_on_update(delta_time)
-        #self.profiler.disable()
 
     def do_on_update(self, delta_time: float) -> None :
         """Only called in on_update, what actually happens when updates."""
@@ -280,12 +268,10 @@ class GameView(arcade.View):
             pass
 
 
-        self.profiler.enable()
         for arrow in self.__arrow_list :
             arrow.move()
             if (arrow.center_y < self.__camera.bottom_left.y):
                 arrow.remove_from_sprite_lists()
-        self.profiler.disable()
         
 
         self.__update_camera()
@@ -358,9 +344,7 @@ class GameView(arcade.View):
         """Handles all game collisions: player, weapons, arrows, monsters, coins, levers, lava, end."""
 
         self.__coin_collisions()
-        self.profiler.enable()
         self.__arrow_collisions()
-        self.profiler.disable()
 
         if (weapon := self.current_weapon) is not None :
             weapon.check_collision(self.__monster_list, self.__lever_list, self.__ui)
@@ -461,7 +445,11 @@ class GameView(arcade.View):
     @property
     def __won(self) -> bool :
         return self.__has_won
+    @property
+    def get_has_won(self) -> bool:
+        return self.__has_won
 
+    
     @__won.setter
     def __won(self, value : bool) -> None :
         if value == True :
