@@ -33,6 +33,6 @@ def test_plateforme_direction(window: arcade.Window) -> None:
     view.on_key_press(arcade.key.RIGHT, 0)
     window.test(20)
     view.on_key_release(arcade.key.RIGHT, 0)
-    assert(view.get_has_won)
+    assert(view.won)
     
 
