@@ -21,10 +21,6 @@ FINI !
 
 FINI !
 
-
-* [] Écran de fin de jeu pour enlever problème si end mais pas next_map
-
-
 ---
 
 ## Suivi

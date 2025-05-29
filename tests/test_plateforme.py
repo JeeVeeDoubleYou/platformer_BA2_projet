@@ -17,7 +17,6 @@ def test_plateforme_direction(window: arcade.Window) -> None:
     assert(plateforme_position > view.player_y)
     view.on_key_press(arcade.key.LEFT, 0)
     window.test(30)
-    print(view.player_x)
     view.on_key_release(arcade.key.LEFT, 0)
     assert(start_position_y == view.player_y)
 
