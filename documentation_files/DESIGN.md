@@ -284,22 +284,36 @@ for arrow in list(self.__arrow_list) : #on repete n donc θ(n)
         self.center_y += self.change_y # θ(1)
         self.angle = atan2_deg(self.change_x,self.change_y) - 45 # θ(1)
 ```
-La première chose que nous devons remarquer, en analysant la complexité, est la complexité de la fonction `remove_from_sprite_lists()`, une fonction d'Arcade. Cette fonction s'exécute en θ(1)l où le nombre d'opérations constances est faible, car les sprites ne sont pas enlevées de chaque liste individuellement, mais directement du physics engine. Une fois que l'on sait ça, nous pouvons voir que les seules opérations qui ne s'effectuent pas en θ(1) sont les boucles sur les flèches, qui sont en θ(n). Comme il y a deux telles boucles, mais qu'elles ne sont pas imbriquées, nous trouvons que le total est du update est en θ(n).
+La première chose que nous devons remarquer, en analysant la complexité, est la complexité de la fonction `remove_from_sprite_lists()`, une fonction d'Arcade. Cette fonction s'exécute en θ(1) où le nombre d'opérations constances est faible, car les sprites ne sont pas enlevées de chaque liste individuellement, mais directement du physics engine. Une fois que l'on sait ça, nous pouvons voir que les seules opérations qui ne s'effectuent pas en θ(1) sont les boucles sur les flèches, qui sont en θ(n). Comme il y a deux telles boucles, mais qu'elles ne sont pas imbriquées, nous trouvons que le total est du update est en θ(n).
 
 Ici, nous pouvons en profiter pour mettre en évidence l'avantage d'avoir utilisé une fonction de la bibliothèque externe Arcade, plutôt que d'avoir essayé de récrire la fonction par nous-mêmes. En effet, si nous avions dû enlever chaque flèche de chaque SpriteList par nous-mêmes, comme il peut y avoir un très grand nombre de SpriteList dans le jeu, cela aurait pu affecter les performances du jeu. Cela n'aurait pas affecté la complexité algorithmique, car le nombre de SpriteList est constant ici, mais nous savons que dans un problème pratique, la seule complexité théorique ne suffit pas à évaluer les performances d'un programme.
 
 ### Benchmarking
 
-resultat des test:
-number	percall	 	
-10	    0.00255
-100	    0.0342
-500	    0.0596
-1000    0.118
-2000	0.237
-5000	0.589
-10000	1.168
-20000	2.324
-50000	6.146
+| N | Durée de on_update() [s] | 
+|:---------:|:---------:|
+| 10 | 0.00255 |
+| 100 | 0.0342 | 
+| 500 | 0.0596| 
+|1000 | 0.118|
+| 2000| 0.237 |
+| 5000 | 0.589|
+| 10000| 1.168|
+| 20000| 2.324|
+| 5000| 6.146|
 
 
+![Benchmarking de on_update()](benchmarking_update.png)
+
+Sur le graphique, nous pouvons visualiser le temps d'un appel de la fonction on_update(),
+en fonction du nombre de flèches présentes sur la carte. Nous voyons que la tendance est 
+linéaire, alors on_update() est bien en θ(n), comme vu dans notre analyse de complexité. 
+
+
+![Visualisation du nombre de flèches sans lag](fleches_sans_lag.png)
+
+Dans ce second graphique, qui présente une vue plus précise du graphique précédent pour un petit nombre
+de flèches, nous avons ajouté un line qui représente 1/60 secondes, c'est à dire
+le temps maximal que peut prendre la fonction on_update() avant que le jeu ne lag. En effet, on_update()
+est appelé soixante fois par secondes. Nous voyons alors que l'on peut avoir jusqu'à quarante flèches actives à 
+la fois, avant que le jeu ne commence à avoir un délai.
