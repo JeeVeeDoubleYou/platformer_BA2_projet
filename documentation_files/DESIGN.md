@@ -202,7 +202,7 @@ def __grouping_platform(self, map_matrix : list[list[str]], line : int, column :
 
 La fonction `find_platforms_in_map_matrix()` a pour but d’explorer la matrice représentant notre carte, d’identifier les groupes de cases correspondant à des plateformes mobiles, puis de les regrouper à l’aide de la fonction récursive `grouping_platform()`. Pour faire cela, elle parcourt chaque case de la matrice et, si la case contient un caractère de plateforme et n’a pas encore été visitée, elle initialise une nouvelle instance de plateforme et appelle `grouping_platform()` pour regrouper toutes les cases adjacentes formant cette plateforme.
 
-Dans notre analyse de complexité, nous allons nous intéresser uniquement à la complexité de créer une seule plateforme, pas toutes les plateforme de carte. Alors, nous allons commencer par remarquer la ligne de code suivante, dans `find_platforms_in_map_matrix()` :
+Dans notre analyse de complexité, nous allons nous intéresser uniquement à la complexité de créer une seule plateforme, et non à toutes les plateforme de carte. Alors, nous allons commencer par remarquer la ligne de code suivante, dans `find_platforms_in_map_matrix()` :
 
 ```python 
 if map_matrix[line][column] in self.__platform_characters and (line, column) not in visited : 
@@ -212,20 +212,27 @@ Cette condition, associée au code dans `grouping_platform()` qui ajoute une cas
 
 La fonction `grouping_platform()` visite récursivement les cases voisines tant qu’elles sont valides (c’est-à-dire qu’elles sont dans la matrice, non encore visitées, et qu’elles contiennent un caractère de plateforme ou une flèche). Elle ajoute chaque case visitée et valide à un ensemble visited, ce qui garantit qu’aucune case n’est explorée plus d’une fois, si l'on considère qu'explorer une case signifie passer les deux premières conditions de la fonction de `grouping_platform()`, qui sont en θ(1). 
 
-Même si chaque appel récursif peut théoriquement générer jusqu’à quatre appels supplémentaires (vers les quatre directions cardinales), le mécanisme de marquage dans visited empêche toute redondance. Le nombre total d'appels récursifs est donc en O(n), puisque chaque case valide est explorée une seule fois, et que les cases sont valides ne sont jamais explorées.
+Même si chaque appel récursif peut théoriquement générer jusqu’à quatre appels supplémentaires (vers les quatre directions cardinales), le mécanisme de marquage dans visited empêche toute redondance. Le nombre total d'appels récursifs est donc en θ(n), puisque chaque case valide est explorée une seule fois, et que les cases sont valides ne sont jamais explorées.
+
+### Benchmarking 
+
+| N | Durée de setup() [s] | 
+|:---------:|:---------:|
+| 25 | 0.00154 |
+| 100 | 0.00454 | 
+| 400 | 0.0166| 
+| 900 | 0.0344|
+
+![Graphique de benchmarking de setup](benchmarking_setup.png)
+
+Grâce au graphique, fait à partir de mesures réelles de temps, nous pouvons vérifier notre analyse de complexité. 
+En effet, nous voyons une droite, ce que corrobore notre analyse de complexité en θ(n).   
+Nous n'avons pas pu prendre de mesures au-delà de n ≈ 900, à cause de la limite de récursion de python.
 
 ## On_update()
 
 Analyse de complexité du update des flèches tirées par l'arc, avec paramètre n où n est le nombre de flèches dans le jeu.
 Voici les fonctions qui gèrent la mise à jour des flèches, pour référence.
-Arrow on updade tourne en θ(n²) ou n est le nombre d'arrow
-
-resultat des tests (un seul appel donc le cumtime = percall):
-number	cumtime
-25	    0.00154
-100	    0.00454 
-400	    0.0166
-900	    0.0344
 
 
 ```python
@@ -280,6 +287,8 @@ for arrow in list(self.__arrow_list) : #on repete n donc θ(n)
 La première chose que nous devons remarquer, en analysant la complexité, est la complexité de la fonction `remove_from_sprite_lists()`, une fonction d'Arcade. Cette fonction s'exécute en θ(1)l où le nombre d'opérations constances est faible, car les sprites ne sont pas enlevées de chaque liste individuellement, mais directement du physics engine. Une fois que l'on sait ça, nous pouvons voir que les seules opérations qui ne s'effectuent pas en θ(1) sont les boucles sur les flèches, qui sont en θ(n). Comme il y a deux telles boucles, mais qu'elles ne sont pas imbriquées, nous trouvons que le total est du update est en θ(n).
 
 Ici, nous pouvons en profiter pour mettre en évidence l'avantage d'avoir utilisé une fonction de la bibliothèque externe Arcade, plutôt que d'avoir essayé de récrire la fonction par nous-mêmes. En effet, si nous avions dû enlever chaque flèche de chaque SpriteList par nous-mêmes, comme il peut y avoir un très grand nombre de SpriteList dans le jeu, cela aurait pu affecter les performances du jeu. Cela n'aurait pas affecté la complexité algorithmique, car le nombre de SpriteList est constant ici, mais nous savons que dans un problème pratique, la seule complexité théorique ne suffit pas à évaluer les performances d'un programme.
+
+### Benchmarking
 
 resultat des test:
 number	cumtime	 	

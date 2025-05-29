@@ -442,14 +442,17 @@ class GameView(arcade.View):
     def can_play(self) -> bool :
         return not (self.__error or self.__won)
     
+    # This property is needed for the tests
     @property
-    def won(self) -> bool :
+    def won(self) -> bool : 
         return self.__has_won
     
+    # This property is needed to match the private setter
     @property
-    def __won(self) -> bool :
+    def __won(self) -> bool : 
         return self.__has_won
 
+    # This setter is private because it should not be modified outside GameView
     @__won.setter
     def __won(self, value : bool) -> None :
         if value == True :
