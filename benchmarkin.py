@@ -15,7 +15,6 @@ def test_collision_check(window: arcade.Window) -> None:
         lava_list.append(lava)
     number = 1000
     res = timeit.timeit(lambda: view.on_update(0.1), number = number)
-    print(res,'ms')
 
 
 if __name__ == "__benchmarking__":
@@ -24,4 +23,3 @@ if __name__ == "__benchmarking__":
     test_collision_check(window = arcade.Window(constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT, constants.WINDOW_TITLE))
     profiler.disable()
     profiler.dump_stats("profile.prof")
-    print("sauvgarder dans profile.prof")
