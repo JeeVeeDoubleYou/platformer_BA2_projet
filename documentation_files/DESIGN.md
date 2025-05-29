@@ -291,13 +291,15 @@ Ici, nous pouvons en profiter pour mettre en évidence l'avantage d'avoir utilis
 ### Benchmarking
 
 resultat des test:
-number	cumtime	 	
-10	    0.0422 
-100	    0.565
-500	    0.984
-1000    1.95
-2000	3.91
-5000	9.73
-10000	19.3 
-20000	38.4
-50000	104
+number	percall	 	
+10	    0.00255
+100	    0.0342
+500	    0.0596
+1000    0.118
+2000	0.237
+5000	0.589
+10000	1.168
+20000	2.324
+50000	6.146
+
+
