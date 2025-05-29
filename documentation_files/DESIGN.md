@@ -282,13 +282,15 @@ La première chose que nous devons remarquer, en analysant la complexité, est l
 Ici, nous pouvons en profiter pour mettre en évidence l'avantage d'avoir utilisé une fonction de la bibliothèque externe Arcade, plutôt que d'avoir essayé de récrire la fonction par nous-mêmes. En effet, si nous avions dû enlever chaque flèche de chaque SpriteList par nous-mêmes, comme il peut y avoir un très grand nombre de SpriteList dans le jeu, cela aurait pu affecter les performances du jeu. Cela n'aurait pas affecté la complexité algorithmique, car le nombre de SpriteList est constant ici, mais nous savons que dans un problème pratique, la seule complexité théorique ne suffit pas à évaluer les performances d'un programme.
 
 resultat des test:
-number	cumtime	 	
-10	    0.0422 
-100	    0.565
-500	    0.984
-1000    1.95
-2000	3.91
-5000	9.73
-10000	19.3 
-20000	38.4
-50000	104
+number	percall	 	
+10	    0.00255
+100	    0.0342
+500	    0.0596
+1000    0.118
+2000	0.237
+5000	0.589
+10000	1.168
+20000	2.324
+50000	6.146
+
+
