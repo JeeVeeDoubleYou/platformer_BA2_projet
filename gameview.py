@@ -443,13 +443,9 @@ class GameView(arcade.View):
         return not (self.__error or self.__won)
     
     @property
-    def __won(self) -> bool :
-        return self.__has_won
-    @property
-    def get_has_won(self) -> bool:
+    def won(self) -> bool :
         return self.__has_won
 
-    
     @__won.setter
     def __won(self, value : bool) -> None :
         if value == True :
